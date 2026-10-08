@@ -1,0 +1,51 @@
+# Laravel dependencies, local configuration, and generated files
+/backend/vendor/
+/backend/.env
+/backend/.env.*
+!/backend/.env.example
+/backend/auth.json
+/backend/Homestead.json
+/backend/Homestead.yaml
+/backend/.phpunit.cache/
+/backend/.phpunit.result.cache
+/backend/bootstrap/cache/*.php
+/backend/storage/framework/cache/data/
+/backend/storage/framework/sessions/
+/backend/storage/framework/views/
+/backend/storage/logs/
+/backend/public/build/
+
+# Node dependencies, build output, and logs
+**/node_modules/
+/frontend/.next/
+/frontend/out/
+/frontend/build/
+/frontend/dist/
+**/coverage/
+.pnp.*
+npm-debug.log*
+yarn-debug.log*
+
+# Go binaries and profiling output
+*.exe
+*.test
+*.out
+*.dll
+*.so
+*.dylib
+*.prof
+
+# Environment files (keep example templates)
+.env
+.env.*
+!.env.example
+
+# Editor and operating-system files
+.vscode/
+.idea/
+*.suo
+*.user
+*.swp
+*~
+.DS_Store
+Thumbs.db
