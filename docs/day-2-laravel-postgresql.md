@@ -28,33 +28,15 @@ You should finish the day understanding:
 
 ### What to do
 
-Define the business fields:
+Document the business entity design, including PostgreSQL-compatible types and requiredness, before writing a migration. See [Business Entity Design](business-entity-design.md).
 
-```text
-id
-name
-description
-type
-address
-latitude
-longitude
-website
-phone
-created_at
-updated_at
-```
+The broad category (Hotel, Restaurant, Tour) is related through the category foreign key planned for D2-03. `type` is the more specific business kind (for example, Boutique hotel, Hostel, Café, or Snorkeling tour).
 
-### How
-
-Choose PostgreSQL-compatible types and identify which fields are required.
-
-### Test
-
-Document the design before writing the migration.
+Only `website` is optional among user-provided business attributes; IDs and timestamps are system-managed.
 
 ### Learning
 
-A database model should represent domain needs first, not implementation convenience.
+A database model should represent domain needs first, not implementation convenience. Review the design document before creating the businesses migration in D2-03.
 
 ---
 
