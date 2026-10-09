@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-caribeops}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-caribeops_local}
     ports:
-      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
     networks:
       - backend
     volumes:
@@ -21,6 +21,52 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+
+  laravel:
+    build:
+      context: ./backend/laravel
+      dockerfile: Dockerfile
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_DATABASE: ${POSTGRES_DB:-caribeops}
+      DB_USERNAME: ${POSTGRES_USER:-caribeops}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-caribeops_local}
+      CACHE_STORE: file
+      QUEUE_CONNECTION: sync
+      SESSION_DRIVER: file
+    ports:
+      - "127.0.0.1:8000:8000"
+    networks:
+      - backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  next:
+    build:
+      context: ./frontend/next
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: development
+      NEXT_TELEMETRY_DISABLED: "1"
+    ports:
+      - "127.0.0.1:3000:3000"
+    networks:
+      - backend
+
+  analytics:
+    build:
+      context: ./analytics/go
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8080:8080"
+    networks:
+      - backend
 
 networks:
   backend:

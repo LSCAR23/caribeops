@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+.git/
+.agents/
+.claude/
+.kiro/
+vendor/
+node_modules/
+tests/
+AGENTS.md
+CLAUDE.md
+.mcp.json
+boost.json
+opencode.json
+storage/logs/*
+bootstrap/cache/*.php
