@@ -23,3 +23,9 @@ Route::post('/businesses', function (StoreBusinessRequest $request) {
 
     return response()->json($business, 201);
 });
+
+Route::put('/businesses/{business}', function (StoreBusinessRequest $request, Business $business) {
+    $business->update($request->validated());
+
+    return response()->json($business->refresh());
+})->whereNumber('business');
