@@ -12,3 +12,7 @@ Route::get('/health', function () {
 Route::get('/businesses', function () {
     return response()->json(Business::query()->orderBy('id')->paginate());
 });
+
+Route::get('/businesses/{business}', function (Business $business) {
+    return response()->json($business);
+});
