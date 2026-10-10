@@ -29,3 +29,9 @@ Route::put('/businesses/{business}', function (StoreBusinessRequest $request, Bu
 
     return response()->json($business->refresh());
 })->whereNumber('business');
+
+Route::delete('/businesses/{business}', function (Business $business) {
+    $business->delete();
+
+    return response()->noContent();
+})->whereNumber('business');
