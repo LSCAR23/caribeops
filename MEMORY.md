@@ -15,7 +15,7 @@
 
 ## Last task implemented
 
-Completed D2-07 by adding and applying a named PostgreSQL CHECK constraint on `reviews.rating` requiring values from 1 through 5. The preflight found no existing out-of-range ratings. PostgreSQL boundary probes accepted 1 and 5 and rejected 0 and 6 with SQLSTATE 23514; all temporary fixtures were rolled back. Only the D2-07 migration was applied, in batch 6; the three Laravel starter migrations remain pending. The D2-07 plan records full verification. PHPUnit was not run because its configured database is SQLite in memory, not the PostgreSQL target.
+D2-08 was attempted as a verification task for the complete migration chain, but the implementation was blocked by infrastructure: the PostgreSQL service required by the Laravel `pgsql` connection is not reachable in the current environment. Attempts to start it with `docker compose up -d postgres` failed because Docker Desktop reported an internal API error while pulling `postgres:16-alpine`, and a separate `docker info` check confirmed the Docker engine API itself is unavailable. This means the migration-chain validation cannot run until the Docker environment is restored. No schema or migration files were changed as part of this blocked attempt.
 
 ## What the system does now
 
