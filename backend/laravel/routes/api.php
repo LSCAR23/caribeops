@@ -15,4 +15,4 @@ Route::get('/businesses', function () {
 
 Route::get('/businesses/{business}', function (Business $business) {
     return response()->json($business);
-});
+})->whereNumber('business');
