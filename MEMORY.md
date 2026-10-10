@@ -2,6 +2,9 @@
 
 ## Last files modified
 
+- `docs/plans/d2-13-define-business-amenities.md` — D2-13 plan updated to `Implemented — verified` with the final relationship validation results.
+- `backend/laravel/app/Models/Business.php` — confirmed the existing `amenities()` `belongsToMany` relationship for the `business_amenities` pivot and kept the model aligned with the repo’s minimal Eloquent pattern.
+- `backend/laravel/app/Models/Amenity.php` — confirmed the inverse `businesses()` `belongsToMany` relation and the explicit `fillable` contract.
 - `backend/laravel/app/Models/Review.php` — D2-12 Eloquent model for the existing `reviews` table with mass assignment and `business()` `belongsTo` relation.
 - `docs/plans/d2-12-create-review-model.md` — D2-12 plan updated with implementation outcome and verification.
 - `backend/laravel/app/Models/Business.php` — D2-10 Eloquent model for the existing `businesses` table with mass assignment and `category()` `belongsTo` relation.
@@ -21,7 +24,7 @@
 
 ## Last task implemented
 
-D2-12 added the `App\Models\Review` Eloquent model for the existing `reviews` table. The model keeps the approved scope minimal: it defines the table's mass-assignable fields and a `business()` `belongsTo` relationship to `App\Models\Business`. `php -l app/Models/Review.php` reported no syntax errors, and `vendor/bin/pint --dirty --format agent` passed. A transaction-safe Tinker smoke check inserted temporary category and business rows plus a review, loaded the review with `with('business')`, and verified the parent business name before rolling the transaction back. `php artisan migrate:status --database=pgsql --no-interaction` remained unchanged, confirming the existing migration state and schema were left intact. No schema, migration, controller, or request changes were made.
+D2-13 verified the `Business` → `Amenity` many-to-many Eloquent relationship against the live Laravel/PostgreSQL app. The repository already had the correct `Business::amenities()` and `Amenity::businesses()` methods in place, aligned with the existing `business_amenities` pivot table and the project’s minimal explicit model pattern. Validation succeeded with `php -l app/Models/Business.php`, `php -l app/Models/Amenity.php`, `vendor/bin/pint --dirty --format agent`, and `php artisan migrate:status --database=pgsql --no-interaction`. A transaction-safe PHP smoke test created a temporary business and amenity, attached the amenity via the relationship, and returned a related count of `1` before the transaction closed, confirming the live `belongsToMany` association works without leaving data behind. No migration or schema changes were required.
 
 ## What the system does now
 
