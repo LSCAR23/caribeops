@@ -19,6 +19,20 @@ class AmenitySeeder extends Seeder
             ['name' => 'Breakfast', 'slug' => 'breakfast'],
             ['name' => 'Air Conditioning', 'slug' => 'air-conditioning'],
             ['name' => 'Pet Friendly', 'slug' => 'pet-friendly'],
+            ['name' => 'Restaurant', 'slug' => 'restaurant'],
+            ['name' => 'Bar', 'slug' => 'bar'],
+            ['name' => 'Airport Shuttle', 'slug' => 'airport-shuttle'],
+            ['name' => 'Spa', 'slug' => 'spa'],
+            ['name' => 'Beach Access', 'slug' => 'beach-access'],
+            ['name' => 'Ocean View', 'slug' => 'ocean-view'],
+            ['name' => 'Guided Tours', 'slug' => 'guided-tours'],
+            ['name' => 'Snorkeling Gear', 'slug' => 'snorkeling-gear'],
+            ['name' => 'Kayak Rental', 'slug' => 'kayak-rental'],
+            ['name' => 'Wheelchair Accessible', 'slug' => 'wheelchair-accessible'],
+            ['name' => 'Laundry', 'slug' => 'laundry'],
+            ['name' => '24-Hour Front Desk', 'slug' => '24-hour-front-desk'],
+            ['name' => 'Family Friendly', 'slug' => 'family-friendly'],
+            ['name' => 'Eco Friendly', 'slug' => 'eco-friendly'],
         ];
 
         foreach ($amenities as $amenity) {

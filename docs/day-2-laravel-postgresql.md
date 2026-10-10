@@ -385,6 +385,14 @@ Generate approximately:
 
 One command rebuilds a useful development database.
 
+Run from `backend/laravel` against a disposable local database:
+
+```powershell
+php artisan migrate:fresh --seed --database=pgsql --no-interaction
+```
+
+This destructive command drops the configured database tables before re-running migrations and seeders. Never run it against production, a shared database, or a database containing data that must be kept.
+
 ### Learning
 
 Enough data is important when practicing pagination and query performance.
