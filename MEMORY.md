@@ -2,6 +2,8 @@
 
 ## Last files modified
 
+- `docs/plans/d2-14-define-business-reviews.md` — D2-14 plan updated to `Implemented — verified` with final `hasMany` validation results.
+- `backend/laravel/app/Models/Business.php` — added the parent-side `reviews()` `hasMany` relation for the existing `reviews` table while preserving the `category()` and `amenities()` relations.
 - `docs/plans/d2-13-define-business-amenities.md` — D2-13 plan updated to `Implemented — verified` with the final relationship validation results.
 - `backend/laravel/app/Models/Business.php` — confirmed the existing `amenities()` `belongsToMany` relationship for the `business_amenities` pivot and kept the model aligned with the repo’s minimal Eloquent pattern.
 - `backend/laravel/app/Models/Amenity.php` — confirmed the inverse `businesses()` `belongsToMany` relation and the explicit `fillable` contract.
@@ -24,7 +26,7 @@
 
 ## Last task implemented
 
-D2-13 verified the `Business` → `Amenity` many-to-many Eloquent relationship against the live Laravel/PostgreSQL app. The repository already had the correct `Business::amenities()` and `Amenity::businesses()` methods in place, aligned with the existing `business_amenities` pivot table and the project’s minimal explicit model pattern. Validation succeeded with `php -l app/Models/Business.php`, `php -l app/Models/Amenity.php`, `vendor/bin/pint --dirty --format agent`, and `php artisan migrate:status --database=pgsql --no-interaction`. A transaction-safe PHP smoke test created a temporary business and amenity, attached the amenity via the relationship, and returned a related count of `1` before the transaction closed, confirming the live `belongsToMany` association works without leaving data behind. No migration or schema changes were required.
+D2-14 implemented the `Business` → `Review` parent-side `hasMany` relationship in the live Laravel app. The `Business` model now exposes a `reviews()` relation that loads all review rows for a business, while the existing `Review::business()` `belongsTo` child relation remains intact and aligned with the `reviews.business_id` foreign key. Validation succeeded with `php -l app/Models/Business.php`, `php -l app/Models/Review.php`, `vendor/bin/pint --dirty --format agent`, and `php artisan migrate:status --database=pgsql --no-interaction`. A transaction-safe PHP smoke test created two reviews for a temporary business and returned a count of `2`, confirming the live `hasMany` association works without leaving data behind. No migration or schema changes were required.
 
 ## What the system does now
 
