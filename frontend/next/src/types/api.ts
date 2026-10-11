@@ -14,3 +14,9 @@ export interface ApiListResponse<T> {
 export interface ApiItemResponse<T> {
   data: T;
 }
+
+// Plain collection shape: ReviewResource::collection(...) without a
+// paginator renders { data: [...] }. Added for the D3-12 reviews call.
+export interface ApiCollectionResponse<T> {
+  data: T[];
+}

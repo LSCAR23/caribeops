@@ -2,6 +2,7 @@
 
 use App\Http\Requests\StoreBusinessRequest;
 use App\Http\Resources\BusinessResource;
+use App\Http\Resources\ReviewResource;
 use App\Models\Business;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,10 @@ Route::get('/businesses', function () {
 
 Route::get('/businesses/{business}', function (Business $business) {
     return new BusinessResource($business);
+})->whereUuid('business');
+
+Route::get('/businesses/{business}/reviews', function (Business $business) {
+    return ReviewResource::collection($business->reviews()->orderByDesc('review_date')->get());
 })->whereUuid('business');
 
 Route::post('/businesses', function (StoreBusinessRequest $request) {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Business } from "@/types/business";
 
-function formatRating(value: Business["average_rating"]): string | null {
+export function formatRating(value: Business["average_rating"]): string | null {
   if (value === null || value === undefined) {
     return null;
   }
