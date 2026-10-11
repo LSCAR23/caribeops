@@ -6,6 +6,7 @@ use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ReviewResource;
 use App\Models\Business;
 use App\Models\Category;
+use App\Models\Review;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', function () {
@@ -16,6 +17,19 @@ Route::get('/health', function () {
 
 Route::get('/categories', function () {
     return CategoryResource::collection(Category::orderBy('name')->get());
+});
+
+Route::get('/dashboard/summary', function () {
+    $averageRating = Review::avg('rating');
+
+    return response()->json([
+        'data' => [
+            'total_businesses' => Business::count(),
+            'total_reviews' => Review::count(),
+            'average_rating' => $averageRating === null ? null : (float) $averageRating,
+            'new_businesses' => Business::where('created_at', '>=', now()->subDays(7))->count(),
+        ],
+    ]);
 });
 
 Route::get('/businesses', function () {
