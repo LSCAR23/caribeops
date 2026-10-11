@@ -7,6 +7,7 @@ use App\Http\Resources\ReviewResource;
 use App\Models\Business;
 use App\Models\Category;
 use App\Models\Review;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', function () {
@@ -32,8 +33,15 @@ Route::get('/dashboard/summary', function () {
     ]);
 });
 
-Route::get('/businesses', function () {
-    return BusinessResource::collection(Business::query()->with('category')->withAvg('reviews', 'rating')->orderBy('id')->paginate());
+Route::get('/businesses', function (Request $request) {
+    $businesses = Business::query()
+        ->with('category')
+        ->withAvg('reviews', 'rating')
+        ->when($request->query('category_id'), fn ($query, $categoryId) => $query->where('category_id', $categoryId))
+        ->orderBy('id')
+        ->paginate();
+
+    return BusinessResource::collection($businesses);
 });
 
 Route::get('/businesses/{business}', function (Business $business) {
