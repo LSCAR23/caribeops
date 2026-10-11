@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import BusinessForm from "./BusinessForm";
 import { apiPost } from "@/lib/api-client";
@@ -12,19 +12,19 @@ import type { BusinessFormField } from "@/lib/validate-business";
 type SubmitStatus =
   | { state: "idle" }
   | { state: "pending" }
-  | { state: "success"; name: string }
   | { state: "error" };
 
 // Submission shell around the validated BusinessForm (D3-15).
 // The form's onValid seam guarantees only client-valid values arrive here;
 // this layer owns string→payload coercion and the POST + submit states.
-// No redirect on success — post-creation list sync belongs to D3-16.
+// On 201 it navigates to the new business's detail page (D3-16).
 export default function NewBusinessForm({
   categories,
 }: {
   categories: Category[];
 }) {
   const [status, setStatus] = useState<SubmitStatus>({ state: "idle" });
+  const router = useRouter();
 
   async function handleValid(values: Record<BusinessFormField, string>) {
     if (status.state === "pending") {
@@ -47,29 +47,10 @@ export default function NewBusinessForm({
           phone: values.phone.trim(),
         },
       );
-      setStatus({ state: "success", name: created.data.name });
+      router.push(`/businesses/${created.data.id}`);
     } catch {
       setStatus({ state: "error" });
     }
-  }
-
-  if (status.state === "success") {
-    return (
-      <div className="mt-6">
-        <p
-          role="status"
-          className="text-sm font-medium text-teal-700 dark:text-teal-400"
-        >
-          Business &ldquo;{status.name}&rdquo; created successfully.
-        </p>
-        <Link
-          href="/businesses"
-          className="mt-2 inline-block text-sm font-medium text-teal-700 underline dark:text-teal-400"
-        >
-          View businesses
-        </Link>
-      </div>
-    );
   }
 
   return (
