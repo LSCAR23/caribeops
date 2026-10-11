@@ -4,11 +4,17 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"caribeops/analytics/internal/config"
 )
 
 func main() {
-	log.Println("Analytics API listening on :8080")
-	if err := http.ListenAndServe(":8080", newHandler()); err != nil {
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Analytics API listening on :" + cfg.Port)
+	if err := http.ListenAndServe(":"+cfg.Port, newHandler()); err != nil {
 		log.Fatal(err)
 	}
 }
