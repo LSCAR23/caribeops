@@ -1,4 +1,5 @@
 import Link from "next/link";
+import EmptyState from "./EmptyState";
 import type { Business } from "@/types/business";
 
 export function formatRating(value: Business["average_rating"]): string | null {
@@ -17,6 +18,10 @@ export default function BusinessList({
 }: {
   businesses: Business[];
 }) {
+  if (businesses.length === 0) {
+    return <EmptyState message="No businesses found." />;
+  }
+
   return (
     <ul className="mt-6 space-y-4">
       {businesses.map((business) => {

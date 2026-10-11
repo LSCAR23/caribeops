@@ -4,7 +4,7 @@ export default function ReviewList({ reviews }: { reviews: Review[] }) {
   if (reviews.length === 0) {
     return (
       <p className="mt-6 text-sm text-zinc-600 dark:text-zinc-300">
-        No reviews yet.
+        No reviews found.
       </p>
     );
   }
