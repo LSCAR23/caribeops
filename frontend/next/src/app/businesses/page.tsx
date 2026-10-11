@@ -1,4 +1,5 @@
 import { connection } from "next/server";
+import BusinessList from "@/components/BusinessList";
 import { apiGet } from "@/lib/api-client";
 import type { ApiListResponse } from "@/types/api";
 import type { Business } from "@/types/business";
@@ -23,21 +24,7 @@ export default async function BusinessesPage() {
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
         Showing {result.data.length} of {result.meta.total} businesses
       </p>
-      <ul className="mt-6 space-y-4">
-        {result.data.map((business) => (
-          <li
-            key={business.id}
-            className="border-b border-zinc-200 pb-4 dark:border-zinc-800"
-          >
-            <p className="text-base font-medium text-zinc-900 dark:text-zinc-50">
-              {business.name}
-            </p>
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-              {business.type} · {business.address}
-            </p>
-          </li>
-        ))}
-      </ul>
+      <BusinessList businesses={result.data} />
     </main>
   );
 }

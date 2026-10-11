@@ -12,7 +12,7 @@ Route::get('/health', function () {
 });
 
 Route::get('/businesses', function () {
-    return BusinessResource::collection(Business::query()->orderBy('id')->paginate());
+    return BusinessResource::collection(Business::query()->with('category')->withAvg('reviews', 'rating')->orderBy('id')->paginate());
 });
 
 Route::get('/businesses/{business}', function (Business $business) {
