@@ -1,6 +1,6 @@
 import { apiBaseUrl } from "./api-config";
 
-// Thrown by apiGet when Laravel answers with an HTTP error status.
+// Thrown by the API client when Laravel answers with an HTTP error status.
 // Carries the numeric status so D3-09 error states can branch on it.
 export class ApiError extends Error {
   readonly status: number;
@@ -45,4 +45,40 @@ export async function apiGet<T>(
     return undefined as T;
   }
   return JSON.parse(text) as T;
+}
+
+// Minimal POST client for the Laravel API (D3-15).
+// Same contract as apiGet: base URL join, JSON headers, !ok → throw.
+// The submit layer (not this client) owns string→payload coercion.
+export async function apiPost<T>(
+  path: string,
+  body: unknown,
+  init?: RequestInit,
+): Promise<T> {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const response = await fetch(`${apiBaseUrl}${normalizedPath}`, {
+    ...init,
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      ...init?.headers,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const text = (await response.text()).slice(0, 200);
+    throw new ApiError(
+      response.status,
+      `POST ${normalizedPath} failed with status ${response.status}`,
+      text.length > 0 ? text : undefined,
+    );
+  }
+
+  const responseText = await response.text();
+  if (responseText.length === 0) {
+    return undefined as T;
+  }
+  return JSON.parse(responseText) as T;
 }

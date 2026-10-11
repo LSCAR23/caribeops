@@ -1,5 +1,5 @@
 import { connection } from "next/server";
-import BusinessForm from "@/components/BusinessForm";
+import NewBusinessForm from "@/components/NewBusinessForm";
 import { apiGet } from "@/lib/api-client";
 import type { ApiCollectionResponse } from "@/types/api";
 import type { Category } from "@/types/category";
@@ -21,7 +21,7 @@ export default async function NewBusinessPage() {
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
         Fill in the details for the new business.
       </p>
-      <BusinessForm categories={result.data} />
+      <NewBusinessForm categories={result.data} />
     </main>
   );
 }
