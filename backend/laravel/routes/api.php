@@ -17,7 +17,7 @@ Route::get('/businesses', function () {
 
 Route::get('/businesses/{business}', function (Business $business) {
     return new BusinessResource($business);
-})->whereNumber('business');
+})->whereUuid('business');
 
 Route::post('/businesses', function (StoreBusinessRequest $request) {
     $business = Business::create($request->validated());
@@ -29,10 +29,10 @@ Route::put('/businesses/{business}', function (StoreBusinessRequest $request, Bu
     $business->update($request->validated());
 
     return new BusinessResource($business->refresh());
-})->whereNumber('business');
+})->whereUuid('business');
 
 Route::delete('/businesses/{business}', function (Business $business) {
     $business->delete();
 
     return response()->noContent();
-})->whereNumber('business');
+})->whereUuid('business');

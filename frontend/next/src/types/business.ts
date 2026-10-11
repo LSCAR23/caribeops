@@ -1,6 +1,6 @@
 export interface Business {
-  id: number;
-  category_id: number;
+  id: string;
+  category_id: string;
   category_name: string | null;
   name: string;
   description: string;

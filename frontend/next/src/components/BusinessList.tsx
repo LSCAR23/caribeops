@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Business } from "@/types/business";
 
 function formatRating(value: Business["average_rating"]): string | null {
@@ -26,7 +27,12 @@ export default function BusinessList({
             className="border-b border-zinc-200 pb-4 dark:border-zinc-800"
           >
             <p className="text-base font-medium text-zinc-900 dark:text-zinc-50">
-              {business.name}
+              <Link
+                href={`/businesses/${business.id}`}
+                className="hover:underline"
+              >
+                {business.name}
+              </Link>
             </p>
             <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
               {business.category_name ?? "—"} · {business.address}

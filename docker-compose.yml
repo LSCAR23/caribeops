@@ -54,6 +54,9 @@ services:
     environment:
       NODE_ENV: development
       NEXT_TELEMETRY_DISABLED: "1"
+      # Server-side fetches run inside this container: reach Laravel over the
+      # Compose backend network, not host loopback (D3-10 diagnosis).
+      NEXT_PUBLIC_API_URL: http://laravel:8000
     ports:
       - "127.0.0.1:3000:3000"
     networks:

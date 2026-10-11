@@ -10,8 +10,8 @@ Each business belongs to one broad **category**, represented by `category_id` (f
 
 | Column | PostgreSQL type | Nullable | Meaning and constraints |
 |---|---|---:|---|
-| `id` | `bigint` identity | No | Generated primary key. |
-| `category_id` | `bigint` | No | Foreign key to `categories.id`; a business must belong to a broad category. The delete policy is to be selected with the categories/businesses migrations. |
+| `id` | `uuid` | No | Generated primary key (client-generated ordered UUID via `HasUuids`). |
+| `category_id` | `uuid` | No | Foreign key to `categories.id`; a business must belong to a broad category. The delete policy is to be selected with the categories/businesses migrations. |
 | `name` | `varchar(255)` | No | Business display name. |
 | `description` | `text` | No | Business description. |
 | `type` | `varchar(120)` | No | Specific kind of business. Kept as text, not a database enum, in this initial design. |
