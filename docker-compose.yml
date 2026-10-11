@@ -66,6 +66,8 @@ services:
     build:
       context: ./analytics/go
       dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-caribeops}:${POSTGRES_PASSWORD:-caribeops_local}@postgres:5432/${POSTGRES_DB:-caribeops}?sslmode=disable
     ports:
       - "127.0.0.1:8080:8080"
     networks:

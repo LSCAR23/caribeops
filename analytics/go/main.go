@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"caribeops/analytics/internal/config"
+	"caribeops/analytics/internal/db"
 )
 
 func main() {
@@ -13,6 +16,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	pool, err := db.Connect(ctx, cfg.DatabaseURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer pool.Close()
 	log.Println("Analytics API listening on :" + cfg.Port)
 	if err := http.ListenAndServe(":"+cfg.Port, newHandler()); err != nil {
 		log.Fatal(err)
