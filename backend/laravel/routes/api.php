@@ -2,14 +2,20 @@
 
 use App\Http\Requests\StoreBusinessRequest;
 use App\Http\Resources\BusinessResource;
+use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ReviewResource;
 use App\Models\Business;
+use App\Models\Category;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', function () {
     return response()->json([
         'status' => 'ok',
     ]);
+});
+
+Route::get('/categories', function () {
+    return CategoryResource::collection(Category::orderBy('name')->get());
 });
 
 Route::get('/businesses', function () {

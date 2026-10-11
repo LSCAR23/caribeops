@@ -1,4 +1,5 @@
 import { connection } from "next/server";
+import Link from "next/link";
 import BusinessList from "@/components/BusinessList";
 import { apiGet } from "@/lib/api-client";
 import type { ApiListResponse } from "@/types/api";
@@ -21,6 +22,14 @@ export default async function BusinessesPage() {
       <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
         Businesses
       </h1>
+      <div className="mt-4">
+        <Link
+          href="/businesses/new"
+          className="rounded bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500"
+        >
+          New business
+        </Link>
+      </div>
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
         Showing {result.data.length} of {result.meta.total} businesses
       </p>
