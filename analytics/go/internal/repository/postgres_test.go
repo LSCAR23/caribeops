@@ -248,3 +248,78 @@ func TestPostgresReviewsByMonth(t *testing.T) {
 		t.Errorf("month sum = %d, ReviewCount = %d", sum, total)
 	}
 }
+
+// TestPostgresTopBusinesses is the Day-4 order gate at limit 5: element-wise
+// equality with manual SQL plus independent order assertions on the method
+// output itself (avg non-increasing, count non-increasing on avg ties), so a
+// wrong-but-identical ORDER BY in both queries would still fail.
+func TestPostgresTopBusinesses(t *testing.T) {
+	databaseURL := os.Getenv("DATABASE_URL")
+	if strings.TrimSpace(databaseURL) == "" {
+		t.Skip("DATABASE_URL unset: skipping live top-businesses check")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	pool, err := db.Connect(ctx, databaseURL)
+	if err != nil {
+		t.Fatalf("expected live connect to succeed, got %v", err)
+	}
+	defer pool.Close()
+
+	const limit = 5
+	repo := NewPostgres(pool)
+	got, err := repo.TopBusinesses(ctx, limit)
+	if err != nil {
+		t.Fatalf("TopBusinesses failed: %v", err)
+	}
+
+	rows, err := pool.Query(ctx, `
+		SELECT b.id, b.name, AVG(r.rating), COUNT(r.id)
+		FROM businesses b
+		INNER JOIN reviews r ON r.business_id = b.id
+		GROUP BY b.id, b.name
+		ORDER BY AVG(r.rating) DESC, COUNT(r.id) DESC, b.id ASC
+		LIMIT $1`, limit)
+	if err != nil {
+		t.Fatalf("direct ranking failed: %v", err)
+	}
+	defer rows.Close()
+
+	var want []TopBusiness
+	for rows.Next() {
+		var row TopBusiness
+		if err := rows.Scan(&row.ID, &row.Name, &row.AverageRating, &row.ReviewCount); err != nil {
+			t.Fatalf("direct scan failed: %v", err)
+		}
+		want = append(want, row)
+	}
+	if err := rows.Err(); err != nil {
+		t.Fatalf("direct rows failed: %v", err)
+	}
+
+	for _, row := range got {
+		t.Logf("top: id=%s name=%q avg=%.4f reviews=%d", row.ID, row.Name, row.AverageRating, row.ReviewCount)
+	}
+	if len(got) > limit {
+		t.Errorf("TopBusinesses returned %d rows, limit %d", len(got), limit)
+	}
+	if len(got) != len(want) {
+		t.Fatalf("TopBusinesses returned %d rows, direct query %d", len(got), len(want))
+	}
+	for i := range got {
+		if got[i] != want[i] {
+			t.Errorf("row %d: method=%+v direct=%+v", i, got[i], want[i])
+		}
+		if i > 0 {
+			prev, cur := got[i-1], got[i]
+			if cur.AverageRating > prev.AverageRating {
+				t.Errorf("row %d: avg %v after %v — not non-increasing", i, cur.AverageRating, prev.AverageRating)
+			}
+			if cur.AverageRating == prev.AverageRating && cur.ReviewCount > prev.ReviewCount {
+				t.Errorf("row %d: count %d after %d on tied avg — not non-increasing", i, cur.ReviewCount, prev.ReviewCount)
+			}
+		}
+	}
+}

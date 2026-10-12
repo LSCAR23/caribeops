@@ -110,3 +110,43 @@ func (r *Postgres) ReviewsByMonth(ctx context.Context) ([]MonthlyReviews, error)
 	}
 	return out, nil
 }
+
+// TopBusinesses returns the top businesses by average rating, tie-broken by
+// review volume (D4-13). The metric is explicit by design: "top" without an
+// ORDER BY is ambiguous. INNER JOIN restricts ranking to rated businesses —
+// unreviewed rows carry NULL averages, and PostgreSQL sorts DESC NULLs first,
+// which would crown unrated businesses without it. The id tail keeps ties
+// fully deterministic. Non-positive limits short-circuit to empty since
+// PostgreSQL rejects negative LIMIT.
+func (r *Postgres) TopBusinesses(ctx context.Context, limit int) ([]TopBusiness, error) {
+	if limit <= 0 {
+		return nil, nil
+	}
+	rows, err := r.pool.Query(ctx, `
+		SELECT b.id, b.name, AVG(r.rating), COUNT(r.id)
+		FROM businesses b
+		INNER JOIN reviews r ON r.business_id = b.id
+		GROUP BY b.id, b.name
+		ORDER BY AVG(r.rating) DESC, COUNT(r.id) DESC, b.id ASC
+		LIMIT $1`, limit)
+	if err != nil {
+		return nil, fmt.Errorf("top businesses: %w", err)
+	}
+	defer rows.Close()
+
+	var out []TopBusiness
+	for rows.Next() {
+		var row TopBusiness
+		if err := rows.Scan(&row.ID, &row.Name, &row.AverageRating, &row.ReviewCount); err != nil {
+			return nil, fmt.Errorf("top businesses: %w", err)
+		}
+		out = append(out, row)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("top businesses: %w", err)
+	}
+	return out, nil
+}
+
+// Compile-time proof that the Repository surface is fully implemented.
+var _ Repository = (*Postgres)(nil)
