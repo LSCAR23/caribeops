@@ -4,12 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"maps"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"testing"
 	"time"
 
 	"caribeops/analytics/internal/repository"
+	"caribeops/analytics/internal/service"
 )
 
 type fakeAnalyticsProvider struct {
@@ -220,6 +223,42 @@ func TestReviewsByMonthRejects(t *testing.T) {
 
 		if response.Code != http.StatusBadRequest {
 			t.Errorf("%s: status = %d, want %d", tc.name, response.Code, http.StatusBadRequest)
+		}
+	}
+}
+
+// TestResponseWireKeys pins the client-visible JSON contract for every
+// analytics response shape. Handler tests decode into structs, which is blind
+// to tag renames — map-decoding catches a dropped or renamed key. The
+// duplication with the struct tags is deliberate: wire renames must be
+// conscious.
+func TestResponseWireKeys(t *testing.T) {
+	month := time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC)
+	for _, tc := range []struct {
+		name  string
+		value any
+		keys  []string
+	}{
+		{"overview", service.Overview{Businesses: 42, Reviews: 350, AverageRating: 4.2},
+			[]string{"average_rating", "businesses", "reviews"}},
+		{"category", repository.CategoryCount{Slug: "tours", Name: "Tours", Businesses: 16},
+			[]string{"businesses", "name", "slug"}},
+		{"month", repository.MonthlyReviews{Month: month, Reviews: 3},
+			[]string{"month", "reviews"}},
+		{"top", repository.TopBusiness{ID: "id-1", Name: "Top", AverageRating: 4.5, ReviewCount: 8},
+			[]string{"average_rating", "id", "name", "review_count"}},
+	} {
+		raw, err := json.Marshal(tc.value)
+		if err != nil {
+			t.Fatalf("%s: marshal failed: %v", tc.name, err)
+		}
+		var decoded map[string]any
+		if err := json.Unmarshal(raw, &decoded); err != nil {
+			t.Fatalf("%s: unmarshal failed: %v", tc.name, err)
+		}
+		got := slices.Sorted(maps.Keys(decoded))
+		if !slices.Equal(got, tc.keys) {
+			t.Errorf("%s: keys = %v, want %v", tc.name, got, tc.keys)
 		}
 	}
 }

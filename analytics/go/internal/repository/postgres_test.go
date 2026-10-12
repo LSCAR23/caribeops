@@ -390,3 +390,19 @@ func TestPostgresFilteredQueries(t *testing.T) {
 	t.Logf("filtered: top2=%d tours=%+v unknown=%d window2024rows=%d sum=%d total=%d",
 		len(top2), tours, len(unknown), len(window), sum, total)
 }
+
+// TestTopBusinessesNonPositiveLimit covers the guard clause with a nil pool:
+// non-positive limits return before touching the database, so this runs with
+// no DB and never skips.
+func TestTopBusinessesNonPositiveLimit(t *testing.T) {
+	repo := NewPostgres(nil)
+	for _, limit := range []int{0, -1} {
+		rows, err := repo.TopBusinesses(context.Background(), limit)
+		if err != nil {
+			t.Errorf("limit %d: expected nil error, got %v", limit, err)
+		}
+		if len(rows) != 0 {
+			t.Errorf("limit %d: expected empty, got %+v", limit, rows)
+		}
+	}
+}
