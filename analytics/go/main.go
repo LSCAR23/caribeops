@@ -9,6 +9,9 @@ import (
 
 	"caribeops/analytics/internal/config"
 	"caribeops/analytics/internal/db"
+	"caribeops/analytics/internal/handler"
+	"caribeops/analytics/internal/repository"
+	"caribeops/analytics/internal/service"
 )
 
 func main() {
@@ -23,13 +26,14 @@ func main() {
 		log.Fatal(err)
 	}
 	defer pool.Close()
+	overview := service.NewOverviewService(repository.NewPostgres(pool))
 	log.Println("Analytics API listening on :" + cfg.Port)
-	if err := http.ListenAndServe(":"+cfg.Port, newHandler()); err != nil {
+	if err := http.ListenAndServe(":"+cfg.Port, newHandler(overview)); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func newHandler() http.Handler {
+func newHandler(overview handler.OverviewProvider) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -37,6 +41,7 @@ func newHandler() http.Handler {
 			log.Printf("write health response: %v", err)
 		}
 	})
+	mux.Handle("GET /analytics/overview", handler.NewOverviewHandler(overview))
 
 	return mux
 }

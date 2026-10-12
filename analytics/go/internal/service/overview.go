@@ -3,8 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-
-	"caribeops/analytics/internal/repository"
 )
 
 // Overview is the analytics dashboard summary (D4-09). JSON keys match the
@@ -15,17 +13,28 @@ type Overview struct {
 	AverageRating float64 `json:"average_rating"`
 }
 
+// OverviewRepository is the trio GetOverview needs. It mirrors the matching
+// methods of repository.Repository narrowed to this service's use, so the
+// partially implemented *repository.Postgres satisfies it today and the
+// service stays testable with small fakes. *service.OverviewService in turn
+// satisfies handler.OverviewProvider.
+type OverviewRepository interface {
+	BusinessCount(ctx context.Context) (int64, error)
+	ReviewCount(ctx context.Context) (int64, error)
+	AverageRating(ctx context.Context) (float64, error)
+}
+
 // OverviewService combines repository reads into application behavior. It
-// depends on the Repository interface — never on SQL or driver details — so
-// it is testable with a fake and the handler later depends on this service,
-// not on the repository.
+// depends on the OverviewRepository interface — never on SQL or driver
+// details — so it is testable with a fake and the handler later depends on
+// this service, not on the repository.
 type OverviewService struct {
-	repo repository.Repository
+	repo OverviewRepository
 }
 
 // NewOverviewService wires a repository implementation (or fake) into the
 // service.
-func NewOverviewService(repo repository.Repository) *OverviewService {
+func NewOverviewService(repo OverviewRepository) *OverviewService {
 	return &OverviewService{repo: repo}
 }
 

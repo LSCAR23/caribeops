@@ -1,16 +1,25 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"caribeops/analytics/internal/service"
 )
+
+type stubOverviewProvider struct{}
+
+func (stubOverviewProvider) GetOverview(context.Context) (service.Overview, error) {
+	return service.Overview{}, nil
+}
 
 func TestHealthEndpoint(t *testing.T) {
 	request := httptest.NewRequest(http.MethodGet, "/health", nil)
 	response := httptest.NewRecorder()
 
-	newHandler().ServeHTTP(response, request)
+	newHandler(stubOverviewProvider{}).ServeHTTP(response, request)
 
 	if response.Code != http.StatusOK {
 		t.Fatalf("expected status %d, got %d", http.StatusOK, response.Code)
