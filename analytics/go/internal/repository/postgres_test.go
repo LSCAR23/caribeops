@@ -111,3 +111,71 @@ func TestPostgresAverageRating(t *testing.T) {
 		t.Errorf("AverageRating = %v, direct query = %v", got, want)
 	}
 }
+
+// TestPostgresBusinessesByCategory is the Day-4 gate for GROUP BY: the method
+// slice must equal an independent manual query element-wise (same deterministic
+// ordering in both), and the row sum must tie to the proven BusinessCount —
+// no hardcoded category literals, so reseeds can't break it.
+func TestPostgresBusinessesByCategory(t *testing.T) {
+	databaseURL := os.Getenv("DATABASE_URL")
+	if strings.TrimSpace(databaseURL) == "" {
+		t.Skip("DATABASE_URL unset: skipping live businesses-by-category check")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	pool, err := db.Connect(ctx, databaseURL)
+	if err != nil {
+		t.Fatalf("expected live connect to succeed, got %v", err)
+	}
+	defer pool.Close()
+
+	repo := NewPostgres(pool)
+	got, err := repo.BusinessesByCategory(ctx)
+	if err != nil {
+		t.Fatalf("BusinessesByCategory failed: %v", err)
+	}
+
+	rows, err := pool.Query(ctx, `
+		SELECT c.slug, c.name, COUNT(b.id)
+		FROM categories c
+		LEFT JOIN businesses b ON b.category_id = c.id
+		GROUP BY c.slug, c.name
+		ORDER BY COUNT(b.id) DESC, c.slug ASC`)
+	if err != nil {
+		t.Fatalf("direct GROUP BY failed: %v", err)
+	}
+	defer rows.Close()
+
+	var want []CategoryCount
+	for rows.Next() {
+		var row CategoryCount
+		if err := rows.Scan(&row.Slug, &row.Name, &row.Businesses); err != nil {
+			t.Fatalf("direct scan failed: %v", err)
+		}
+		want = append(want, row)
+	}
+	if err := rows.Err(); err != nil {
+		t.Fatalf("direct rows failed: %v", err)
+	}
+
+	t.Logf("by category: method=%+v direct=%+v", got, want)
+	if len(got) != len(want) {
+		t.Fatalf("BusinessesByCategory returned %d rows, direct query %d", len(got), len(want))
+	}
+	var sum int64
+	for i := range got {
+		if got[i] != want[i] {
+			t.Errorf("row %d: method=%+v direct=%+v", i, got[i], want[i])
+		}
+		sum += got[i].Businesses
+	}
+	total, err := repo.BusinessCount(ctx)
+	if err != nil {
+		t.Fatalf("BusinessCount failed: %v", err)
+	}
+	if sum != total {
+		t.Errorf("category sum = %d, BusinessCount = %d", sum, total)
+	}
+}

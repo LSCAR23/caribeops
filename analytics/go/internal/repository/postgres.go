@@ -51,3 +51,33 @@ func (r *Postgres) AverageRating(ctx context.Context) (float64, error) {
 	}
 	return avg, nil
 }
+
+// BusinessesByCategory returns per-category business counts (D4-11), one row
+// per category via GROUP BY. The LEFT JOIN keeps categories with zero
+// businesses visible as zero rows instead of dropping them; ordering by
+// count (then slug) keeps the output deterministic for callers and tests.
+func (r *Postgres) BusinessesByCategory(ctx context.Context) ([]CategoryCount, error) {
+	rows, err := r.pool.Query(ctx, `
+		SELECT c.slug, c.name, COUNT(b.id)
+		FROM categories c
+		LEFT JOIN businesses b ON b.category_id = c.id
+		GROUP BY c.slug, c.name
+		ORDER BY COUNT(b.id) DESC, c.slug ASC`)
+	if err != nil {
+		return nil, fmt.Errorf("businesses by category: %w", err)
+	}
+	defer rows.Close()
+
+	var out []CategoryCount
+	for rows.Next() {
+		var row CategoryCount
+		if err := rows.Scan(&row.Slug, &row.Name, &row.Businesses); err != nil {
+			return nil, fmt.Errorf("businesses by category: %w", err)
+		}
+		out = append(out, row)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("businesses by category: %w", err)
+	}
+	return out, nil
+}
