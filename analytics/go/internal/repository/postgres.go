@@ -81,3 +81,32 @@ func (r *Postgres) BusinessesByCategory(ctx context.Context) ([]CategoryCount, e
 	}
 	return out, nil
 }
+
+// ReviewsByMonth returns per-month review volume (D4-12) ascending by month.
+// date_trunc floors each review_date to its month start server-side; the
+// ::date cast keeps months as plain calendar days. Months with zero reviews
+// are absent by construction (review-sourced grouping).
+func (r *Postgres) ReviewsByMonth(ctx context.Context) ([]MonthlyReviews, error) {
+	rows, err := r.pool.Query(ctx, `
+		SELECT date_trunc('month', review_date)::date, COUNT(*)
+		FROM reviews
+		GROUP BY 1
+		ORDER BY 1`)
+	if err != nil {
+		return nil, fmt.Errorf("reviews by month: %w", err)
+	}
+	defer rows.Close()
+
+	var out []MonthlyReviews
+	for rows.Next() {
+		var row MonthlyReviews
+		if err := rows.Scan(&row.Month, &row.Reviews); err != nil {
+			return nil, fmt.Errorf("reviews by month: %w", err)
+		}
+		out = append(out, row)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("reviews by month: %w", err)
+	}
+	return out, nil
+}
