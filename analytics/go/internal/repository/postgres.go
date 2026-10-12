@@ -40,3 +40,14 @@ func (r *Postgres) ReviewCount(ctx context.Context) (int64, error) {
 	}
 	return n, nil
 }
+
+// AverageRating returns the mean review rating (D4-08). AVG over an empty
+// table is NULL, so COALESCE keeps the float64 contract total: an empty
+// reviews table reads 0 instead of failing the scan.
+func (r *Postgres) AverageRating(ctx context.Context) (float64, error) {
+	var avg float64
+	if err := r.pool.QueryRow(ctx, `SELECT COALESCE(AVG(rating), 0) FROM reviews`).Scan(&avg); err != nil {
+		return 0, fmt.Errorf("average rating: %w", err)
+	}
+	return avg, nil
+}

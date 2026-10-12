@@ -77,3 +77,37 @@ func TestPostgresReviewCount(t *testing.T) {
 		t.Errorf("ReviewCount = %d, direct query = %d", got, want)
 	}
 }
+
+// TestPostgresAverageRating mirrors the count tests for AVG(rating):
+// identical aggregates over identical data convert identically, so exact
+// equality against an independent raw query is the correct assertion.
+func TestPostgresAverageRating(t *testing.T) {
+	databaseURL := os.Getenv("DATABASE_URL")
+	if strings.TrimSpace(databaseURL) == "" {
+		t.Skip("DATABASE_URL unset: skipping live average-rating check")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	pool, err := db.Connect(ctx, databaseURL)
+	if err != nil {
+		t.Fatalf("expected live connect to succeed, got %v", err)
+	}
+	defer pool.Close()
+
+	got, err := NewPostgres(pool).AverageRating(ctx)
+	if err != nil {
+		t.Fatalf("AverageRating failed: %v", err)
+	}
+
+	var want float64
+	if err := pool.QueryRow(ctx, `SELECT COALESCE(AVG(rating), 0) FROM reviews`).Scan(&want); err != nil {
+		t.Fatalf("direct AVG failed: %v", err)
+	}
+
+	t.Logf("average rating: method=%.4f direct=%.4f", got, want)
+	if got != want {
+		t.Errorf("AverageRating = %v, direct query = %v", got, want)
+	}
+}
