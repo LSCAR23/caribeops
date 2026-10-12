@@ -41,10 +41,12 @@ type Repository interface {
 	// handling is the D4-08 implementation's job (COALESCE), not this contract's.
 	AverageRating(ctx context.Context) (float64, error)
 	// BusinessesByCategory groups businesses per category (D4-11, D4-14).
-	BusinessesByCategory(ctx context.Context) ([]CategoryCount, error)
-	// ReviewsByMonth groups review volume by month (D4-12, D4-14).
-	// Date-range filters arrive in D4-15.
-	ReviewsByMonth(ctx context.Context) ([]MonthlyReviews, error)
+	// An empty category returns every category; a slug filters to that
+	// category, and an unknown slug yields an empty slice (D4-15).
+	BusinessesByCategory(ctx context.Context, category string) ([]CategoryCount, error)
+	// ReviewsByMonth groups review volume by month (D4-12, D4-14). Zero from
+	// or to leaves that side unbounded (D4-15).
+	ReviewsByMonth(ctx context.Context, from, to time.Time) ([]MonthlyReviews, error)
 	// TopBusinesses ranks businesses, returning at most limit rows (D4-13,
 	// D4-14). The limit parameter anticipates D4-15's ?limit=.
 	TopBusinesses(ctx context.Context, limit int) ([]TopBusiness, error)

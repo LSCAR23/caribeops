@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strings"
 	"testing"
+	"time"
 
 	"caribeops/analytics/internal/repository"
 )
@@ -41,11 +42,11 @@ func (f *fakeRepository) AverageRating(context.Context) (float64, error) {
 	return f.average, nil
 }
 
-func (f *fakeRepository) BusinessesByCategory(context.Context) ([]repository.CategoryCount, error) {
+func (f *fakeRepository) BusinessesByCategory(context.Context, string) ([]repository.CategoryCount, error) {
 	return nil, nil
 }
 
-func (f *fakeRepository) ReviewsByMonth(context.Context) ([]repository.MonthlyReviews, error) {
+func (f *fakeRepository) ReviewsByMonth(context.Context, time.Time, time.Time) ([]repository.MonthlyReviews, error) {
 	return nil, nil
 }
 

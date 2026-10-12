@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -56,19 +57,33 @@ func (r *Postgres) AverageRating(ctx context.Context) (float64, error) {
 // per category via GROUP BY. The LEFT JOIN keeps categories with zero
 // businesses visible as zero rows instead of dropping them; ordering by
 // count (then slug) keeps the output deterministic for callers and tests.
-func (r *Postgres) BusinessesByCategory(ctx context.Context) ([]CategoryCount, error) {
-	rows, err := r.pool.Query(ctx, `
+// A non-empty category slug filters to that category; unknown slugs return
+// an empty slice (D4-15).
+func (r *Postgres) BusinessesByCategory(ctx context.Context, category string) ([]CategoryCount, error) {
+	query := `
 		SELECT c.slug, c.name, COUNT(b.id)
 		FROM categories c
 		LEFT JOIN businesses b ON b.category_id = c.id
 		GROUP BY c.slug, c.name
-		ORDER BY COUNT(b.id) DESC, c.slug ASC`)
+		ORDER BY COUNT(b.id) DESC, c.slug ASC`
+	args := []any{}
+	if category != "" {
+		query = `
+			SELECT c.slug, c.name, COUNT(b.id)
+			FROM categories c
+			LEFT JOIN businesses b ON b.category_id = c.id
+			WHERE c.slug = $1
+			GROUP BY c.slug, c.name
+			ORDER BY COUNT(b.id) DESC, c.slug ASC`
+		args = append(args, category)
+	}
+	rows, err := r.pool.Query(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("businesses by category: %w", err)
 	}
 	defer rows.Close()
 
-	var out []CategoryCount
+	out := []CategoryCount{}
 	for rows.Next() {
 		var row CategoryCount
 		if err := rows.Scan(&row.Slug, &row.Name, &row.Businesses); err != nil {
@@ -85,19 +100,33 @@ func (r *Postgres) BusinessesByCategory(ctx context.Context) ([]CategoryCount, e
 // ReviewsByMonth returns per-month review volume (D4-12) ascending by month.
 // date_trunc floors each review_date to its month start server-side; the
 // ::date cast keeps months as plain calendar days. Months with zero reviews
-// are absent by construction (review-sourced grouping).
-func (r *Postgres) ReviewsByMonth(ctx context.Context) ([]MonthlyReviews, error) {
-	rows, err := r.pool.Query(ctx, `
+// are absent by construction (review-sourced grouping). Zero from/to leaves
+// that bound open (D4-15); bounds are inclusive.
+func (r *Postgres) ReviewsByMonth(ctx context.Context, from, to time.Time) ([]MonthlyReviews, error) {
+	query := `
 		SELECT date_trunc('month', review_date)::date, COUNT(*)
-		FROM reviews
-		GROUP BY 1
-		ORDER BY 1`)
+		FROM reviews`
+	args := []any{}
+	if !from.IsZero() {
+		args = append(args, from)
+		query += fmt.Sprintf("\nWHERE review_date >= $%d::date", len(args))
+	}
+	if !to.IsZero() {
+		args = append(args, to)
+		if len(args) == 1 {
+			query += fmt.Sprintf("\nWHERE review_date <= $%d::date", len(args))
+		} else {
+			query += fmt.Sprintf("\nAND review_date <= $%d::date", len(args))
+		}
+	}
+	query += "\nGROUP BY 1\nORDER BY 1"
+	rows, err := r.pool.Query(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("reviews by month: %w", err)
 	}
 	defer rows.Close()
 
-	var out []MonthlyReviews
+	out := []MonthlyReviews{}
 	for rows.Next() {
 		var row MonthlyReviews
 		if err := rows.Scan(&row.Month, &row.Reviews); err != nil {
@@ -120,7 +149,7 @@ func (r *Postgres) ReviewsByMonth(ctx context.Context) ([]MonthlyReviews, error)
 // PostgreSQL rejects negative LIMIT.
 func (r *Postgres) TopBusinesses(ctx context.Context, limit int) ([]TopBusiness, error) {
 	if limit <= 0 {
-		return nil, nil
+		return []TopBusiness{}, nil
 	}
 	rows, err := r.pool.Query(ctx, `
 		SELECT b.id, b.name, AVG(r.rating), COUNT(r.id)
@@ -134,7 +163,7 @@ func (r *Postgres) TopBusinesses(ctx context.Context, limit int) ([]TopBusiness,
 	}
 	defer rows.Close()
 
-	var out []TopBusiness
+	out := []TopBusiness{}
 	for rows.Next() {
 		var row TopBusiness
 		if err := rows.Scan(&row.ID, &row.Name, &row.AverageRating, &row.ReviewCount); err != nil {

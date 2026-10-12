@@ -132,7 +132,7 @@ func TestPostgresBusinessesByCategory(t *testing.T) {
 	defer pool.Close()
 
 	repo := NewPostgres(pool)
-	got, err := repo.BusinessesByCategory(ctx)
+	got, err := repo.BusinessesByCategory(ctx, "")
 	if err != nil {
 		t.Fatalf("BusinessesByCategory failed: %v", err)
 	}
@@ -200,7 +200,7 @@ func TestPostgresReviewsByMonth(t *testing.T) {
 	defer pool.Close()
 
 	repo := NewPostgres(pool)
-	got, err := repo.ReviewsByMonth(ctx)
+	got, err := repo.ReviewsByMonth(ctx, time.Time{}, time.Time{})
 	if err != nil {
 		t.Fatalf("ReviewsByMonth failed: %v", err)
 	}
@@ -322,4 +322,71 @@ func TestPostgresTopBusinesses(t *testing.T) {
 			}
 		}
 	}
+}
+
+// TestPostgresFilteredQueries proves filters differentiate (D4-15): narrower
+// inputs return narrower outputs, without hardcoding seed literals.
+func TestPostgresFilteredQueries(t *testing.T) {
+	databaseURL := os.Getenv("DATABASE_URL")
+	if strings.TrimSpace(databaseURL) == "" {
+		t.Skip("DATABASE_URL unset: skipping live filtered-query checks")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	pool, err := db.Connect(ctx, databaseURL)
+	if err != nil {
+		t.Fatalf("expected live connect to succeed, got %v", err)
+	}
+	defer pool.Close()
+
+	repo := NewPostgres(pool)
+
+	top2, err := repo.TopBusinesses(ctx, 2)
+	if err != nil {
+		t.Fatalf("TopBusinesses(2) failed: %v", err)
+	}
+	if len(top2) != 2 {
+		t.Errorf("TopBusinesses(2) returned %d rows, want 2", len(top2))
+	}
+
+	tours, err := repo.BusinessesByCategory(ctx, "tours")
+	if err != nil {
+		t.Fatalf("BusinessesByCategory(tours) failed: %v", err)
+	}
+	if len(tours) != 1 || tours[0].Slug != "tours" {
+		t.Errorf("BusinessesByCategory(tours) = %+v, want the single tours row", tours)
+	}
+
+	unknown, err := repo.BusinessesByCategory(ctx, "no-such-category")
+	if err != nil {
+		t.Fatalf("BusinessesByCategory(unknown) failed: %v", err)
+	}
+	if len(unknown) != 0 {
+		t.Errorf("BusinessesByCategory(unknown) = %+v, want empty", unknown)
+	}
+
+	from := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	to := time.Date(2024, 12, 31, 0, 0, 0, 0, time.UTC)
+	window, err := repo.ReviewsByMonth(ctx, from, to)
+	if err != nil {
+		t.Fatalf("ReviewsByMonth(2024) failed: %v", err)
+	}
+	var sum int64
+	for _, row := range window {
+		if row.Month.Before(from) || row.Month.After(to) {
+			t.Errorf("month %s outside 2024 window", row.Month.Format("2006-01-02"))
+		}
+		sum += row.Reviews
+	}
+	total, err := repo.ReviewCount(ctx)
+	if err != nil {
+		t.Fatalf("ReviewCount failed: %v", err)
+	}
+	if sum > total {
+		t.Errorf("window sum = %d exceeds ReviewCount = %d", sum, total)
+	}
+	t.Logf("filtered: top2=%d tours=%+v unknown=%d window2024rows=%d sum=%d total=%d",
+		len(top2), tours, len(unknown), len(window), sum, total)
 }

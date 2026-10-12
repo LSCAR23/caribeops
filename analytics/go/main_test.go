@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"caribeops/analytics/internal/repository"
 	"caribeops/analytics/internal/service"
@@ -16,11 +17,11 @@ func (stubOverviewProvider) GetOverview(context.Context) (service.Overview, erro
 	return service.Overview{}, nil
 }
 
-func (stubOverviewProvider) BusinessesByCategory(context.Context) ([]repository.CategoryCount, error) {
+func (stubOverviewProvider) BusinessesByCategory(context.Context, string) ([]repository.CategoryCount, error) {
 	return nil, nil
 }
 
-func (stubOverviewProvider) ReviewsByMonth(context.Context) ([]repository.MonthlyReviews, error) {
+func (stubOverviewProvider) ReviewsByMonth(context.Context, time.Time, time.Time) ([]repository.MonthlyReviews, error) {
 	return nil, nil
 }
 
