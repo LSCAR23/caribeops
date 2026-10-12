@@ -26,14 +26,15 @@ func main() {
 		log.Fatal(err)
 	}
 	defer pool.Close()
-	overview := service.NewOverviewService(repository.NewPostgres(pool))
+	repo := repository.NewPostgres(pool)
+	overview := service.NewOverviewService(repo)
 	log.Println("Analytics API listening on :" + cfg.Port)
-	if err := http.ListenAndServe(":"+cfg.Port, newHandler(overview)); err != nil {
+	if err := http.ListenAndServe(":"+cfg.Port, newHandler(overview, repo)); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func newHandler(overview handler.OverviewProvider) http.Handler {
+func newHandler(overview handler.OverviewProvider, analytics handler.AnalyticsProvider) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -42,6 +43,9 @@ func newHandler(overview handler.OverviewProvider) http.Handler {
 		}
 	})
 	mux.Handle("GET /analytics/overview", handler.NewOverviewHandler(overview))
+	mux.Handle("GET /analytics/businesses-by-category", handler.NewBusinessesByCategoryHandler(analytics))
+	mux.Handle("GET /analytics/reviews-by-month", handler.NewReviewsByMonthHandler(analytics))
+	mux.Handle("GET /analytics/top-businesses", handler.NewTopBusinessesHandler(analytics))
 
 	return mux
 }

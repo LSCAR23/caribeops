@@ -8,25 +8,25 @@ import (
 // CategoryCount is one row of the businesses-by-category breakdown (D4-11).
 // Slug is the stable category key; Name is the display label.
 type CategoryCount struct {
-	Slug       string
-	Name       string
-	Businesses int64
+	Slug       string `json:"slug"`
+	Name       string `json:"name"`
+	Businesses int64  `json:"businesses"`
 }
 
 // MonthlyReviews is one month of review volume (D4-12). Month is the first
 // day of the month, derived from reviews.review_date.
 type MonthlyReviews struct {
-	Month   time.Time
-	Reviews int64
+	Month   time.Time `json:"month"`
+	Reviews int64     `json:"reviews"`
 }
 
 // TopBusiness is one ranked business (D4-13). Ranking defaults to average
 // rating first, review volume as tiebreak; D4-13 may refine the metric.
 type TopBusiness struct {
-	ID            string
-	Name          string
-	AverageRating float64
-	ReviewCount   int64
+	ID            string  `json:"id"`
+	Name          string  `json:"name"`
+	AverageRating float64 `json:"average_rating"`
+	ReviewCount   int64   `json:"review_count"`
 }
 
 // Repository is the analytics query surface. Implementations run SQL against

@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"caribeops/analytics/internal/repository"
 	"caribeops/analytics/internal/service"
 )
 
@@ -15,11 +16,23 @@ func (stubOverviewProvider) GetOverview(context.Context) (service.Overview, erro
 	return service.Overview{}, nil
 }
 
+func (stubOverviewProvider) BusinessesByCategory(context.Context) ([]repository.CategoryCount, error) {
+	return nil, nil
+}
+
+func (stubOverviewProvider) ReviewsByMonth(context.Context) ([]repository.MonthlyReviews, error) {
+	return nil, nil
+}
+
+func (stubOverviewProvider) TopBusinesses(context.Context, int) ([]repository.TopBusiness, error) {
+	return nil, nil
+}
+
 func TestHealthEndpoint(t *testing.T) {
 	request := httptest.NewRequest(http.MethodGet, "/health", nil)
 	response := httptest.NewRecorder()
 
-	newHandler(stubOverviewProvider{}).ServeHTTP(response, request)
+	newHandler(stubOverviewProvider{}, stubOverviewProvider{}).ServeHTTP(response, request)
 
 	if response.Code != http.StatusOK {
 		t.Fatalf("expected status %d, got %d", http.StatusOK, response.Code)
