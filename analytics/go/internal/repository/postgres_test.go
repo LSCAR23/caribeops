@@ -44,3 +44,36 @@ func TestPostgresBusinessCount(t *testing.T) {
 		t.Errorf("BusinessCount = %d, direct query = %d", got, want)
 	}
 }
+
+// TestPostgresReviewCount mirrors TestPostgresBusinessCount for the reviews
+// table: method result must equal an independent direct query.
+func TestPostgresReviewCount(t *testing.T) {
+	databaseURL := os.Getenv("DATABASE_URL")
+	if strings.TrimSpace(databaseURL) == "" {
+		t.Skip("DATABASE_URL unset: skipping live review-count check")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	pool, err := db.Connect(ctx, databaseURL)
+	if err != nil {
+		t.Fatalf("expected live connect to succeed, got %v", err)
+	}
+	defer pool.Close()
+
+	got, err := NewPostgres(pool).ReviewCount(ctx)
+	if err != nil {
+		t.Fatalf("ReviewCount failed: %v", err)
+	}
+
+	var want int64
+	if err := pool.QueryRow(ctx, `SELECT COUNT(*) FROM reviews`).Scan(&want); err != nil {
+		t.Fatalf("direct COUNT(*) failed: %v", err)
+	}
+
+	t.Logf("reviews: method=%d direct=%d", got, want)
+	if got != want {
+		t.Errorf("ReviewCount = %d, direct query = %d", got, want)
+	}
+}

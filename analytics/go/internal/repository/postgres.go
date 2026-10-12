@@ -30,3 +30,13 @@ func (r *Postgres) BusinessCount(ctx context.Context) (int64, error) {
 	}
 	return n, nil
 }
+
+// ReviewCount returns the number of reviews (D4-07), same single-row pattern
+// as BusinessCount.
+func (r *Postgres) ReviewCount(ctx context.Context) (int64, error) {
+	var n int64
+	if err := r.pool.QueryRow(ctx, `SELECT COUNT(*) FROM reviews`).Scan(&n); err != nil {
+		return 0, fmt.Errorf("review count: %w", err)
+	}
+	return n, nil
+}
