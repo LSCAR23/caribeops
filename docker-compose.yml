@@ -80,6 +80,14 @@ services:
       - "127.0.0.1:8080:8080"
     networks:
       - backend
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget --no-verbose --tries=1 --spider http://127.0.0.1:8080/health || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
 networks:
   backend:

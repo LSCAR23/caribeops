@@ -7,7 +7,7 @@ COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /analytics .
 
-FROM scratch
+FROM alpine
 
 COPY --from=build /analytics /analytics
 
