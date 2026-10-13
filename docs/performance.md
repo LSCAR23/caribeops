@@ -92,3 +92,62 @@ definition — an index cannot remove the grouping work, only feed it faster);
 (3) possibly stale statistics skewing row estimates. The join key is the prime
 suspect **for D5-19 to evaluate** — choosing the index (which column, which
 kind, covering or not) is D5-19's task, not this file's.
+
+## D5-20 — Before/after comparison (same query, same data)
+
+**Query** (exact UI-default text, both sides — `LIMIT 10`, unbounded,
+`analytics` role, `EXPLAIN (ANALYZE)` Execution medians):
+
+```sql
+SELECT b.id, b.name, AVG(r.rating), COUNT(r.id)
+FROM businesses b
+INNER JOIN reviews r ON r.business_id = b.id
+GROUP BY b.id, b.name
+ORDER BY AVG(r.rating) DESC, COUNT(r.id) DESC, b.id ASC
+LIMIT 10;
+```
+
+**Before** (D5-17, warmup + 5 runs): **0.251 ms** median
+(`0.227 / 0.238 / 0.251 / 0.322 / 0.259`).
+
+**Index** (D5-19, live, kept):
+
+```sql
+CREATE INDEX reviews_business_id_index ON reviews (business_id);
+```
+
+**After** (this task, warmup + 5 fresh runs, same method): **0.282 ms** median
+(`0.276 / 0.284 / 0.298 / 0.282 / 0.274`; warmup `0.329`).
+
+**Observations:**
+
+- Plans are node-identical before and after (Limit → top-N heapsort →
+  HashAggregate → Hash Join → Seq Scans; all `shared hit`). The planner keeps
+  hashing both cached sides — correctly: at 320 rows, probing a new index
+  costs more than scanning two tiny relations.
+- The medians (0.251 vs 0.282) sit inside each other's noise bands — single
+  runs on either side spanned 0.21–0.48 ms across all sessions. No win, no
+  regression; a flat line, honestly reported.
+- Dataset-sameness is proven, not assumed: counts re-verified `40|320` at
+  D5-17, D5-19, D5-18, and again here, with no reseed between any measurement.
+  The "before" numbers are reused from record deliberately — re-measuring them
+  would require dropping the landed index to re-prove it.
+- The value of this index accrues with scale (hash inputs outgrowing cache),
+  not on today's dev volume. The design reasoning transfers; the milliseconds
+  don't — which is itself the D5-20 lesson: a claim backed by measurement,
+  including a flat one.
+
+**Reproduce** (read-only; needs the seeded volume + landed index):
+
+```bash
+docker exec -e PGPASSWORD=<dev-default> caribeops-postgres-1 \
+  psql -h localhost -U analytics -d caribeops -tAX -c \
+  "EXPLAIN (ANALYZE) SELECT b.id, b.name, AVG(r.rating), COUNT(r.id) \
+   FROM businesses b INNER JOIN reviews r ON r.business_id = b.id \
+   GROUP BY b.id, b.name \
+   ORDER BY AVG(r.rating) DESC, COUNT(r.id) DESC, b.id ASC LIMIT 10;" \
+  | grep "Execution Time"
+```
+
+Run six times, discard the first (warmup), take the median of the remaining
+five — the exact D5-17/D5-20 discipline.
