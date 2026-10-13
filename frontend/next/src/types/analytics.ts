@@ -6,3 +6,11 @@ export interface AnalyticsOverview {
   reviews: number;
   average_rating: number;
 }
+
+// One row of GET /analytics/businesses-by-category (D5-12).
+// Rendered in returned order; the chart scales bars against the max row.
+export interface CategoryCount {
+  slug: string;
+  name: string;
+  businesses: number;
+}

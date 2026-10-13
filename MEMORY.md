@@ -2,6 +2,11 @@
 
 ## Last files modified
 
+- `frontend/next/src/components/CategoryChart.tsx` — D5-12 new presentational CSS-bar chart (pixels only, max-relative widths, zero-guard, aria labels).
+- `frontend/next/src/app/analytics/page.tsx` — D5-12 rewritten (server fetch of by-category, chart section, placeholder + stale note retired).
+- `frontend/next/src/types/analytics.ts` — D5-12 extended with `CategoryCount`.
+- `docs/plans/d5-12-add-businesses-by-category-chart.md` — D5-12 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
+
 - `frontend/next/src/types/analytics.ts`, `src/lib/analytics-config.ts`, `src/lib/analytics-client.ts` — D5-11 new Go fetch path (flat overview type, env-based base URL, `ApiError`-contract client).
 - `frontend/next/src/app/page.tsx` — D5-11 hybrid wiring (Go overview × Laravel summary via `Promise.all`; 3 cards from Go, 4th from Laravel).
 - `docker-compose.yml` — D5-11 `NEXT_PUBLIC_ANALYTICS_URL: http://analytics:8080` (deferred D5-06 item, now consumed).
@@ -96,6 +101,8 @@
 
 ## Last task implemented
 
+D5-12 on 2026-10-13 added the businesses-by-category chart: `CategoryCount` type + presentational `CategoryChart` (CSS bars, max-relative widths, `max || 1` guard, aria labels) + `/analytics` page rewrite (server fetch, placeholder + stale Day-4 note retired). Verification: `tsc` + `lint` clean; rebuilt `next` image (no bind mount); browser shows `Restaurants 16 / Tours 16 / Hotels 8` with `100%/100%/50%` bars matching Go JSON row-for-row (task test). `git diff --check` clean; exactly the 3 intended paths changed. No commit made. Note: the D5-12 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D5-13 Add Reviews-by-Month Chart.
+
 D5-11 on 2026-10-13 connected the dashboard to Go overview: new analytics fetch path (`types/analytics.ts`, `lib/analytics-config.ts`, `lib/analytics-client.ts` mirroring the Laravel trio's contracts) + hybrid `page.tsx` (`Promise.all` Go overview + Laravel summary; cards `40/320/3.0` from Go with `3.0 = toFixed(1)` of `3.040625`, 4th card still Laravel) + compose `NEXT_PUBLIC_ANALYTICS_URL: http://analytics:8080`. Key finding: compose `next` was serving a stale Oct-9 image copy (no bind mount) — fixed via `build next && up -d` per the D5-02 contract; future `next` edits need a rebuild to take effect. Verification: `tsc` + `lint` clean; `config --quiet` exit 0; dashboard cards match Go JSON (task test); `git diff --check` clean; exactly the 5 intended paths changed. No commit made. Note: the D5-11 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D5-12 Add Businesses-by-Category Chart.
 
 D5-10 on 2026-10-13 switched Go to the read-only role: compose analytics `DATABASE_URL` → `analytics` credentials (single dev-default secret, service-name host unchanged) + `.env.example` mirror line. Env-only change — container recreated, no rebuild, no crash-loop. Verification under the role: `/health` ok; overview `40/320/3.040625` byte-identical to baseline; all three grouped/ranked endpoints 200 with live data; `?limit=many` → `400`; container `healthy`; log scan zero auth errors. Regression: Laravel endpoint 200 (still superuser, Day-6 scope). `git diff --check` clean; only the two intended files changed. No secrets recorded. No commit made. Note: the D5-10 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D5-11 Connect Next.js Dashboard to Go Overview.
@@ -187,5 +194,7 @@ D5-09 done 2026-10-13: `analytics` is now least-privilege (SELECT on the 3 Go-re
 D5-10 done 2026-10-13: least privilege is now live — Go authenticates as the restricted `analytics` role and serves every endpoint correctly with zero auth errors. The permissions trilogy (D5-08/09/10) is complete; Laravel still runs as superuser (Day 6 security scope).
 
 D5-11 done 2026-10-13: dashboard KPIs now come from Go (`40/320/3.0`, browser-matched) with Laravel keeping the recency card; analytics URL wired by service name. Operational note: compose `next` has no bind mount — always `build next` after editing its source.
+
+D5-12 done 2026-10-13: `/analytics` shows its first live section — a CSS-bar category chart (`16/16/8`, proportional widths) fed by Go, placeholder retired. Same fetch path, same rebuild rule.
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
