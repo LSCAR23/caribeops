@@ -1,8 +1,13 @@
 import { connection } from "next/server";
 import CategoryChart from "@/components/CategoryChart";
 import MonthlyChart from "@/components/MonthlyChart";
+import TopBusinesses from "@/components/TopBusinesses";
 import { analyticsGet } from "@/lib/analytics-client";
-import type { CategoryCount, MonthlyReviews } from "@/types/analytics";
+import type {
+  CategoryCount,
+  MonthlyReviews,
+  TopBusiness,
+} from "@/types/analytics";
 
 // Rendered per request (never prerendered): the charts must read live Go
 // data, and builds must not require Go to be up.
@@ -10,9 +15,10 @@ export const instant = false;
 
 export default async function AnalyticsPage() {
   await connection();
-  const [categories, months] = await Promise.all([
+  const [categories, months, top] = await Promise.all([
     analyticsGet<CategoryCount[]>("/analytics/businesses-by-category"),
     analyticsGet<MonthlyReviews[]>("/analytics/reviews-by-month"),
+    analyticsGet<TopBusiness[]>("/analytics/top-businesses"),
   ]);
 
   return (
@@ -31,6 +37,12 @@ export default async function AnalyticsPage() {
           Reviews by month
         </h2>
         <MonthlyChart rows={months} />
+      </section>
+      <section className="mt-10">
+        <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+          Top businesses
+        </h2>
+        <TopBusinesses rows={top} />
       </section>
     </main>
   );

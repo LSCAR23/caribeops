@@ -22,3 +22,13 @@ export interface MonthlyReviews {
   month: string;
   reviews: number;
 }
+
+// One ranked row of GET /analytics/top-businesses (D5-14). Go orders by
+// average rating DESC, review count DESC, id ASC (default limit 10); the UI
+// renders this order exactly — never re-sorts.
+export interface TopBusiness {
+  id: string;
+  name: string;
+  average_rating: number;
+  review_count: number;
+}
