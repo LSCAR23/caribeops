@@ -88,4 +88,25 @@ explicitly invokes `/implement` with this plan path.
 
 ## Implementation outcome
 
-(To be filled by the `/implement` stage: files changed, verification results.)
+**Status:** `Implemented — verified` (2026-10-13, no commit by this stage; note:
+the user committed the D5-17 pair plus this plan file mid-turn as `7839377`
+before the outcome below was recorded — the outcome edit since is the only
+pending modification to this file).
+
+**Files changed:** new `docs/performance.md` (candidate query + fresh plan +
+4 findings + fenced verdict). No app/compose/config changes.
+
+**Verification (exact commands/results — the task's test):**
+- Fresh `EXPLAIN (ANALYZE, BUFFERS)` as the `analytics` role: shape
+  node-for-node identical to D5-17 (Limit → top-N heapsort 26kB →
+  HashAggregate 40 groups → Hash Join 320 rows → Seq Scans; all `shared hit`;
+  rows=70-vs-40 anomaly persists; Execution 0.338 ms single-run, consistent
+  with the 0.251 ms median — no drift).
+- `docs/performance.md` exists with the query text, D5-17 medians recap, full
+  plan, one finding per checklist item (seq scans / sort / row counts / 32:1
+  join amplification / stats anomaly), and a verdict fenced to observation +
+  D5-19 handoff (no index prescribed).
+- Sanity counts still `40|320` (read-only by construction).
+- `git diff --check` clean; `git status --short` → only `docs/performance.md`
+  untracked (+ this plan file's outcome edit); D5-17 pair verified preserved
+  (committed as `7839377`, unmodified since).
