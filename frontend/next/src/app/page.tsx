@@ -1,27 +1,24 @@
+import { Suspense } from "react";
 import { connection } from "next/server";
 import KpiCard from "@/components/KpiCard";
-import { formatRating } from "@/components/BusinessList";
+import GoKpiSection from "@/components/GoKpiSection";
+import { KpiGridSkeleton } from "@/components/LoadingSkeleton";
 import { apiGet } from "@/lib/api-client";
-import { analyticsGet } from "@/lib/analytics-client";
 import type { ApiItemResponse } from "@/types/api";
-import type { AnalyticsOverview } from "@/types/analytics";
 import type { DashboardSummary } from "@/types/dashboard";
 
-// Rendered per request (never prerendered): KPIs must read live Laravel
-// data, and builds must not require Laravel to be up.
+// Rendered per request (never prerendered): KPIs must read live data, and
+// builds must not require the backends to be up.
 export const instant = false;
 
 export default async function Home() {
   await connection();
-  // Aggregate KPIs come from the Go analytics service (D5-11); the recency
-  // card stays on Laravel, which is the only service that computes it.
-  // Fetched in parallel so one slow service does not serialize the other.
-  const [overview, result] = await Promise.all([
-    analyticsGet<AnalyticsOverview>("/analytics/overview"),
-    apiGet<ApiItemResponse<DashboardSummary>>("/api/dashboard/summary"),
-  ]);
+  // The recency card stays on Laravel, fetched as before (D5-11); its timing
+  // is unchanged by D5-15. The Go aggregate cards resolve — and show their
+  // skeleton — independently inside the island below.
+  const result =
+    await apiGet<ApiItemResponse<DashboardSummary>>("/api/dashboard/summary");
   const summary = result.data;
-  const average = formatRating(overview.average_rating);
 
   return (
     <main className="mx-auto w-full max-w-5xl px-6 py-12">
@@ -32,15 +29,9 @@ export default async function Home() {
         Tourism Operations &amp; Analytics
       </h1>
       <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <KpiCard
-          label="Total businesses"
-          value={String(overview.businesses)}
-        />
-        <KpiCard label="Total reviews" value={String(overview.reviews)} />
-        <KpiCard
-          label="Average rating"
-          value={average !== null ? average : "—"}
-        />
+        <Suspense fallback={<KpiGridSkeleton />}>
+          <GoKpiSection />
+        </Suspense>
         <KpiCard
           label="New (7 days)"
           value={String(summary.new_businesses)}

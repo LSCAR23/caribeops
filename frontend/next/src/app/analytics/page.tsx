@@ -1,25 +1,22 @@
+import { Suspense } from "react";
 import { connection } from "next/server";
-import CategoryChart from "@/components/CategoryChart";
-import MonthlyChart from "@/components/MonthlyChart";
-import TopBusinesses from "@/components/TopBusinesses";
-import { analyticsGet } from "@/lib/analytics-client";
-import type {
-  CategoryCount,
-  MonthlyReviews,
-  TopBusiness,
-} from "@/types/analytics";
+import CategorySection from "@/components/CategorySection";
+import MonthlySection from "@/components/MonthlySection";
+import TopSection from "@/components/TopSection";
+import {
+  ChartSkeleton,
+  RankListSkeleton,
+} from "@/components/LoadingSkeleton";
 
-// Rendered per request (never prerendered): the charts must read live Go
+// Rendered per request (never prerendered): the sections must read live Go
 // data, and builds must not require Go to be up.
 export const instant = false;
 
+// Shell-first (D5-15): the shell streams immediately while each Go-backed
+// section resolves — and shows its skeleton — independently. A slow Go
+// delays pixels per section, never the whole page.
 export default async function AnalyticsPage() {
   await connection();
-  const [categories, months, top] = await Promise.all([
-    analyticsGet<CategoryCount[]>("/analytics/businesses-by-category"),
-    analyticsGet<MonthlyReviews[]>("/analytics/reviews-by-month"),
-    analyticsGet<TopBusiness[]>("/analytics/top-businesses"),
-  ]);
 
   return (
     <main className="mx-auto w-full max-w-5xl px-6 py-12">
@@ -27,22 +24,19 @@ export default async function AnalyticsPage() {
         Analytics
       </h1>
       <section className="mt-8">
-        <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
-          Businesses by category
-        </h2>
-        <CategoryChart rows={categories} />
+        <Suspense fallback={<ChartSkeleton />}>
+          <CategorySection />
+        </Suspense>
       </section>
       <section className="mt-10">
-        <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
-          Reviews by month
-        </h2>
-        <MonthlyChart rows={months} />
+        <Suspense fallback={<ChartSkeleton rows={12} />}>
+          <MonthlySection />
+        </Suspense>
       </section>
       <section className="mt-10">
-        <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
-          Top businesses
-        </h2>
-        <TopBusinesses rows={top} />
+        <Suspense fallback={<RankListSkeleton />}>
+          <TopSection />
+        </Suspense>
       </section>
     </main>
   );

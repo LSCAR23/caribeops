@@ -2,6 +2,11 @@
 
 ## Last files modified
 
+- `frontend/next/src/components/LoadingSkeleton.tsx` — D5-15 new shared shimmer skeletons (KPI grid, chart, rank list; aria-busy).
+- `frontend/next/src/components/CategorySection.tsx`, `MonthlySection.tsx`, `TopSection.tsx`, `GoKpiSection.tsx` — D5-15 new async Suspense islands (one per Go dependency).
+- `frontend/next/src/app/analytics/page.tsx`, `src/app/page.tsx` — D5-15 shell-first rewrites (Laravel timing unchanged).
+- `docs/plans/d5-15-add-analytics-loading-states.md` — D5-15 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
+
 - `frontend/next/src/components/TopBusinesses.tsx` — D5-14 new presentational ranked list (display-only rank, linked names, formatted ratings, EmptyState; never sorts).
 - `frontend/next/src/app/analytics/page.tsx` — D5-14 third fetch + "Top businesses" section (no hardcoded count).
 - `frontend/next/src/types/analytics.ts` — D5-14 extended with `TopBusiness`.
@@ -111,6 +116,8 @@
 
 ## Last task implemented
 
+D5-15 on 2026-10-13 added analytics loading states: shared `LoadingSkeleton` module (3 shimmer shapes, aria-busy) + 4 async Suspense islands (one per Go dependency; no own `connection()`) + shell-first rewrites of both pages (Laravel timing unchanged). Verification: `tsc` + `lint` clean; rebuilt image; skeleton fallback proven present in streamed markup (transient display honestly not claimed as observed); loaded values equal baselines everywhere. Task test with Go stopped: both pages HTTP 200, fast, no hang — home keeps the Laravel card with an attributable Go-island digest, `/analytics` one digest per island (a free partial-degradation gain vs the old page-level await); restart → `healthy`, content returns. `git diff --check` clean; exactly the 7 intended paths changed. No commit made. Note: the D5-15 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change (islands cover all three analytics sections). Next: D5-16 Add Analytics Error Handling.
+
 D5-14 on 2026-10-13 added the top-businesses section: `TopBusiness` type + presentational `TopBusinesses` (`<ol>`, display-only rank, names linked to shared-DB detail pages, `formatRating` + counts, `EmptyState`; zero client sorting by contract) + page section with parallel default-limit fetch. Verification: `tsc` + `lint` clean; rebuilt `next` image; browser 10-name sequence equals Go JSON element-for-element with matching formatted values (task test). `git diff --check` clean; exactly the 3 intended paths changed. No commit made. Note: the D5-14 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D5-15 Add Analytics Loading States.
 
 D5-13 on 2026-10-13 added the reviews-by-month chart: `MonthlyReviews` type + presentational `MonthlyChart` (last-12 labeled window with `of 244` caption, UTC-anchored labels, zero-guard, aria labels) + page section with parallel fetch. Verification: `tsc` + `lint` clean; rebuilt `next` image; browser aria pairs match Go's last 12 rows exactly (`Oct 2023: 1` … `Apr 2026: 1`, incl. `3`/`2` peaks); caption total matches JSON length (task test). `git diff --check` clean; exactly the 3 intended paths changed. No commit made. Note: the D5-13 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D5-14 Add Top Businesses Section.
@@ -214,5 +221,7 @@ D5-12 done 2026-10-13: `/analytics` shows its first live section — a CSS-bar c
 D5-13 done 2026-10-13: `/analytics` has its second live section — a labeled last-12-months review chart (244-row series windowed honestly with count caption) fed by Go, values exact.
 
 D5-14 done 2026-10-13: `/analytics` has its third live section — a Go-ranked top-10 list in exact API order. Ranking stays in SQL; the UI only presents.
+
+D5-15 done 2026-10-13: analytics surfaces stream skeleton fallbacks per dependency and fail fast + attributably with Go down (documented baseline for D5-16); loaded states unchanged.
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
