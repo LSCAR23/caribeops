@@ -1,5 +1,6 @@
 import KpiCard from "@/components/KpiCard";
 import { formatRating } from "@/components/BusinessList";
+import SectionFallback from "@/components/SectionFallback";
 import { analyticsGet } from "@/lib/analytics-client";
 import type { AnalyticsOverview } from "@/types/analytics";
 
@@ -8,7 +9,15 @@ import type { AnalyticsOverview } from "@/types/analytics";
 // pixels while the shell and the Laravel card resolve on their own timing.
 // No connection() call — the page already opts the tree dynamic.
 export default async function GoKpiSection() {
-  const overview = await analyticsGet<AnalyticsOverview>("/analytics/overview");
+  // D5-16: try wraps the fetch only — a Go outage degrades to the fallback
+  // below, while a render bug still throws instead of being masked.
+  let overview: AnalyticsOverview;
+  try {
+    overview = await analyticsGet<AnalyticsOverview>("/analytics/overview");
+  } catch (error) {
+    console.error(error);
+    return <SectionFallback label="Aggregate KPIs" />;
+  }
   const average = formatRating(overview.average_rating);
 
   return (
