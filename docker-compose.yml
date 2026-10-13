@@ -7,12 +7,14 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-caribeops}
       POSTGRES_USER: ${POSTGRES_USER:-caribeops}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-caribeops_local}
+      ANALYTICS_DB_PASSWORD: ${ANALYTICS_DB_PASSWORD:-analytics_local}
     ports:
       - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
     networks:
       - backend
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test:
         - CMD-SHELL
