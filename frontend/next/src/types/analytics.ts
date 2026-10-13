@@ -14,3 +14,11 @@ export interface CategoryCount {
   name: string;
   businesses: number;
 }
+
+// One row of GET /analytics/reviews-by-month (D5-13). Month arrives as an
+// RFC3339 instant over JSON (Go orders rows oldest-first); the chart formats
+// it UTC-anchored so no timezone renames a bucket.
+export interface MonthlyReviews {
+  month: string;
+  reviews: number;
+}

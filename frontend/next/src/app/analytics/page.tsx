@@ -1,16 +1,19 @@
 import { connection } from "next/server";
 import CategoryChart from "@/components/CategoryChart";
+import MonthlyChart from "@/components/MonthlyChart";
 import { analyticsGet } from "@/lib/analytics-client";
-import type { CategoryCount } from "@/types/analytics";
+import type { CategoryCount, MonthlyReviews } from "@/types/analytics";
 
-// Rendered per request (never prerendered): the chart must read live Go
+// Rendered per request (never prerendered): the charts must read live Go
 // data, and builds must not require Go to be up.
 export const instant = false;
 
 export default async function AnalyticsPage() {
   await connection();
-  const rows =
-    await analyticsGet<CategoryCount[]>("/analytics/businesses-by-category");
+  const [categories, months] = await Promise.all([
+    analyticsGet<CategoryCount[]>("/analytics/businesses-by-category"),
+    analyticsGet<MonthlyReviews[]>("/analytics/reviews-by-month"),
+  ]);
 
   return (
     <main className="mx-auto w-full max-w-5xl px-6 py-12">
@@ -21,7 +24,13 @@ export default async function AnalyticsPage() {
         <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
           Businesses by category
         </h2>
-        <CategoryChart rows={rows} />
+        <CategoryChart rows={categories} />
+      </section>
+      <section className="mt-10">
+        <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+          Reviews by month
+        </h2>
+        <MonthlyChart rows={months} />
       </section>
     </main>
   );

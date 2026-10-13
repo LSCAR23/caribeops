@@ -2,6 +2,11 @@
 
 ## Last files modified
 
+- `frontend/next/src/components/MonthlyChart.tsx` — D5-13 new presentational time-series chart (last-12 window, UTC month labels, count caption, zero-guard, aria labels).
+- `frontend/next/src/app/analytics/page.tsx` — D5-13 parallel by-month fetch + second section.
+- `frontend/next/src/types/analytics.ts` — D5-13 extended with `MonthlyReviews`.
+- `docs/plans/d5-13-add-reviews-by-month-chart.md` — D5-13 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
+
 - `frontend/next/src/components/CategoryChart.tsx` — D5-12 new presentational CSS-bar chart (pixels only, max-relative widths, zero-guard, aria labels).
 - `frontend/next/src/app/analytics/page.tsx` — D5-12 rewritten (server fetch of by-category, chart section, placeholder + stale note retired).
 - `frontend/next/src/types/analytics.ts` — D5-12 extended with `CategoryCount`.
@@ -101,6 +106,8 @@
 
 ## Last task implemented
 
+D5-13 on 2026-10-13 added the reviews-by-month chart: `MonthlyReviews` type + presentational `MonthlyChart` (last-12 labeled window with `of 244` caption, UTC-anchored labels, zero-guard, aria labels) + page section with parallel fetch. Verification: `tsc` + `lint` clean; rebuilt `next` image; browser aria pairs match Go's last 12 rows exactly (`Oct 2023: 1` … `Apr 2026: 1`, incl. `3`/`2` peaks); caption total matches JSON length (task test). `git diff --check` clean; exactly the 3 intended paths changed. No commit made. Note: the D5-13 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D5-14 Add Top Businesses Section.
+
 D5-12 on 2026-10-13 added the businesses-by-category chart: `CategoryCount` type + presentational `CategoryChart` (CSS bars, max-relative widths, `max || 1` guard, aria labels) + `/analytics` page rewrite (server fetch, placeholder + stale Day-4 note retired). Verification: `tsc` + `lint` clean; rebuilt `next` image (no bind mount); browser shows `Restaurants 16 / Tours 16 / Hotels 8` with `100%/100%/50%` bars matching Go JSON row-for-row (task test). `git diff --check` clean; exactly the 3 intended paths changed. No commit made. Note: the D5-12 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D5-13 Add Reviews-by-Month Chart.
 
 D5-11 on 2026-10-13 connected the dashboard to Go overview: new analytics fetch path (`types/analytics.ts`, `lib/analytics-config.ts`, `lib/analytics-client.ts` mirroring the Laravel trio's contracts) + hybrid `page.tsx` (`Promise.all` Go overview + Laravel summary; cards `40/320/3.0` from Go with `3.0 = toFixed(1)` of `3.040625`, 4th card still Laravel) + compose `NEXT_PUBLIC_ANALYTICS_URL: http://analytics:8080`. Key finding: compose `next` was serving a stale Oct-9 image copy (no bind mount) — fixed via `build next && up -d` per the D5-02 contract; future `next` edits need a rebuild to take effect. Verification: `tsc` + `lint` clean; `config --quiet` exit 0; dashboard cards match Go JSON (task test); `git diff --check` clean; exactly the 5 intended paths changed. No commit made. Note: the D5-11 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D5-12 Add Businesses-by-Category Chart.
@@ -196,5 +203,7 @@ D5-10 done 2026-10-13: least privilege is now live — Go authenticates as the r
 D5-11 done 2026-10-13: dashboard KPIs now come from Go (`40/320/3.0`, browser-matched) with Laravel keeping the recency card; analytics URL wired by service name. Operational note: compose `next` has no bind mount — always `build next` after editing its source.
 
 D5-12 done 2026-10-13: `/analytics` shows its first live section — a CSS-bar category chart (`16/16/8`, proportional widths) fed by Go, placeholder retired. Same fetch path, same rebuild rule.
+
+D5-13 done 2026-10-13: `/analytics` has its second live section — a labeled last-12-months review chart (244-row series windowed honestly with count caption) fed by Go, values exact.
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
