@@ -25,7 +25,7 @@ Route::post('/login', function (LoginRequest $request) {
     return response()->json([
         'token' => $request->user()->createToken('api')->plainTextToken,
     ]);
-});
+})->middleware('throttle:login');
 
 Route::post('/logout', function (Request $request) {
     $request->user()->currentAccessToken()->delete();
@@ -41,11 +41,11 @@ Route::get('/health', function () {
     return response()->json([
         'status' => 'ok',
     ]);
-});
+})->middleware('throttle:reads');
 
 Route::get('/categories', function () {
     return CategoryResource::collection(Category::orderBy('name')->get());
-});
+})->middleware('throttle:reads');
 
 Route::get('/dashboard/summary', function () {
     $averageRating = Review::avg('rating');
@@ -58,7 +58,7 @@ Route::get('/dashboard/summary', function () {
             'new_businesses' => Business::where('created_at', '>=', now()->subDays(7))->count(),
         ],
     ]);
-});
+})->middleware('throttle:reads');
 
 Route::get('/businesses', function (Request $request) {
     $businesses = Business::query()
@@ -69,15 +69,15 @@ Route::get('/businesses', function (Request $request) {
         ->paginate();
 
     return BusinessResource::collection($businesses);
-});
+})->middleware('throttle:reads');
 
 Route::get('/businesses/{business}', function (Business $business) {
     return new BusinessResource($business);
-})->whereUuid('business');
+})->whereUuid('business')->middleware('throttle:reads');
 
 Route::get('/businesses/{business}/reviews', function (Business $business) {
     return ReviewResource::collection($business->reviews()->orderByDesc('review_date')->get());
-})->whereUuid('business');
+})->whereUuid('business')->middleware('throttle:reads');
 
 Route::post('/businesses', function (StoreBusinessRequest $request) {
     $business = $request->user()->businesses()->create($request->validated());

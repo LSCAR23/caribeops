@@ -2,6 +2,10 @@
 
 ## Last files modified
 
+- `backend/laravel/app/Providers/AppServiceProvider.php` — D6-18 `login` (10/min email+IP) + `reads` (60/min IP) limiters.
+- `backend/laravel/routes/api.php` — D6-18 `throttle:login` on POST login, `throttle:reads` on the 6 public GETs.
+- `backend/laravel/tests/Feature/RateLimitTest.php` — D6-18 new via `make:test` (11th login 429, 61st read 429, limit headers).
+- `docs/plans/d6-18-add-rate-limiting.md` — D6-18 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 - `backend/laravel/config/cors.php` — D6-17 new via `config:publish`, narrowed deliberately (env-driven origins, fixed methods/headers, no wildcards).
 - `backend/laravel/.env.example` — D6-17 documents `CORS_ALLOWED_ORIGINS`.
 - `backend/laravel/tests/Feature/CorsTest.php` — D6-17 new via `make:test` (allowed/denied preflight + GET with Origin).
@@ -198,6 +202,8 @@
 - `docs/plans/d3-19-add-category-filtering.md` — D3-19 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 
 ## Last task implemented
+
+D6-18 on 2026-10-14 added rate limiting: `login` limiter (10/min per email+IP) on `POST /api/login` + `reads` limiter (60/min per IP) on all 6 public GETs + new `RateLimitTest` (11th login → 429 with `Retry-After`, 61st read → 429, health carries limit headers). Audit findings: same-email ceiling is 2/test (number kept); the `api` group had no throttle at all, so reads got a real limiter instead of a hollow pin. Verification: `php -l` + Pint clean; narrow new file **3/3 green, 77 assertions** (first run 2/3, reads limiter added on the finding); full suite **62/62 green, 492 assertions** (59 pre-existing untouched); `route:list` shows `throttle:login`. `git diff --check` clean. No commit made. Note: the D6-18 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; one audit-driven extension (reads limiter) recorded in the outcome. Next: D6-19 Audit Secrets.
 
 D6-17 on 2026-10-14 configured CORS deliberately: published `config/cors.php` narrowed from `*` defaults (`api/*` only, fixed methods/headers, env-driven origins + dev defaults, `supports_credentials` false) + `.env.example` docs + new `CorsTest` (allowed preflight echoes origin, denied preflight never echoes — empty value, browsers match on value — GET with Origin carries header). Verification: `php -l` + Pint clean; narrow new file **3/3 green, 8 assertions** (first run 2/3, denied-pin corrected to observed-sane); full suite **59/59 green, 415 assertions** (56 pre-existing untouched); browser login regression green through real preflight (temp viewer removed after). `git diff --check` clean. No commit made. Note: the D6-17 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-18 Add Rate Limiting.
 
@@ -398,5 +404,7 @@ D6-15 done 2026-10-14: nav Logout (visible only authed) revokes server-side, cle
 D6-16 done 2026-10-14: all 5 writes audited cell-by-cell (401/403/404/422/405/éxito) with a proving test each - anonymous unknown-UUID writes 401 (auth before binding); zero app changes.
 
 D6-17 done 2026-10-14: CORS allowlist deliberada por entorno (preflight permitido ecoa, denegado nunca; login navegador verde) - sin wildcards, sin credenciales; rate limiting next (D6-18).
+
+D6-18 done 2026-10-14: login 10/min email+IP y lecturas públicas 60/min IP (11º/61º → 429) - suite intacta por aislamiento; auditoría de secretos next (D6-19).
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
