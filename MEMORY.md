@@ -2,6 +2,9 @@
 
 ## Last files modified
 
+- `Makefile` — D6-27 `test` runs the three suites, `test-e2e` gates the Playwright flow on documented prereqs, `smoke` keeps the Day-1 curls.
+- `frontend/next/vitest.config.ts` — D6-27 excludes `e2e/**` (Playwright owns browser specs).
+- `docs/plans/d6-27-one-command-tests.md` — D6-27 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 - `frontend/next/package.json` + `package-lock.json` — D6-26 `test:e2e: playwright test` + `@playwright/test@1.64.1`.
 - `frontend/next/playwright.config.ts` + `e2e/auth-flow.spec.ts` — D6-26 new (chromium, env baseURL, 4-step read-only flow).
 - `frontend/next/.gitignore` — D6-26 ignores Playwright run artifacts.
@@ -217,6 +220,8 @@
 - `docs/plans/d3-19-add-category-filtering.md` — D3-19 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 
 ## Last task implemented
+
+D6-27 on 2026-10-14 wired one-command test execution: root `Makefile` (`test` = artisan + go + vitest, `test-e2e` with prereq echo, `smoke` = Day-1 curls verbatim) + vitest `e2e/**` exclusion (Playwright spec leaked into `npm test`: 9/9 pass but 1 file failed — fixed, each runner owns its dir). Verification: recipe commands run directly (`make` absent on Windows host) — artisan **63/63**, go **6/6** no-DB, vitest **4 files 9/9**; `tsc` exit 0; `git diff --check` clean. No commit made. Note: the D6-27 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; one verification-driven line (vitest exclusion) recorded in the outcome. Next: D6-28 Commit Day 6.
 
 D6-26 on 2026-10-14 added the end-to-end user flow: Playwright (`@playwright/test@1.64.1`, chromium, env `baseURL`, no `webServer`) + `test:e2e` script + `e2e/auth-flow.spec.ts` walking login → `/` → businesses → detail (read-only, env credentials) + gitignored run artifacts. Verification: spec **1 passed (7.6s)** with API trail in server log; `tsc` + `eslint` exit 0; `git diff --check` clean. E2E viewer account kept as documented env fixture (one-liner in plan outcome). No commit made. Note: the D6-26 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; dependency approval via this invocation. Next: D6-27 Create One-Command Test Execution.
 
@@ -453,5 +458,7 @@ D6-24 done 2026-10-14: handlers 200/400/500 verdes con test citado por forma, to
 D6-25 done 2026-10-14: `npm test` 9/9 (lista/KPI/carga/error) con vitest+testing-library, sin navegador - unidad de presentación; e2e flow next (D6-26).
 
 D6-26 done 2026-10-14: `test:e2e` 1/1 (login→dashboard→businesses→detalle, 7.6s, solo-lectura) con Playwright+chromium - flujo real multi-servicio; one-command next (D6-27).
+
+D6-27 done 2026-10-14: `make test` orquesta las 3 suites, `test-e2e` con prereqs, `smoke` conserva curls - feedback rápido en un comando; commit Day 6 next (D6-28).
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.

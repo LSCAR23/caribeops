@@ -12,4 +12,21 @@ export default defineConfig({
     baseURL: process.env.E2E_BASE_URL ?? "http://127.0.0.1:3101",
   },
   projects: [{ name: "chromium", use: { browserName: "chromium" } }],
+  // Local-dev convenience (D6-26 amendment): start the stack on demand
+  // instead of requiring it up front. Reuses running servers when present.
+  webServer: [
+    {
+      command: "php artisan serve --host=127.0.0.1 --port=8000",
+      cwd: "../../backend/laravel",
+      url: "http://127.0.0.1:8000/api/health",
+      reuseExistingServer: !process.env.CI,
+      timeout: 60_000,
+    },
+    {
+      command: "npx next dev --port 3101",
+      url: "http://127.0.0.1:3101/login",
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    },
+  ],
 });

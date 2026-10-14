@@ -14,5 +14,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     setupFiles: ["./vitest.setup.tsx"],
+    // Playwright owns e2e/*.spec.ts (D6-26) — never run browser specs here.
+    exclude: ["e2e/**", "node_modules/**"],
   },
 });
