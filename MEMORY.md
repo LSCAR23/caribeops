@@ -2,6 +2,7 @@
 
 ## Last files modified
 
+- `docs/plans/d6-20-laravel-health-test.md` — D6-20 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification. Explicit zero-change landing: no application file touched.
 - `docs/plans/d6-19-audit-secrets.md` — D6-19 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with the verdict table. Explicit zero-change landing: no application file touched.
 - `backend/laravel/app/Providers/AppServiceProvider.php` — D6-18 `login` (10/min email+IP) + `reads` (60/min IP) limiters.
 - `backend/laravel/routes/api.php` — D6-18 `throttle:login` on POST login, `throttle:reads` on the 6 public GETs.
@@ -203,6 +204,8 @@
 - `docs/plans/d3-19-add-category-filtering.md` — D3-19 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 
 ## Last task implemented
+
+D6-20 on 2026-10-14 verified the Laravel health test (explicit zero-change landing): pre-existing `HealthEndpointTest` already pins the spec exactly (200 + exact `{status: ok}`, stateless). Verification: narrow **1/1 green, 2 assertions**; full suite **62/62 green, 492 assertions** (unchanged). `git diff --check` clean. No commit made. Note: the D6-20 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-21 Laravel CRUD Tests.
 
 D6-18 on 2026-10-14 added rate limiting: `login` limiter (10/min per email+IP) on `POST /api/login` + `reads` limiter (60/min per IP) on all 6 public GETs + new `RateLimitTest` (11th login → 429 with `Retry-After`, 61st read → 429, health carries limit headers). Audit findings: same-email ceiling is 2/test (number kept); the `api` group had no throttle at all, so reads got a real limiter instead of a hollow pin. Verification: `php -l` + Pint clean; narrow new file **3/3 green, 77 assertions** (first run 2/3, reads limiter added on the finding); full suite **62/62 green, 492 assertions** (59 pre-existing untouched); `route:list` shows `throttle:login`. `git diff --check` clean. No commit made. Note: the D6-18 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; one audit-driven extension (reads limiter) recorded in the outcome. Next: D6-19 Audit Secrets.
 
@@ -411,5 +414,7 @@ D6-17 done 2026-10-14: CORS allowlist deliberada por entorno (preflight permitid
 D6-18 done 2026-10-14: login 10/min email+IP y lecturas públicas 60/min IP (11º/61º → 429) - suite intacta por aislamiento; auditoría de secretos next (D6-19).
 
 D6-19 done 2026-10-14: cero filtraciones (trackeados, historial 325 revs, examples completos, dev-defaults aceptados) - nada que rotar, cero cambios; health test next (D6-20).
+
+D6-20 done 2026-10-14: health 200 + payload exacto fijado y verde, stateless - base determinista lista; CRUD tests next (D6-21).
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
