@@ -1,7 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiPost } from "@/lib/api-client";
+import { setToken } from "@/lib/auth";
 
 type SubmitStatus =
   | { state: "idle" }
@@ -24,6 +26,7 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState<SubmitStatus>({ state: "idle" });
+  const router = useRouter();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -36,10 +39,10 @@ export default function LoginForm() {
         email: email.trim(),
         password,
       });
-      // Provisional handoff for D6-13 (owns persistence + redirect):
-      // keep the Bearer token where the authenticated area can adopt it.
-      localStorage.setItem("caribeops_token", result.token);
+      setToken(result.token);
       setStatus({ state: "success" });
+      // The spec's transition to the authenticated area (D6-13).
+      router.push("/");
     } catch {
       setStatus({ state: "error" });
     }

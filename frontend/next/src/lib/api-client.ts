@@ -1,4 +1,5 @@
 import { apiBaseUrl } from "./api-config";
+import { authHeaders } from "./auth";
 
 // Thrown by the API client when Laravel answers with an HTTP error status.
 // Carries the numeric status so D3-09 error states can branch on it.
@@ -27,6 +28,7 @@ export async function apiGet<T>(
     ...init,
     headers: {
       Accept: "application/json",
+      ...authHeaders(),
       ...init?.headers,
     },
   });
@@ -62,6 +64,7 @@ export async function apiPost<T>(
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
+      ...authHeaders(),
       ...init?.headers,
     },
     body: JSON.stringify(body),
