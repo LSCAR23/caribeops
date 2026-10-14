@@ -2,6 +2,7 @@
 
 ## Last files modified
 
+- `docs/plans/d6-24-go-handler-tests.md` — D6-24 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with the shape→test matrix. Explicit zero-change landing: no application file touched.
 - `docs/plans/d6-23-go-repository-tests.md` — D6-23 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with the method→test→mode matrix. Explicit zero-change landing: no application file touched.
 - `docs/plans/d6-22-authorization-tests.md` — D6-22 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with the permission matrix. Explicit zero-change landing: no application file touched.
 - `backend/laravel/tests/Feature/BusinessCrudLifecycleTest.php` — D6-21 new via `make:test` (one-test POST→GET→PUT→GET→DELETE→404 lifecycle with DB asserts per step).
@@ -208,6 +209,8 @@
 - `docs/plans/d3-19-add-category-filtering.md` — D3-19 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 
 ## Last task implemented
+
+D6-24 on 2026-10-14 verified the Go handler tests (explicit zero-change landing): 200 covered by 4 success tests + health, 400 by limit-table rejects + month-range rejects, 500 by analytics-failure (3 endpoints) + overview-failure — all DB-free fakes. Verification: handler + root green; full `go test` **6/6 packages ok** without DB; `gofmt`/`vet` clean. `git diff --check` clean. No commit made. Note: the D6-24 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. A first attempt in a restricted session verified everything read-only but could not write files — closed here with the full-preamble invocation. Next: D6-25 Frontend Component Tests.
 
 D6-23 on 2026-10-14 verified the Go repository tests (explicit zero-change landing): `gofmt`/`vet`/`build` clean; no-DB run 6/6 packages ok with 7 live tests visibly SKIP; live run against seeded dev PG 8/8 PASS (all 6 methods + filtered + guard) and 6/6 packages ok. Env note: dev PG is on 127.0.0.1:5433 (two :5432 probes failed 28P01 first); seed 40|320 pre-verified; password from local `.env` at runtime, never recorded. `git diff --check` clean. No commit made. Note: the D6-23 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-24 Go Handler Tests.
 
@@ -432,5 +435,7 @@ D6-21 done 2026-10-14: ciclo POST→GET→PUT→GET→DELETE→404 sobre una fil
 D6-22 done 2026-10-14: matriz admin/owner-propio/owner-ajeno/viewer toda en verde con test citado por celda - permisos ejecutables; Go repository tests next (D6-23).
 
 D6-23 done 2026-10-14: repo Go 8/8 en vivo + 6/6 paquetes sin DB (skips) - datos predecibles 40/320, cero cambios; handler tests next (D6-24).
+
+D6-24 done 2026-10-14: handlers 200/400/500 verdes con test citado por forma, todo DB-free - tradução HTTP aislada; component tests next (D6-25).
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
