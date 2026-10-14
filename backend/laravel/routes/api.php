@@ -89,7 +89,7 @@ Route::put('/businesses/{business}', function (StoreBusinessRequest $request, Bu
     $business->update($request->validated());
 
     return new BusinessResource($business->refresh());
-})->whereUuid('business');
+})->whereUuid('business')->middleware('auth:sanctum');
 
 Route::delete('/businesses/{business}', function (Business $business) {
     $business->delete();

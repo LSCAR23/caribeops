@@ -57,6 +57,7 @@ class BusinessValidationTest extends TestCase
         $this->seed(CategorySeeder::class);
         $categoryId = Category::query()->where('slug', 'hotels')->firstOrFail()->id;
         $business = Business::factory()->create(['name' => 'D2-31 Original Name']);
+        $user = User::factory()->create();
 
         $payload = [
             'category_id' => $categoryId,
@@ -69,7 +70,17 @@ class BusinessValidationTest extends TestCase
             'phone' => $business->phone,
         ];
 
-        $this->putJson("/api/businesses/{$business->id}", $payload)
+        $token = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ])->json('token');
+
+        auth('web')->logout();
+        auth()->forgetGuards();
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer '.$token,
+        ])->putJson("/api/businesses/{$business->id}", $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name', 'website']);
 
@@ -78,6 +89,30 @@ class BusinessValidationTest extends TestCase
             'name' => 'D2-31 Original Name',
             'type' => $business->type,
             'phone' => $business->phone,
+        ]);
+    }
+
+    public function test_anonymous_business_update_is_rejected(): void
+    {
+        $this->seed(CategorySeeder::class);
+        $categoryId = Category::query()->where('slug', 'hotels')->firstOrFail()->id;
+        $business = Business::factory()->create(['name' => 'D2-31 Original Name']);
+
+        $this->putJson("/api/businesses/{$business->id}", [
+            'category_id' => $categoryId,
+            'name' => 'Anonymous Update Attempt',
+            'description' => $business->description,
+            'type' => $business->type,
+            'address' => $business->address,
+            'latitude' => (float) $business->latitude,
+            'longitude' => (float) $business->longitude,
+            'website' => 'https://example.com/anonymous-update',
+            'phone' => $business->phone,
+        ])->assertUnauthorized();
+
+        $this->assertDatabaseHas('businesses', [
+            'id' => $business->id,
+            'name' => 'D2-31 Original Name',
         ]);
     }
 }

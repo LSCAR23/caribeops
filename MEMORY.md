@@ -2,7 +2,9 @@
 
 ## Last files modified
 
-- `backend/laravel/routes/api.php` — D6-05 `auth:sanctum` on `POST /businesses` only (one line; PUT/DELETE deferred to D6-06/07; D6-04 `GET /me` unchanged in the same file).
+- `backend/laravel/routes/api.php` — D6-06 `auth:sanctum` on `PUT /businesses/{business}` (`whereUuid` kept; POST gate + `GET /me` unchanged in the same file; DELETE still open for D6-07).
+- `backend/laravel/tests/Feature/BusinessValidationTest.php` — D6-06 PUT case authenticated via login-flow (still 422 + values kept) + new anonymous valid PUT → 401 with row unchanged.
+- `docs/plans/d6-06-protect-business-modification.md` — D6-06 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 - `backend/laravel/tests/Feature/BusinessCreationTest.php` — D6-05 happy path authenticated via login-flow + new anonymous → 401 with zero rows.
 - `backend/laravel/tests/Feature/BusinessValidationTest.php` — D6-05 creation case authenticated (still 422); PUT case untouched.
 - `docs/plans/d6-05-protect-business-creation.md` — D6-05 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
@@ -153,6 +155,8 @@
 - `docs/plans/d3-19-add-category-filtering.md` — D3-19 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 
 ## Last task implemented
+
+D6-06 on 2026-10-14 protected business modification: `auth:sanctum` on `PUT /api/businesses/{business}` (`whereUuid` kept; anonymous valid PUT → 401 with row unchanged; authed invalid → 422 with original values kept) + authenticated the PUT case in `BusinessValidationTest` via login-flow and added its anonymous-401 case. Verification: `php -l` + Pint clean; `route:list -v` shows sanctum on POST + PUT, DELETE still open; narrow validation + creation + authentication files **15/15 green, 70 assertions**; full suite **30/30 green, 346 assertions**. `git diff --check` clean; exactly the 2 intended app paths changed (+ new plan file). No commit made. Note: the D6-06 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-07 Protect Business Deletion.
 
 D6-05 on 2026-10-14 protected business creation: `auth:sanctum` on `POST /api/businesses` only (anonymous → 401 before validation; authed valid → 201, authed invalid → 422, both unchanged) + authenticated the happy-path `BusinessCreationTest` via login-flow and added its anonymous-401 case + authenticated the creation case in `BusinessValidationTest` (PUT case untouched). Verification: `php -l` + Pint clean; `route:list -v` shows sanctum on POST only; narrow creation + validation + authentication files **14/14 green, 68 assertions**; full suite **29/29 green, 344 assertions**. `git diff --check` clean; exactly the 3 intended app paths changed (+ new plan file). No commit made. Frontend `NewBusinessForm` 401s until D6-13 (roadmap order, accepted). Note: the D6-05 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-06 Protect Business Modification.
 
@@ -305,5 +309,7 @@ D6-03 done 2026-10-14: `POST /api/logout` revokes the current Bearer (204; reuse
 D6-04 done 2026-10-14: `GET /api/me` returns the current user (200; secrets hidden; revoked 401) - frontend identity contract ready, roles deferred to D6-08.
 
 D6-05 done 2026-10-14: `POST /api/businesses` requires auth (anonymous 401; authed 201/422 unchanged) - first write endpoint protected; PUT/DELETE still open for D6-06/07.
+
+D6-06 done 2026-10-14: `PUT /api/businesses/{business}` requires auth (anonymous 401, row unchanged; authed 422 intact) - per-operation gates advancing; only DELETE still open (D6-07).
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
