@@ -2,6 +2,7 @@
 
 ## Last files modified
 
+- `docs/plans/d6-23-go-repository-tests.md` — D6-23 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with the method→test→mode matrix. Explicit zero-change landing: no application file touched.
 - `docs/plans/d6-22-authorization-tests.md` — D6-22 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with the permission matrix. Explicit zero-change landing: no application file touched.
 - `backend/laravel/tests/Feature/BusinessCrudLifecycleTest.php` — D6-21 new via `make:test` (one-test POST→GET→PUT→GET→DELETE→404 lifecycle with DB asserts per step).
 - `docs/plans/d6-21-laravel-crud-tests.md` — D6-21 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
@@ -208,7 +209,7 @@
 
 ## Last task implemented
 
-D6-22 on 2026-10-14 verified the authorization matrix (explicit zero-change landing): admin allowed, owner-own allowed, owner-other denied, viewer denied — each cell green with cited tests. Verification: auth narrow **17/17 green, 66 assertions**; full suite **63/63 green, 506 assertions** (unchanged). `git diff --check` clean. No commit made. Note: the D6-22 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-23 Go Repository Tests.
+D6-23 on 2026-10-14 verified the Go repository tests (explicit zero-change landing): `gofmt`/`vet`/`build` clean; no-DB run 6/6 packages ok with 7 live tests visibly SKIP; live run against seeded dev PG 8/8 PASS (all 6 methods + filtered + guard) and 6/6 packages ok. Env note: dev PG is on 127.0.0.1:5433 (two :5432 probes failed 28P01 first); seed 40|320 pre-verified; password from local `.env` at runtime, never recorded. `git diff --check` clean. No commit made. Note: the D6-23 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-24 Go Handler Tests.
 
 D6-21 on 2026-10-14 added the CRUD lifecycle guard: new `BusinessCrudLifecycleTest` walking one admin-owned row through POST 201 (+creator ownership) → GET 200 → PUT 200 → GET reflects → DELETE 204 → GET 404 with DB assertions per step and final count 0. Verification: `php -l` + Pint clean; narrow **1/1 green, 14 assertions**; CRUD subset **10/10 green, 256 assertions**; full suite **63/63 green, 506 assertions** (62 pre-existing untouched). `git diff --check` clean. No commit made. Note: the D6-21 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-22 Authorization Tests.
 
