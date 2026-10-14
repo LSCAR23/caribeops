@@ -2,6 +2,9 @@
 
 ## Last files modified
 
+- `frontend/next/src/components/RequireAuth.tsx` — D6-14 new optimistic gate (tokenless → `/login`, authed `/login` → `/`, renders null).
+- `frontend/next/src/app/layout.tsx` — D6-14 mounts `<RequireAuth />` (server component preserved).
+- `docs/plans/d6-14-protect-dashboard-routes.md` — D6-14 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 - `frontend/next/src/lib/auth.ts` — D6-13 new Bearer-token seam (key + guarded get/set/clear + `authHeaders()`).
 - `frontend/next/src/lib/api-client.ts` — D6-13 auto-attaches Bearer client-side (`...authHeaders()` before explicit overrides; server calls untouched).
 - `frontend/next/src/components/LoginForm.tsx` — D6-13 `setToken` via lib + success redirects to `/`.
@@ -187,6 +190,8 @@
 
 ## Last task implemented
 
+D6-14 on 2026-10-14 protected dashboard routes: new `RequireAuth` client gate mounted once in `RootLayout` (anonymous anywhere except `/login` → `/login`; authenticated on `/login` → `/`; renders null; layout stays server). Verification: `tsc` exit 0; scoped `eslint` exit 0; browser task test (`serve :8000` + `dev :3101`, isolated tokenless context, temp admin removed after) `/`, `/businesses/new`, `/analytics` → `/login`, valid login → `/`, authed `/login` reload → `/`, wrong password → generic alert + null token on `/login`; `git diff --check` clean. No commit made. Note: the D6-14 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-15 Add Logout Button.
+
 D6-13 on 2026-10-14 connected login to Laravel: new `lib/auth.ts` token seam (D6-12 provisional storage adopted) + `api-client` auto-attaches Bearer client-side with explicit-header precedence and zero server impact + `LoginForm` persists via lib and redirects to `/` on success. Verification: `tsc` exit 0; scoped `eslint` exit 0; browser task test (`serve :8000` + `dev :3101`, temp admin removed after) valid login → `/` with 50-char token, authed `/businesses/new` submit → 201 detail (`biz_owner=4 creator=4`), wrong password → generic alert + null token on `/login`; `git diff --check` clean. No commit made. Note: the D6-13 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-14 Protect Dashboard Routes.
 
 D6-12 on 2026-10-14 created the login page: static `/login` server page + new `LoginForm` client island (idle/pending/error/success mirroring `NewBusinessForm`, `apiPost('/api/login')`, every rejection maps to generic `Invalid email or password.` with `role="alert"`, success stores `caribeops_token` in `localStorage` as provisional D6-13 handoff) + Login link in `Navigation`. No redirect (D6-13), no route protection (D6-14), no backend changes. Verification: `npx tsc --noEmit` exit 0; scoped `eslint` exit 0; browser task test (`serve :8000` + `dev :3101`, temp probe user removed after) wrong-password → exact generic alert + null token, valid → success + 50-char token; `git diff --check` clean. No commit made. Note: the D6-12 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-13 Connect Login to Laravel.
@@ -370,5 +375,7 @@ D6-11 done 2026-10-14: cross-owner PUT/DELETE denied (403, unchanged) unless adm
 D6-12 done 2026-10-14: `/login` serves email+password form (invalid → generic visible error, nothing stored; valid → token persisted + success, no redirect) - failure UX without disclosure; transition + protection deferred to D6-13/14.
 
 D6-13 done 2026-10-14: valid login lands on `/` and client calls carry Bearer automatically (authed creation 201, was 401) - frontend consumes the auth contract centrally; route protection deferred to D6-14.
+
+D6-14 done 2026-10-14: anonymous anywhere except `/login` lands on `/login`, authed `/login` lands on `/` - UX-level gate, API stays authoritative; auth-aware nav + logout deferred to D6-15.
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
