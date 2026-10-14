@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Business;
 use App\Models\Category;
+use App\Models\User;
 use Database\Seeders\CategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -15,6 +16,7 @@ class BusinessValidationTest extends TestCase
     public function test_business_creation_with_invalid_fields_returns_422_and_persists_nothing(): void
     {
         $this->seed(CategorySeeder::class);
+        $user = User::factory()->create();
 
         $payload = [
             'category_id' => 999999,
@@ -26,7 +28,17 @@ class BusinessValidationTest extends TestCase
             'website' => 'not-a-url',
         ];
 
-        $this->postJson('/api/businesses', $payload)
+        $token = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ])->json('token');
+
+        auth('web')->logout();
+        auth()->forgetGuards();
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer '.$token,
+        ])->postJson('/api/businesses', $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors([
                 'category_id',

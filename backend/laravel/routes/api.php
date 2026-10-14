@@ -83,7 +83,7 @@ Route::post('/businesses', function (StoreBusinessRequest $request) {
     $business = Business::create($request->validated());
 
     return (new BusinessResource($business))->response()->setStatusCode(201);
-});
+})->middleware('auth:sanctum');
 
 Route::put('/businesses/{business}', function (StoreBusinessRequest $request, Business $business) {
     $business->update($request->validated());
