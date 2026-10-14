@@ -2,6 +2,8 @@
 
 ## Last files modified
 
+- `backend/laravel/tests/Feature/WriteEndpointAuditTest.php` — D6-16 new via `make:test` (9 audit pins: login missing-fields 422s, admin unknown-UUID 404s, anonymous unknown-UUID 401s, non-UUID 404s, PATCH 405).
+- `docs/plans/d6-16-review-write-endpoint-validation.md` — D6-16 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and full audit matrix.
 - `frontend/next/src/components/LogoutButton.tsx` — D6-15 new token-gated island (best-effort revoke + guaranteed local cleanup, `pathname`-keyed re-adopt).
 - `frontend/next/src/components/Navigation.tsx` — D6-15 mounts `<LogoutButton />` (server nav preserved).
 - `docs/plans/d6-15-add-logout-button.md` — D6-15 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
@@ -192,6 +194,8 @@
 - `docs/plans/d3-19-add-category-filtering.md` — D3-19 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 
 ## Last task implemented
+
+D6-16 on 2026-10-14 audited all write-endpoint validation/authorization: `route:list` inventory of the 5 writes + new `WriteEndpointAuditTest` pinning the 9 previously unproven cells (login missing-email/password 422s with zero tokens, admin PUT/DELETE unknown-UUID 404s, anonymous unknown-UUID 401s, admin non-UUID 404s, PATCH 405 documenting PUT-only design). Audit finding: auth runs before binding, so anonymous unknown-UUID writes 401 (existence not leaked) — pinned as observed, no bug, no app change. Verification: `php -l` + Pint clean; narrow new file **9/9 green, 19 assertions**; full suite **56/56 green, 407 assertions** (47 pre-existing untouched). `git diff --check` clean. No commit made. Note: the D6-16 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-17 Configure CORS.
 
 D6-15 on 2026-10-14 added the logout button: new token-gated `LogoutButton` island in `Navigation` (best-effort `POST /api/logout` + guaranteed `clearToken()` + `push('/login')` in `finally`; re-adopts the token on route change since the layout never remounts — self-caught during testing when Logout stayed hidden until reload). Verification: `tsc` exit 0; scoped `eslint` exit 0; browser task test (`serve :8000` + `dev :3101`, temp admin removed after) anonymous sees no button, login → `/` with Logout visible, click → `/login` + null token, stale token via `/api/me` → 401; `git diff --check` clean. Committed by user as `e1f2aaa` (implementation files); outcome + memory recorded after. Next: D6-16 Review All Write Endpoint Validation.
 
@@ -384,5 +388,7 @@ D6-13 done 2026-10-14: valid login lands on `/` and client calls carry Bearer au
 D6-14 done 2026-10-14: anonymous anywhere except `/login` lands on `/login`, authed `/login` lands on `/` - UX-level gate, API stays authoritative; auth-aware nav + logout deferred to D6-15.
 
 D6-15 done 2026-10-14: nav Logout (visible only authed) revokes server-side, clears client, lands on `/login` - full login→area→logout lifecycle; validation review next (D6-16).
+
+D6-16 done 2026-10-14: all 5 writes audited cell-by-cell (401/403/404/422/405/éxito) with a proving test each - anonymous unknown-UUID writes 401 (auth before binding); zero app changes.
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
