@@ -29,7 +29,7 @@ class BusinessDeletionTest extends TestCase
     {
         $this->seed(CategorySeeder::class);
         $business = Business::factory()->create();
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'admin']);
 
         $token = $this->postJson('/api/login', [
             'email' => $user->email,

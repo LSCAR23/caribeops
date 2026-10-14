@@ -36,7 +36,7 @@ class BusinessCreationTest extends TestCase
     {
         $this->seed(CategorySeeder::class);
         $categoryId = Category::query()->where('slug', 'hotels')->firstOrFail()->id;
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'admin']);
 
         $payload = [
             'category_id' => $categoryId,

@@ -83,16 +83,16 @@ Route::post('/businesses', function (StoreBusinessRequest $request) {
     $business = Business::create($request->validated());
 
     return (new BusinessResource($business))->response()->setStatusCode(201);
-})->middleware('auth:sanctum');
+})->middleware(['auth:sanctum', 'can:create,App\Models\Business']);
 
 Route::put('/businesses/{business}', function (StoreBusinessRequest $request, Business $business) {
     $business->update($request->validated());
 
     return new BusinessResource($business->refresh());
-})->whereUuid('business')->middleware('auth:sanctum');
+})->whereUuid('business')->middleware(['auth:sanctum', 'can:update,business']);
 
 Route::delete('/businesses/{business}', function (Business $business) {
     $business->delete();
 
     return response()->noContent();
-})->whereUuid('business')->middleware('auth:sanctum');
+})->whereUuid('business')->middleware(['auth:sanctum', 'can:delete,business']);

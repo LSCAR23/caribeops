@@ -16,7 +16,7 @@ class BusinessValidationTest extends TestCase
     public function test_business_creation_with_invalid_fields_returns_422_and_persists_nothing(): void
     {
         $this->seed(CategorySeeder::class);
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'admin']);
 
         $payload = [
             'category_id' => 999999,
@@ -57,7 +57,7 @@ class BusinessValidationTest extends TestCase
         $this->seed(CategorySeeder::class);
         $categoryId = Category::query()->where('slug', 'hotels')->firstOrFail()->id;
         $business = Business::factory()->create(['name' => 'D2-31 Original Name']);
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'admin']);
 
         $payload = [
             'category_id' => $categoryId,

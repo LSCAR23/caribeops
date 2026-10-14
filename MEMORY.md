@@ -2,7 +2,12 @@
 
 ## Last files modified
 
-- `backend/laravel/database/migrations/2026_10_14_173601_add_role_to_users_table.php` — D6-08 new (`string('role')->default('viewer')`, reversible; applied as dev batch 4).
+- `backend/laravel/app/Policies/BusinessPolicy.php` — D6-09 new via `make:policy` (create/update/delete: non-viewer; auto-discovered; D6-10/11 extension home).
+- `backend/laravel/routes/api.php` — D6-09 `can` middleware after `auth:sanctum` on POST/PUT/DELETE (401-before-403; closures untouched).
+- `backend/laravel/tests/Feature/BusinessCreationTest.php`, `BusinessValidationTest.php` (×2), `BusinessDeletionTest.php` — D6-09 authed users switched to admin (4 mechanical spots).
+- `backend/laravel/tests/Feature/BusinessAuthorizationTest.php` — D6-09 new via `make:test` (viewer 403 on POST/PUT/DELETE + state unchanged).
+- `docs/plans/d6-09-add-authorization-policies.md` — D6-09 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
+- `backend/laravel/database/migrations/2026_10_14_173601_add_role_to_users_table.php` — D6-08 (`string('role')->default('viewer')`, dev batch 4).
 - `backend/laravel/app/Models/User.php` — D6-08 +'role' fillable.
 - `backend/laravel/database/factories/UserFactory.php` — D6-08 +'role' => 'viewer' default.
 - `backend/laravel/tests/Feature/UserRolesTest.php` — D6-08 new via `make:test` (3 roles persist + factory default `viewer`).
@@ -162,6 +167,8 @@
 - `docs/plans/d3-19-add-category-filtering.md` — D3-19 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 
 ## Last task implemented
+
+D6-09 on 2026-10-14 centralized authorization: new auto-discovered `BusinessPolicy` (create/update/delete: `role !== 'viewer'`) + `can` middleware after `auth:sanctum` on all three write routes (401-before-403; closures untouched) + 4-spot admin switch in existing write tests + new `BusinessAuthorizationTest` (viewer 403 on POST/PUT/DELETE, state unchanged). Owner-write scope deliberately unpinned until D6-10/11. Verification: `php -l` + Pint clean; `route:list -v` shows auth + Authorize on all writes; narrow 5 files **20/20 green, 81 assertions**; full suite **37/37 green, 365 assertions**. `git diff --check` clean. No commit made. Note: the D6-09 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-10 Add Business Ownership.
 
 D6-08 on 2026-10-14 added user roles: `role` string column default `viewer` (reversible migration, dev batch 4, existing rows backfill to viewer) + fillable + factory default + new `UserRolesTest` (admin/owner/viewer persist + default is viewer). No enforcement yet (D6-09); `/me` now carries `role` with secrets still hidden (probe-verified, row removed). Verification: narrow new file **2/2 green, 8 assertions**; full suite **34/34 green, 359 assertions** (32 pre-existing untouched). `php -l` + Pint clean; `git diff --check` clean. Infra note: host Postgres was down; started to `healthy` (D4-11 precedent) before verifying. No commit made. Note: the D6-08 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-09 Add Authorization Policies/Middleware.
 
@@ -326,5 +333,7 @@ D6-06 done 2026-10-14: `PUT /api/businesses/{business}` requires auth (anonymous
 D6-07 done 2026-10-14: `DELETE /api/businesses/{business}` requires auth (anonymous 401, row kept; authed 204) - write trilogy (POST/PUT/DELETE) complete; roles/ownership next (D6-08+).
 
 D6-08 done 2026-10-14: `users.role` persists admin/owner/viewer (default viewer) - authorization data ready, enforcement next (D6-09).
+
+D6-09 done 2026-10-14: `BusinessPolicy` denies viewers on all writes (403, unchanged) - authorization centralized; ownership next (D6-10/11).
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
