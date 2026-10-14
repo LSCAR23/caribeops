@@ -2,7 +2,7 @@
 
 **Task:** D6-15 — Add Logout Button
 **Date:** 2026-10-14
-**Status:** `Checked — awaiting user approval`
+**Status:** `Implemented — verified`
 **Plan path (to materialize at implement):** `docs/plans/d6-15-add-logout-button.md`
 
 > Note: orchestrated in a Plan-mode session blocked from writing `docs/plans/`, so this checked inline deliverable is materialized verbatim before implementation (no scope change), following the D6-08…D6-14 precedent in `MEMORY.md`.
@@ -50,3 +50,14 @@ Best-effort revocation + guaranteed local cleanup (`try/finally`): even with a d
 ## Reminder
 
 Implementation is not authorized until the user reviews this checked plan and explicitly invokes `/implement` with this plan path.
+
+## Implementation outcome
+
+**Status:** `Implemented — verified` (2026-10-14, committed by user as `e1f2aaa` mid-turn; outcome + memory recorded after).
+
+**Files changed:** new `frontend/next/src/components/LogoutButton.tsx` (`"use client"` token-gated island: null when anonymous, `apiPost('/api/logout')` in `try`, `clearToken()` + `push('/login')` in `finally`, pending state) + `frontend/next/src/components/Navigation.tsx` (mounts `<LogoutButton />`; nav stays server); plan file materialized at this path verbatim from the checked inline deliverable — no scope change.
+
+**Verification (exact commands/results — the spec's test):**
+- `npx tsc --noEmit` → exit 0; scoped `npx eslint` → exit 0 (one self-caught fix: mount-only effect never re-adopted the token after client-side login navigation, so Logout stayed hidden until reload — effect now keys on `pathname` like `RequireAuth`; plus one `?? null`-style disable-directive placement correction before final green).
+- Browser task test (`serve :8000` + `dev :3101`, temp admin user + tokens removed after, counts back to 0): anonymous sees no Logout button; valid login → `/` with Logout visible (no reload needed after fix); click → `/login` + null token; stale token reused via `/api/me` → 401 (real server revocation); wrong password in fresh context → stays on `/login` with the generic alert.
+- `git diff --check` clean.

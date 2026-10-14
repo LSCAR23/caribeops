@@ -2,6 +2,9 @@
 
 ## Last files modified
 
+- `frontend/next/src/components/LogoutButton.tsx` — D6-15 new token-gated island (best-effort revoke + guaranteed local cleanup, `pathname`-keyed re-adopt).
+- `frontend/next/src/components/Navigation.tsx` — D6-15 mounts `<LogoutButton />` (server nav preserved).
+- `docs/plans/d6-15-add-logout-button.md` — D6-15 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 - `frontend/next/src/components/RequireAuth.tsx` — D6-14 new optimistic gate (tokenless → `/login`, authed `/login` → `/`, renders null).
 - `frontend/next/src/app/layout.tsx` — D6-14 mounts `<RequireAuth />` (server component preserved).
 - `docs/plans/d6-14-protect-dashboard-routes.md` — D6-14 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
@@ -190,6 +193,8 @@
 
 ## Last task implemented
 
+D6-15 on 2026-10-14 added the logout button: new token-gated `LogoutButton` island in `Navigation` (best-effort `POST /api/logout` + guaranteed `clearToken()` + `push('/login')` in `finally`; re-adopts the token on route change since the layout never remounts — self-caught during testing when Logout stayed hidden until reload). Verification: `tsc` exit 0; scoped `eslint` exit 0; browser task test (`serve :8000` + `dev :3101`, temp admin removed after) anonymous sees no button, login → `/` with Logout visible, click → `/login` + null token, stale token via `/api/me` → 401; `git diff --check` clean. Committed by user as `e1f2aaa` (implementation files); outcome + memory recorded after. Next: D6-16 Review All Write Endpoint Validation.
+
 D6-14 on 2026-10-14 protected dashboard routes: new `RequireAuth` client gate mounted once in `RootLayout` (anonymous anywhere except `/login` → `/login`; authenticated on `/login` → `/`; renders null; layout stays server). Verification: `tsc` exit 0; scoped `eslint` exit 0; browser task test (`serve :8000` + `dev :3101`, isolated tokenless context, temp admin removed after) `/`, `/businesses/new`, `/analytics` → `/login`, valid login → `/`, authed `/login` reload → `/`, wrong password → generic alert + null token on `/login`; `git diff --check` clean. No commit made. Note: the D6-14 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-15 Add Logout Button.
 
 D6-13 on 2026-10-14 connected login to Laravel: new `lib/auth.ts` token seam (D6-12 provisional storage adopted) + `api-client` auto-attaches Bearer client-side with explicit-header precedence and zero server impact + `LoginForm` persists via lib and redirects to `/` on success. Verification: `tsc` exit 0; scoped `eslint` exit 0; browser task test (`serve :8000` + `dev :3101`, temp admin removed after) valid login → `/` with 50-char token, authed `/businesses/new` submit → 201 detail (`biz_owner=4 creator=4`), wrong password → generic alert + null token on `/login`; `git diff --check` clean. No commit made. Note: the D6-13 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-14 Protect Dashboard Routes.
@@ -377,5 +382,7 @@ D6-12 done 2026-10-14: `/login` serves email+password form (invalid → generic 
 D6-13 done 2026-10-14: valid login lands on `/` and client calls carry Bearer automatically (authed creation 201, was 401) - frontend consumes the auth contract centrally; route protection deferred to D6-14.
 
 D6-14 done 2026-10-14: anonymous anywhere except `/login` lands on `/login`, authed `/login` lands on `/` - UX-level gate, API stays authoritative; auth-aware nav + logout deferred to D6-15.
+
+D6-15 done 2026-10-14: nav Logout (visible only authed) revokes server-side, clears client, lands on `/login` - full login→area→logout lifecycle; validation review next (D6-16).
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
