@@ -33,6 +33,10 @@ Route::post('/logout', function (Request $request) {
     return response()->noContent();
 })->middleware('auth:sanctum');
 
+Route::get('/me', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
+
 Route::get('/health', function () {
     return response()->json([
         'status' => 'ok',

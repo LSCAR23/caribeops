@@ -140,4 +140,55 @@ class AuthenticationTest extends TestCase
 
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }
+
+    public function test_me_returns_current_user(): void
+    {
+        $user = User::factory()->create();
+
+        $token = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ])->json('token');
+
+        auth('web')->logout();
+        auth()->forgetGuards();
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer '.$token,
+        ])->getJson('/api/me');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('id', $user->id)
+            ->assertJsonPath('email', $user->email)
+            ->assertJsonMissing(['password', 'remember_token']);
+    }
+
+    public function test_me_without_token_is_rejected(): void
+    {
+        $this->getJson('/api/me')->assertUnauthorized();
+    }
+
+    public function test_me_with_revoked_token_is_rejected(): void
+    {
+        $user = User::factory()->create();
+
+        $token = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ])->json('token');
+
+        auth('web')->logout();
+        auth()->forgetGuards();
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer '.$token,
+        ])->postJson('/api/logout')->assertNoContent();
+
+        auth()->forgetGuards();
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer '.$token,
+        ])->getJson('/api/me')->assertUnauthorized();
+    }
 }
