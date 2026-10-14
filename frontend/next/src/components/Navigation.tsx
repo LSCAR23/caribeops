@@ -4,6 +4,7 @@ const links = [
   { href: "/", label: "Dashboard" },
   { href: "/businesses", label: "Businesses" },
   { href: "/analytics", label: "Analytics" },
+  { href: "/login", label: "Login" },
 ] as const;
 
 export default function Navigation() {
