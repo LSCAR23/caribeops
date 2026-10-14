@@ -2,6 +2,10 @@
 
 ## Last files modified
 
+- `backend/laravel/composer.json` + `composer.lock` — D6-01 Sanctum `^4.0` added (resolved `v4.3.3`; incidental framework 13.35→13.36 via `--with-all-dependencies`).
+- `backend/laravel/config/sanctum.php`, `backend/laravel/database/migrations/2026_10_13_181728_create_personal_access_tokens_table.php` — D6-01 new via `install:api` (existing api.php preserved, not overwritten).
+- `docs/plans/d6-01-add-laravel-api-authentication.md` — D6-01 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
+
 - `backend/laravel/database/migrations/2026_10_13_042916_add_reviews_business_id_index.php` — D5-21 new idempotent index migration (raw `IF NOT EXISTS`/`IF EXISTS`, same name as the live D5-19 index).
 - `docs/plans/d5-21-add-performance-index-migration.md` — D5-21 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 
@@ -132,6 +136,8 @@
 - `docs/plans/d3-19-add-category-filtering.md` — D3-19 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 
 ## Last task implemented
+
+D6-01 on 2026-10-14 installed the API auth capability: `laravel/sanctum v4.3.3` via the framework's `install:api` flow (no version hand-pinned; existing `api.php` preserved, not overwritten) + `config/sanctum.php` + tokens-table migration applied on dev DB (batch 3, chain intact). `HasApiTokens` trait deliberately deferred to D6-02 (inert without issuance; installer only instructs it). Verification: `route:list` exit 0; full suite **18/18 green, 309 assertions**; rebuilt compose image `healthy` with API live (vendor parity). `git diff --check` clean; exactly the 4 intended paths changed. No commit made. Note: the D6-01 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-02 Create Login Endpoint.
 
 D5-21 on 2026-10-13 source-controlled the performance index: new migration with raw `IF NOT EXISTS`/`IF EXISTS` body (Schema builder can't express tolerance) under the live index's exact name. Verification: `php -l` + Pint clean; disposable `caribeops_indexcheck` DB ran the full 10-migration chain on empty schema with the index appearing (spec's from-scratch test, dev volume never at risk); rollback/re-migrate round-trip green; dev `migrate` applied it as a no-op with status recorded; scratch DB dropped without residue; endpoint live, counts `40|320` untouched. `git diff --check` clean; only the new migration added. No commit made. Note: the D5-21 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D5-22 Commit Day 5.
 
@@ -264,5 +270,7 @@ D5-19 done 2026-10-13: `reviews_business_id_index` lives in the DB (join-pattern
 D5-20 done 2026-10-13: the comparison is on record — 0.251 → 0.282, an honest flat line with method and recipe. Performance evidence block nearly complete; only the migration (D5-21) remains.
 
 D5-21 done 2026-10-13: the index is now schema evolution — migration-coverage proven on a disposable from-scratch chain, tolerated on the live DB, dev data untouched. Performance block (D5-17…21) complete; only D5-22 remains.
+
+D6-01 done 2026-10-14: Sanctum capability installed, configured, migrated, and green — nothing enforced yet. First dependency addition of the project, approved via `/implement`.
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
