@@ -2,6 +2,8 @@
 
 ## Last files modified
 
+- `backend/laravel/tests/Feature/BusinessCrudLifecycleTest.php` — D6-21 new via `make:test` (one-test POST→GET→PUT→GET→DELETE→404 lifecycle with DB asserts per step).
+- `docs/plans/d6-21-laravel-crud-tests.md` — D6-21 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 - `docs/plans/d6-20-laravel-health-test.md` — D6-20 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification. Explicit zero-change landing: no application file touched.
 - `docs/plans/d6-19-audit-secrets.md` — D6-19 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with the verdict table. Explicit zero-change landing: no application file touched.
 - `backend/laravel/app/Providers/AppServiceProvider.php` — D6-18 `login` (10/min email+IP) + `reads` (60/min IP) limiters.
@@ -204,6 +206,8 @@
 - `docs/plans/d3-19-add-category-filtering.md` — D3-19 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 
 ## Last task implemented
+
+D6-21 on 2026-10-14 added the CRUD lifecycle guard: new `BusinessCrudLifecycleTest` walking one admin-owned row through POST 201 (+creator ownership) → GET 200 → PUT 200 → GET reflects → DELETE 204 → GET 404 with DB assertions per step and final count 0. Verification: `php -l` + Pint clean; narrow **1/1 green, 14 assertions**; CRUD subset **10/10 green, 256 assertions**; full suite **63/63 green, 506 assertions** (62 pre-existing untouched). `git diff --check` clean. No commit made. Note: the D6-21 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-22 Authorization Tests.
 
 D6-20 on 2026-10-14 verified the Laravel health test (explicit zero-change landing): pre-existing `HealthEndpointTest` already pins the spec exactly (200 + exact `{status: ok}`, stateless). Verification: narrow **1/1 green, 2 assertions**; full suite **62/62 green, 492 assertions** (unchanged). `git diff --check` clean. No commit made. Note: the D6-20 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-21 Laravel CRUD Tests.
 
@@ -416,5 +420,7 @@ D6-18 done 2026-10-14: login 10/min email+IP y lecturas públicas 60/min IP (11�
 D6-19 done 2026-10-14: cero filtraciones (trackeados, historial 325 revs, examples completos, dev-defaults aceptados) - nada que rotar, cero cambios; health test next (D6-20).
 
 D6-20 done 2026-10-14: health 200 + payload exacto fijado y verde, stateless - base determinista lista; CRUD tests next (D6-21).
+
+D6-21 done 2026-10-14: ciclo POST→GET→PUT→GET→DELETE→404 sobre una fila con asserts de DB por paso - interacción CRUD estable; authorization tests next (D6-22).
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
