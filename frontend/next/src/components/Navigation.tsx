@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LogoutButton from "@/components/LogoutButton";
 
 const links = [
   { href: "/", label: "Dashboard" },
@@ -27,6 +28,7 @@ export default function Navigation() {
               {link.label}
             </Link>
           ))}
+          <LogoutButton />
         </nav>
       </div>
     </header>
