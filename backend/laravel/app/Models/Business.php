@@ -22,6 +22,7 @@ class Business extends Model
      */
     protected $fillable = [
         'category_id',
+        'user_id',
         'name',
         'description',
         'type',
@@ -46,6 +47,14 @@ class Business extends Model
     public function amenities(): BelongsToMany
     {
         return $this->belongsToMany(Amenity::class, 'business_amenities');
+    }
+
+    /**
+     * Get the owner of the business.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**

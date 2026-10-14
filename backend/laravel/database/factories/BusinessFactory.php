@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Business;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -31,6 +32,7 @@ class BusinessFactory extends Factory
 
         return [
             'category_id' => $category->id,
+            'user_id' => User::factory(),
             'name' => fake()->company(),
             'description' => fake()->paragraph(),
             'type' => fake()->randomElement($typesByCategory[$category->slug]),

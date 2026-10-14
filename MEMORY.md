@@ -2,6 +2,12 @@
 
 ## Last files modified
 
+- `backend/laravel/database/migrations/2026_10_14_190449_add_user_id_to_businesses_table.php` — D6-10 new (nullable `user_id` FK → `users.id` with `nullOnDelete`, reversible; dev batch 5).
+- `backend/laravel/app/Models/Business.php` — D6-10 +`user_id` fillable + `user()` `BelongsTo`.
+- `backend/laravel/app/Models/User.php` — D6-10 +`businesses()` `HasMany` (Fillable/Hidden/casts untouched).
+- `backend/laravel/database/factories/BusinessFactory.php` — D6-10 default `user_id => User::factory()` (ReviewFactory precedent).
+- `backend/laravel/tests/Feature/BusinessOwnershipTest.php` — D6-10 new via `make:test` (belongs-to + has-many + delete-nulls).
+- `docs/plans/d6-10-add-business-ownership.md` — D6-10 corrected checked plan materialized at implement time (stale pre-D6-01 inline draft superseded for Sanctum/roles + PG-testing reality), then marked `Implemented — verified` with outcome and verification.
 - `backend/laravel/app/Policies/BusinessPolicy.php` — D6-09 new via `make:policy` (create/update/delete: non-viewer; auto-discovered; D6-10/11 extension home).
 - `backend/laravel/routes/api.php` — D6-09 `can` middleware after `auth:sanctum` on POST/PUT/DELETE (401-before-403; closures untouched).
 - `backend/laravel/tests/Feature/BusinessCreationTest.php`, `BusinessValidationTest.php` (×2), `BusinessDeletionTest.php` — D6-09 authed users switched to admin (4 mechanical spots).
@@ -167,6 +173,8 @@
 - `docs/plans/d3-19-add-category-filtering.md` — D3-19 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 
 ## Last task implemented
+
+D6-10 on 2026-10-14 added business ownership (data-model only): new nullable `user_id` FK migration (`nullOnDelete`, reversible, dev batch 5) + `Business` fillable/`user()` + `User::businesses()` + factory default owner + new `BusinessOwnershipTest` (belongs-to identity + `assertDatabaseHas user_id`, has-many count 2, owner delete → `user_id null`). No route/policy/Request/Resource/seeder changes (D6-11 owns cross-owner denial). Verification: `php -l` + Pint clean; narrow new file **3/3 green, 5 assertions**; full suite **40/40 green, 370 assertions** (37 pre-existing untouched); dev `migrate` DONE batch 5 with 12/12 Ran; `route:list --path=businesses` 6 routes unchanged; `git diff --check` clean. No commit made. Note: no `docs/plans/d6-10*` file existed at `/implement` time and the Plan-mode inline draft predated D6-01…D6-09, so a corrected checked plan was materialized at this path before implementing (SQLite guards dropped for PG testing, Resource/Request deferred, nullable + nullOnDelete pinned); no silent scope exceed. Next: D6-11 Prevent Cross-Owner Modification.
 
 D6-09 on 2026-10-14 centralized authorization: new auto-discovered `BusinessPolicy` (create/update/delete: `role !== 'viewer'`) + `can` middleware after `auth:sanctum` on all three write routes (401-before-403; closures untouched) + 4-spot admin switch in existing write tests + new `BusinessAuthorizationTest` (viewer 403 on POST/PUT/DELETE, state unchanged). Owner-write scope deliberately unpinned until D6-10/11. Verification: `php -l` + Pint clean; `route:list -v` shows auth + Authorize on all writes; narrow 5 files **20/20 green, 81 assertions**; full suite **37/37 green, 365 assertions**. `git diff --check` clean. No commit made. Note: the D6-09 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-10 Add Business Ownership.
 
@@ -335,5 +343,7 @@ D6-07 done 2026-10-14: `DELETE /api/businesses/{business}` requires auth (anonym
 D6-08 done 2026-10-14: `users.role` persists admin/owner/viewer (default viewer) - authorization data ready, enforcement next (D6-09).
 
 D6-09 done 2026-10-14: `BusinessPolicy` denies viewers on all writes (403, unchanged) - authorization centralized; ownership next (D6-10/11).
+
+D6-10 done 2026-10-14: `businesses.user_id` nullable FK (`nullOnDelete`) with `Business->user` / `User->businesses` and factory default owner - records identify owners, policy tightening deferred to D6-11.
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
