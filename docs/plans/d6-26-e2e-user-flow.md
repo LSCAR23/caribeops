@@ -57,6 +57,7 @@ Implementation is not authorized until the user reviews this checked plan and ex
 
 **Verification (exact commands/results — the spec's test):**
 - `npx playwright test` (stack `serve :8000` + `dev :3101`, seeded PG, `E2E_*` env) → **1 passed (7.6s)**: login, dashboard heading, businesses list, first-business detail with `Reviews (n)` heading. Server log confirms the API trail (`/api/login` → `/api/dashboard/summary` → `/api/businesses` → detail + reviews).
+- Post-D6-26 amendment (user-requested): `webServer` now boots `serve :8000` + `dev :3101` on demand (`reuseExistingServer` outside CI) — re-verified `npm run test:e2e` **1 passed (9.9s)** with nothing previously listening.
 - `npx tsc --noEmit` → exit 0; `npx eslint playwright.config.ts e2e/auth-flow.spec.ts` → exit 0.
 - E2E account `e2e@example.com` (viewer, reads-only flow) provisioned once via tinker `firstOrCreate` and KEPT as documented env fixture (repeatable runs; no seeder touched per non-goals). Provisioning one-liner recorded here for D6-27: `php artisan tinker --execute "App\Models\User::firstOrCreate(['email' => 'e2e@example.com'], ['name' => 'E2E', 'password' => '…', 'role' => 'viewer']);"` with `E2E_EMAIL`/`E2E_PASSWORD` exported at run time.
 - `git diff --check` clean; `git status --short` → package files + config + e2e dir + gitignore (+ plan file); `test-results/` removed and ignored.

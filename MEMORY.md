@@ -6,7 +6,7 @@
 - `frontend/next/vitest.config.ts` — D6-27 excludes `e2e/**` (Playwright owns browser specs).
 - `docs/plans/d6-27-one-command-tests.md` — D6-27 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 - `frontend/next/package.json` + `package-lock.json` — D6-26 `test:e2e: playwright test` + `@playwright/test@1.64.1`.
-- `frontend/next/playwright.config.ts` + `e2e/auth-flow.spec.ts` — D6-26 new (chromium, env baseURL, 4-step read-only flow).
+- `frontend/next/playwright.config.ts` + `e2e/auth-flow.spec.ts` — D6-26 new (chromium, env baseURL, 4-step read-only flow; `webServer` boots the stack on demand per user-requested amendment, re-verified 1/1).
 - `frontend/next/.gitignore` — D6-26 ignores Playwright run artifacts.
 - `docs/plans/d6-26-e2e-user-flow.md` — D6-26 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 - `frontend/next/package.json` + `package-lock.json` — D6-25 `test: vitest run` + pinned devDeps (vitest 3.2.4, jsdom 26.1.0, testing-library/react 16.3.1 + jest-dom 6.9.1, plugin-react 4.7.0).
