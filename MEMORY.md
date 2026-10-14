@@ -2,7 +2,12 @@
 
 ## Last files modified
 
-- `backend/laravel/routes/api.php` — D6-07 `auth:sanctum` on `DELETE /businesses/{business}` (`whereUuid` kept; POST/PUT gates unchanged; write trilogy complete).
+- `backend/laravel/database/migrations/2026_10_14_173601_add_role_to_users_table.php` — D6-08 new (`string('role')->default('viewer')`, reversible; applied as dev batch 4).
+- `backend/laravel/app/Models/User.php` — D6-08 +'role' fillable.
+- `backend/laravel/database/factories/UserFactory.php` — D6-08 +'role' => 'viewer' default.
+- `backend/laravel/tests/Feature/UserRolesTest.php` — D6-08 new via `make:test` (3 roles persist + factory default `viewer`).
+- `docs/plans/d6-08-add-user-roles.md` — D6-08 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
+- `backend/laravel/routes/api.php` — unchanged by D6-08 (D6-07 DELETE `auth:sanctum` gate intact; verified via `route:list -v` during D6-07).
 - `backend/laravel/tests/Feature/BusinessDeletionTest.php` — D6-07 new via `make:test` (anonymous DELETE → 401 + row preserved; authed → 204 + zero rows; zero existing-test churn).
 - `docs/plans/d6-07-protect-business-deletion.md` — D6-07 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 - `backend/laravel/tests/Feature/BusinessValidationTest.php` — D6-06 PUT case authenticated via login-flow (still 422 + values kept) + new anonymous valid PUT → 401 with row unchanged.
@@ -157,6 +162,8 @@
 - `docs/plans/d3-19-add-category-filtering.md` — D3-19 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 
 ## Last task implemented
+
+D6-08 on 2026-10-14 added user roles: `role` string column default `viewer` (reversible migration, dev batch 4, existing rows backfill to viewer) + fillable + factory default + new `UserRolesTest` (admin/owner/viewer persist + default is viewer). No enforcement yet (D6-09); `/me` now carries `role` with secrets still hidden (probe-verified, row removed). Verification: narrow new file **2/2 green, 8 assertions**; full suite **34/34 green, 359 assertions** (32 pre-existing untouched). `php -l` + Pint clean; `git diff --check` clean. Infra note: host Postgres was down; started to `healthy` (D4-11 precedent) before verifying. No commit made. Note: the D6-08 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-09 Add Authorization Policies/Middleware.
 
 D6-07 on 2026-10-14 protected business deletion: `auth:sanctum` on `DELETE /api/businesses/{business}` (`whereUuid` kept; anonymous → 401 with row preserved; authed → 204 with row gone) + new `BusinessDeletionTest.php` via `make:test` (2 cases; zero existing-test churn — no suite file touched DELETE). Verification: `php -l` + Pint clean; `route:list -v` shows sanctum on POST + PUT + DELETE; narrow new file **2/2 green, 5 assertions**; full suite **32/32 green, 351 assertions**. `git diff --check` clean; 1 route line + new test file (+ new plan file). No commit made. Note: the D6-07 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-08 Add User Roles.
 
@@ -317,5 +324,7 @@ D6-05 done 2026-10-14: `POST /api/businesses` requires auth (anonymous 401; auth
 D6-06 done 2026-10-14: `PUT /api/businesses/{business}` requires auth (anonymous 401, row unchanged; authed 422 intact) - per-operation gates advancing; only DELETE still open (D6-07).
 
 D6-07 done 2026-10-14: `DELETE /api/businesses/{business}` requires auth (anonymous 401, row kept; authed 204) - write trilogy (POST/PUT/DELETE) complete; roles/ownership next (D6-08+).
+
+D6-08 done 2026-10-14: `users.role` persists admin/owner/viewer (default viewer) - authorization data ready, enforcement next (D6-09).
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
