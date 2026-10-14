@@ -2,6 +2,10 @@
 
 ## Last files modified
 
+- `frontend/next/package.json` + `package-lock.json` — D6-26 `test:e2e: playwright test` + `@playwright/test@1.64.1`.
+- `frontend/next/playwright.config.ts` + `e2e/auth-flow.spec.ts` — D6-26 new (chromium, env baseURL, 4-step read-only flow).
+- `frontend/next/.gitignore` — D6-26 ignores Playwright run artifacts.
+- `docs/plans/d6-26-e2e-user-flow.md` — D6-26 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 - `frontend/next/package.json` + `package-lock.json` — D6-25 `test: vitest run` + pinned devDeps (vitest 3.2.4, jsdom 26.1.0, testing-library/react 16.3.1 + jest-dom 6.9.1, plugin-react 4.7.0).
 - `frontend/next/vitest.config.ts` + `vitest.setup.tsx` — D6-25 new (jsdom, `@` alias, jest-dom, `next/link` stub, explicit cleanup).
 - `frontend/next/src/components/__tests__/` — D6-25 new 4 files, 9 tests (list/KPI/loading/error per spec).
@@ -213,6 +217,8 @@
 - `docs/plans/d3-19-add-category-filtering.md` — D3-19 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 
 ## Last task implemented
+
+D6-26 on 2026-10-14 added the end-to-end user flow: Playwright (`@playwright/test@1.64.1`, chromium, env `baseURL`, no `webServer`) + `test:e2e` script + `e2e/auth-flow.spec.ts` walking login → `/` → businesses → detail (read-only, env credentials) + gitignored run artifacts. Verification: spec **1 passed (7.6s)** with API trail in server log; `tsc` + `eslint` exit 0; `git diff --check` clean. E2E viewer account kept as documented env fixture (one-liner in plan outcome). No commit made. Note: the D6-26 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; dependency approval via this invocation. Next: D6-27 Create One-Command Test Execution.
 
 D6-25 on 2026-10-14 added frontend component tests: vitest harness (pinned devDeps, jsdom, `@` alias, `next/link` stub, explicit cleanup) + `npm test` script + 4 test files covering the spec slots (BusinessList names/order/links/rating/empty, KpiCard values, skeletons aria-busy + counts, SectionFallback role + copy). No `KpiCards` extraction needed. Verification: `npm test` **9/9 green**; `tsc` + `eslint` exit 0; `git diff --check` clean. Self-caught: ERESOLVE→pinned versions, JSX-in-.ts→`.tsx`, cross-test leak→cleanup. No commit made. Note: the D6-25 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; dependency approval via this invocation (Sanctum D6-01 precedent). Next: D6-26 Add One End-to-End User Flow.
 
@@ -445,5 +451,7 @@ D6-23 done 2026-10-14: repo Go 8/8 en vivo + 6/6 paquetes sin DB (skips) - datos
 D6-24 done 2026-10-14: handlers 200/400/500 verdes con test citado por forma, todo DB-free - tradução HTTP aislada; component tests next (D6-25).
 
 D6-25 done 2026-10-14: `npm test` 9/9 (lista/KPI/carga/error) con vitest+testing-library, sin navegador - unidad de presentación; e2e flow next (D6-26).
+
+D6-26 done 2026-10-14: `test:e2e` 1/1 (login→dashboard→businesses→detalle, 7.6s, solo-lectura) con Playwright+chromium - flujo real multi-servicio; one-command next (D6-27).
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
