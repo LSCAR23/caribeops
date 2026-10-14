@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\StoreBusinessRequest;
 use App\Http\Resources\BusinessResource;
 use App\Http\Resources\CategoryResource;
@@ -8,7 +9,23 @@ use App\Models\Business;
 use App\Models\Category;
 use App\Models\Review;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\ValidationException;
+
+Route::post('/login', function (LoginRequest $request) {
+    $credentials = $request->validated();
+
+    if (! Auth::attempt($credentials)) {
+        throw ValidationException::withMessages([
+            'email' => 'These credentials do not match our records.',
+        ]);
+    }
+
+    return response()->json([
+        'token' => $request->user()->createToken('api')->plainTextToken,
+    ]);
+});
 
 Route::get('/health', function () {
     return response()->json([

@@ -2,6 +2,12 @@
 
 ## Last files modified
 
+- `backend/laravel/routes/api.php` — D6-02 `POST /login` closure (`validated()` → `Auth::attempt` → 422 uniform rejection → 200 `{token}`).
+- `backend/laravel/app/Http/Requests/LoginRequest.php` — D6-02 new FormRequest (email/password rules, D2-24 convention).
+- `backend/laravel/app/Models/User.php` — D6-02 `HasApiTokens` trait (D6-01-deferred line).
+- `backend/laravel/tests/Feature/AuthenticationTest.php` — D6-02 new 3-case test (valid/invalid/unknown-email incl. enumeration parity).
+- `docs/plans/d6-02-create-login-endpoint.md` — D6-02 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
+
 - `backend/laravel/composer.json` + `composer.lock` — D6-01 Sanctum `^4.0` added (resolved `v4.3.3`; incidental framework 13.35→13.36 via `--with-all-dependencies`).
 - `backend/laravel/config/sanctum.php`, `backend/laravel/database/migrations/2026_10_13_181728_create_personal_access_tokens_table.php` — D6-01 new via `install:api` (existing api.php preserved, not overwritten).
 - `docs/plans/d6-01-add-laravel-api-authentication.md` — D6-01 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
@@ -136,6 +142,8 @@
 - `docs/plans/d3-19-add-category-filtering.md` — D3-19 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 
 ## Last task implemented
+
+D6-02 on 2026-10-14 created the login endpoint: `HasApiTokens` on `User` + new `LoginRequest` (D2-24 convention) + `POST /api/login` closure verifying via `Auth::attempt` and rejecting uniformly with 422 `ValidationException` (Sanctum-docs idiom; unknown-email and wrong-password shapes identical — no enumeration oracle) + new 3-case `AuthenticationTest` incl. token-row assertion and zero-token assertions. Verification: `php -l` + Pint clean; route registered; narrow **3/3 green**; full suite **21/21 green, 320 assertions** (18 pre-existing untouched). `git diff --check` clean; exactly the 4 intended paths changed. No commit made. Note: the D6-02 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-03 Create Logout Endpoint.
 
 D6-01 on 2026-10-14 installed the API auth capability: `laravel/sanctum v4.3.3` via the framework's `install:api` flow (no version hand-pinned; existing `api.php` preserved, not overwritten) + `config/sanctum.php` + tokens-table migration applied on dev DB (batch 3, chain intact). `HasApiTokens` trait deliberately deferred to D6-02 (inert without issuance; installer only instructs it). Verification: `route:list` exit 0; full suite **18/18 green, 309 assertions**; rebuilt compose image `healthy` with API live (vendor parity). `git diff --check` clean; exactly the 4 intended paths changed. No commit made. Note: the D6-01 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-02 Create Login Endpoint.
 
@@ -272,5 +280,7 @@ D5-20 done 2026-10-13: the comparison is on record — 0.251 → 0.282, an hones
 D5-21 done 2026-10-13: the index is now schema evolution — migration-coverage proven on a disposable from-scratch chain, tolerated on the live DB, dev data untouched. Performance block (D5-17…21) complete; only D5-22 remains.
 
 D6-01 done 2026-10-14: Sanctum capability installed, configured, migrated, and green — nothing enforced yet. First dependency addition of the project, approved via `/implement`.
+
+D6-02 done 2026-10-14: `POST /api/login` verifies credentials and issues Bearer tokens, rejecting uniformly — the first authenticated surface (nothing enforced yet).
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.
