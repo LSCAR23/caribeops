@@ -95,4 +95,4 @@ Route::delete('/businesses/{business}', function (Business $business) {
     $business->delete();
 
     return response()->noContent();
-})->whereUuid('business');
+})->whereUuid('business')->middleware('auth:sanctum');
