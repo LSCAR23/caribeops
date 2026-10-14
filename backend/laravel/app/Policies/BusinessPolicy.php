@@ -20,7 +20,11 @@ class BusinessPolicy
      */
     public function update(User $user, Business $business): bool
     {
-        return $user->role !== 'viewer';
+        if ($user->role === 'admin') {
+            return true;
+        }
+
+        return $business->user_id !== null && $business->user_id === $user->id;
     }
 
     /**
@@ -28,6 +32,10 @@ class BusinessPolicy
      */
     public function delete(User $user, Business $business): bool
     {
-        return $user->role !== 'viewer';
+        if ($user->role === 'admin') {
+            return true;
+        }
+
+        return $business->user_id !== null && $business->user_id === $user->id;
     }
 }

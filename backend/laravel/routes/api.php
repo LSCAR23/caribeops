@@ -80,7 +80,7 @@ Route::get('/businesses/{business}/reviews', function (Business $business) {
 })->whereUuid('business');
 
 Route::post('/businesses', function (StoreBusinessRequest $request) {
-    $business = Business::create($request->validated());
+    $business = $request->user()->businesses()->create($request->validated());
 
     return (new BusinessResource($business))->response()->setStatusCode(201);
 })->middleware(['auth:sanctum', 'can:create,App\Models\Business']);

@@ -32,6 +32,7 @@ class StoreBusinessRequest extends FormRequest
             'longitude' => 'required|numeric|between:-180,180',
             'website' => 'nullable|url',
             'phone' => 'required|string|max:32',
+            'user_id' => 'prohibited',
         ];
     }
 }
