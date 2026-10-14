@@ -2,6 +2,10 @@
 
 ## Last files modified
 
+- `backend/laravel/routes/api.php` — D6-03 `POST /logout` closure (`auth:sanctum` → `currentAccessToken()->delete()` → 204, current-token only).
+- `backend/laravel/tests/Feature/AuthenticationTest.php` — D6-03 +4 logout cases (204 + zero tokens; revoked reuse → 401; no-token → 401; second device untouched; `web` logout + `forgetGuards` Bearer isolation).
+- `docs/plans/d6-03-create-logout-endpoint.md` — D6-03 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
+
 - `backend/laravel/routes/api.php` — D6-02 `POST /login` closure (`validated()` → `Auth::attempt` → 422 uniform rejection → 200 `{token}`).
 - `backend/laravel/app/Http/Requests/LoginRequest.php` — D6-02 new FormRequest (email/password rules, D2-24 convention).
 - `backend/laravel/app/Models/User.php` — D6-02 `HasApiTokens` trait (D6-01-deferred line).
@@ -143,6 +147,8 @@
 
 ## Last task implemented
 
+D6-03 on 2026-10-14 created the logout endpoint: `POST /api/logout` under `auth:sanctum` deleting only `currentAccessToken()` → 204 (second device untouched) + 4 new `AuthenticationTest` cases (revoked reuse → 401, no-token → 401). Test-harness necessity (no route scope change): `Auth::attempt` leaves the `web` guard authenticated in-process so Sanctum returns `TransientToken`; each Bearer request is isolated with `auth('web')->logout()` + `auth()->forgetGuards()`. Verification: `php -l` + Pint clean; route registered; narrow **7/7 green, 24 assertions**; full suite **25/25 green, 333 assertions** (21 pre-existing untouched). `git diff --check` clean; exactly the 2 intended app paths changed (+ new plan file). No commit made. Note: the D6-03 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-04 Create Current User Endpoint.
+
 D6-02 on 2026-10-14 created the login endpoint: `HasApiTokens` on `User` + new `LoginRequest` (D2-24 convention) + `POST /api/login` closure verifying via `Auth::attempt` and rejecting uniformly with 422 `ValidationException` (Sanctum-docs idiom; unknown-email and wrong-password shapes identical — no enumeration oracle) + new 3-case `AuthenticationTest` incl. token-row assertion and zero-token assertions. Verification: `php -l` + Pint clean; route registered; narrow **3/3 green**; full suite **21/21 green, 320 assertions** (18 pre-existing untouched). `git diff --check` clean; exactly the 4 intended paths changed. No commit made. Note: the D6-02 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-03 Create Logout Endpoint.
 
 D6-01 on 2026-10-14 installed the API auth capability: `laravel/sanctum v4.3.3` via the framework's `install:api` flow (no version hand-pinned; existing `api.php` preserved, not overwritten) + `config/sanctum.php` + tokens-table migration applied on dev DB (batch 3, chain intact). `HasApiTokens` trait deliberately deferred to D6-02 (inert without issuance; installer only instructs it). Verification: `route:list` exit 0; full suite **18/18 green, 309 assertions**; rebuilt compose image `healthy` with API live (vendor parity). `git diff --check` clean; exactly the 4 intended paths changed. No commit made. Note: the D6-01 plan file did not exist at `/implement` time (prior Plan-mode session was blocked from writing `docs/plans/`), so it was first materialized verbatim from the checked inline deliverable before implementing; no scope change. Next: D6-02 Create Login Endpoint.
@@ -281,6 +287,8 @@ D5-21 done 2026-10-13: the index is now schema evolution — migration-coverage 
 
 D6-01 done 2026-10-14: Sanctum capability installed, configured, migrated, and green — nothing enforced yet. First dependency addition of the project, approved via `/implement`.
 
-D6-02 done 2026-10-14: `POST /api/login` verifies credentials and issues Bearer tokens, rejecting uniformly — the first authenticated surface (nothing enforced yet).
+D6-02 done 2026-10-14: `POST /api/login` verifies credentials and issues Bearer tokens, rejecting uniformly - the first authenticated surface (nothing enforced yet).
+
+D6-03 done 2026-10-14: `POST /api/logout` revokes the current Bearer (204; reuse 401; second device untouched) - token lifecycle closed, first `auth:sanctum` enforcement.
 
 Use the slash skills in order: `/analize "task name"` → `/plan "task name"` → `/check "docs/plans/plan-file.md"` → `/implement "docs/plans/plan-file.md"`. Plans live in `docs/plans/`. In OpenCode the same sequence runs via `.opencode/commands/` loading skills from `.opencode/skills/` (legacy VS Code definitions remain in `.github/skills/` for reference); `/orchestrator "task name"` runs analize → plan → check then stops, and `/implement` is the approval to proceed. Review the checked plan before invoking `/implement`; that invocation is the approval to proceed. Every completed implementation must update this file's three sections with the actual changed files, task outcome, current project behavior/status, and exact verification results. Workflow/setup changes must not overwrite the domain checkpoint above; record them as workflow-only.

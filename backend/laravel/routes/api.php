@@ -27,6 +27,12 @@ Route::post('/login', function (LoginRequest $request) {
     ]);
 });
 
+Route::post('/logout', function (Request $request) {
+    $request->user()->currentAccessToken()->delete();
+
+    return response()->noContent();
+})->middleware('auth:sanctum');
+
 Route::get('/health', function () {
     return response()->json([
         'status' => 'ok',

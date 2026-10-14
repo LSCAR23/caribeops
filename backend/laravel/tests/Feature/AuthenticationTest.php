@@ -59,4 +59,85 @@ class AuthenticationTest extends TestCase
 
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }
+
+    public function test_logout_revokes_current_token(): void
+    {
+        $user = User::factory()->create();
+
+        $token = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ])->json('token');
+
+        auth('web')->logout();
+        auth()->forgetGuards();
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer '.$token,
+        ])->postJson('/api/logout');
+
+        $response->assertNoContent();
+
+        $this->assertDatabaseCount('personal_access_tokens', 0);
+    }
+
+    public function test_logout_with_revoked_token_is_rejected(): void
+    {
+        $user = User::factory()->create();
+
+        $token = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ])->json('token');
+
+        auth('web')->logout();
+        auth()->forgetGuards();
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer '.$token,
+        ])->postJson('/api/logout')->assertNoContent();
+
+        auth()->forgetGuards();
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer '.$token,
+        ])->postJson('/api/logout')->assertUnauthorized();
+    }
+
+    public function test_logout_without_token_is_rejected(): void
+    {
+        $this->postJson('/api/logout')->assertUnauthorized();
+    }
+
+    public function test_logout_leaves_other_tokens_valid(): void
+    {
+        $user = User::factory()->create();
+
+        $firstToken = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ])->json('token');
+
+        $secondToken = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ])->json('token');
+
+        auth('web')->logout();
+        auth()->forgetGuards();
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer '.$firstToken,
+        ])->postJson('/api/logout')->assertNoContent();
+
+        $this->assertDatabaseCount('personal_access_tokens', 1);
+
+        auth()->forgetGuards();
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer '.$secondToken,
+        ])->postJson('/api/logout')->assertNoContent();
+
+        $this->assertDatabaseCount('personal_access_tokens', 0);
+    }
 }
