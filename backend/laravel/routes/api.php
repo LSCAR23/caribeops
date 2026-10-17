@@ -64,7 +64,8 @@ Route::get('/businesses', function (Request $request) {
     $businesses = Business::query()
         ->with('category')
         ->withAvg('reviews', 'rating')
-        ->when($request->query('category_id'), fn ($query, $categoryId) => $query->where('category_id', $categoryId))
+        ->when($request->query('category'), fn ($query, $category) => $query->whereHas('category', fn ($q) => $q->where('slug', $category)))
+        ->when($request->query('search'), fn ($query, $search) => $query->where('name', 'ilike', '%'.$search.'%'))
         ->orderBy('id')
         ->paginate();
 

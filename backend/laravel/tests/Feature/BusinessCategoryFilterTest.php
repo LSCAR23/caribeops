@@ -12,7 +12,7 @@ class BusinessCategoryFilterTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_business_list_filters_by_category_id(): void
+    public function test_business_list_filters_by_category_slug(): void
     {
         $this->seed(CategorySeeder::class);
         $hotels = Category::query()->where('slug', 'hotels')->firstOrFail();
@@ -31,7 +31,7 @@ class BusinessCategoryFilterTest extends TestCase
             ->assertOk()
             ->assertJsonPath('meta.total', 2);
 
-        $this->getJson("/api/businesses?category_id={$hotels->id}")
+        $this->getJson("/api/businesses?category={$hotels->slug}")
             ->assertOk()
             ->assertJsonPath('meta.total', 1)
             ->assertJsonCount(1, 'data')
@@ -44,7 +44,7 @@ class BusinessCategoryFilterTest extends TestCase
         $this->seed(CategorySeeder::class);
         Business::factory()->create();
 
-        $this->getJson('/api/businesses?category_id=00000000-0000-0000-0000-000000000000')
+        $this->getJson('/api/businesses?category=unknown-slug')
             ->assertOk()
             ->assertJsonPath('meta.total', 0)
             ->assertJsonCount(0, 'data');

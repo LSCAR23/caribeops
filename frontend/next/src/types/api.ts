@@ -1,10 +1,13 @@
 // Paginated Laravel shape: BusinessResource::collection(...->paginate())
-// renders { data: [...], links: {...}, meta: {...} }. Only data + meta.total
-// are consumed (D3-06); the rest stays loosely typed on purpose.
+// renders { data: [...], links: {...}, meta: {...} }. The list page consumes
+// data + the meta page keys below (D7-02); the rest stays loosely typed.
 export interface ApiListResponse<T> {
   data: T[];
   meta: {
     total: number;
+    current_page: number;
+    last_page: number;
+    per_page: number;
     [key: string]: unknown;
   };
 }
