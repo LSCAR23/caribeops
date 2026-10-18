@@ -1,10 +1,12 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
+import GoKpiSection from "@/components/GoKpiSection";
 import CategorySection from "@/components/CategorySection";
 import MonthlySection from "@/components/MonthlySection";
 import TopSection from "@/components/TopSection";
 import {
   ChartSkeleton,
+  KpiGridSkeleton,
   RankListSkeleton,
 } from "@/components/LoadingSkeleton";
 
@@ -23,7 +25,15 @@ export default async function AnalyticsPage() {
       <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
         Analytics
       </h1>
-      <section className="mt-8">
+      <section aria-labelledby="kpis-heading" className="mt-8">
+        <h2 id="kpis-heading" className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+          Aggregate KPIs
+        </h2>
+        <Suspense fallback={<KpiGridSkeleton />}>
+          <GoKpiSection />
+        </Suspense>
+      </section>
+      <section className="mt-10">
         <Suspense fallback={<ChartSkeleton />}>
           <CategorySection />
         </Suspense>
