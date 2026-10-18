@@ -151,3 +151,17 @@ docker exec -e PGPASSWORD=<dev-default> caribeops-postgres-1 \
 
 Run six times, discard the first (warmup), take the median of the remaining
 five — the exact D5-17/D5-20 discipline.
+
+## D7-12 — SQL optimization summary (documented format)
+
+| Step | Content | Where |
+|------|---------|-------|
+| Problem | TopBusinesses (`LIMIT 10`) was the slowest of the six analytics queries (0.251 ms median vs 0.051–0.221 ms for the others). JOIN + GROUP BY + double sort + LIMIT does the most work; the join key `r.business_id = b.id` is unindexed, forcing hash-from-seq-scans on both sides. | D5-17, D5-18 |
+| Original query | Exact UI-default variant (`LIMIT 10`, unbounded, `analytics` role):<br>`SELECT b.id, b.name, AVG(r.rating), COUNT(r.id) FROM businesses b INNER JOIN reviews r ON r.business_id = b.id GROUP BY b.id, b.name ORDER BY AVG(r.rating) DESC, COUNT(r.id) DESC, b.id ASC LIMIT 10;` | D5-18 / D5-20 |
+| EXPLAIN (before) | `Limit → top-N heapsort → HashAggregate → Hash Join → Seq Scan on reviews (320 rows) → Seq Scan on businesses (40 rows)`, all `shared hit`. Representative Execution Time 0.338 ms; the planner hashes both cached sides instead of seeking because no index supports the join key. | D5-18 |
+| Index decision | `CREATE INDEX reviews_business_id_index ON reviews (business_id);` — the join key is the prime suspect. Landed as migration `2026_10_13_042916_add_reviews_business_id_index.php` (idempotent `IF NOT EXISTS`), kept live. | D5-19 / D5-21 |
+| New plan (after) | Node-identical to before (`Limit → top-N heapsort → HashAggregate → Hash Join → Seq Scans`, all `shared hit`). At 320 rows / 40 businesses both relations are cache-resident, so probing the index costs more than scanning; the planner correctly keeps hashing. | D5-20 |
+| Result | Before 0.251 ms median → After 0.282 ms median (`0.276 / 0.284 / 0.298 / 0.282 / 0.274`). Inside each other's noise bands — flat line, honestly reported: no win, no regression. The index's value accrues with scale (hash inputs outgrowing cache), not on today's dev volume. | D5-20 |
+| Reproduce | `docker exec -e PGPASSWORD=<dev-default> caribeops-postgres-1 psql -h localhost -U analytics -d caribeops -tAX -c "EXPLAIN (ANALYZE) SELECT b.id, b.name, AVG(r.rating), COUNT(r.id) FROM businesses b INNER JOIN reviews r ON r.business_id = b.id GROUP BY b.id, b.name ORDER BY AVG(r.rating) DESC, COUNT(r.id) DESC, b.id ASC LIMIT 10;" | grep "Execution Time"` — six runs, discard the first (warmup), take the median of the remaining five; seeded volume 40 businesses / 320 reviews / 3 categories; connect as the `analytics` role. | D5-20 |
+
+No new index was added for D7-12 (the index already landed in D5-19/D5-21), and no re-measurement was done to claim a win — the honest flat-line result from D5-20 is preserved. The optimization is fully reproducible from the documented query and dataset.
