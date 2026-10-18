@@ -27,6 +27,9 @@ class BusinessResource extends JsonResource
             'website' => $this->website,
             'phone' => $this->phone,
             'average_rating' => $this->reviews_avg_rating,
+            'owner' => $this->user ? ['name' => $this->user->name, 'email' => $this->user->email] : null,
+            'amenities' => $this->amenities?->pluck('name'),
+            'reviews' => ReviewResource::collection($this->whenLoaded('reviews')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

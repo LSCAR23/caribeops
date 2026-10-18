@@ -73,7 +73,11 @@ Route::get('/businesses', function (Request $request) {
 })->middleware('throttle:reads');
 
 Route::get('/businesses/{business}', function (Business $business) {
-    return new BusinessResource($business);
+    return new BusinessResource($business->load('user', 'amenities', 'reviews'));
+})->whereUuid('business')->middleware('throttle:reads');
+
+Route::get('/businesses/{business}/amenities', function (Business $business) {
+    return $business->amenities()->get()->pluck('name');
 })->whereUuid('business')->middleware('throttle:reads');
 
 Route::get('/businesses/{business}/reviews', function (Business $business) {

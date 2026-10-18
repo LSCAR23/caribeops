@@ -2,6 +2,12 @@
 
 ## Last files modified
 
+- `backend/laravel/app/Http/Resources/BusinessResource.php` — D7-03 detail composes owner + amenities + reviews (eager-loaded `user`/`amenities`/`reviews`).
+- `backend/laravel/routes/api.php` — D7-03 detail `->with('user','amenities')`; new `GET /api/businesses/{business}/amenities` (amenity names, `whereUuid` + `throttle:reads`).
+- `backend/laravel/tests/Feature/BusinessDetailsTest.php` — D7-03 new via `make:test` (match / no-owner-null / unknown-404 / reviews).
+- `frontend/next/src/app/businesses/[id]/page.tsx` — D7-03 full info block: owner, amenities, description/type/website/phone, rating, reviews via `ReviewList`; single fetch + `notFound()`/`connection()`/`instant=false`.
+- `frontend/next/src/types/business.ts` — D7-03 `Business` extended with `owner`, `amenities`, `reviews`.
+- `docs/plans/d7-03-improve-business-details-page.md` — D7-03 checked plan (`Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 - `backend/laravel/routes/api.php` — category search by slug: `?category=<slug>` via `whereHas('category', ...)` replaces `?category_id=<uuid>`; `?search=` still AND-ed before `paginate()`; empty slug = all categories (no migration; `slug` column unique).
 - `backend/laravel/tests/Feature/BusinessCategoryFilterTest.php` — slug contract: known slug → 1 row, `unknown-slug` → empty 200.
 - `backend/laravel/tests/Feature/BusinessSearchTest.php` — combine case `search=alpha&category={$hotels->slug}`.
@@ -235,6 +241,8 @@
 - `docs/plans/d3-19-add-category-filtering.md` — D3-19 checked plan materialized from the Plan-mode inline deliverable (verbatim, status `Checked — awaiting user approval` with `Plan check`), then marked `Implemented — verified` with outcome and verification.
 
 ## Last task implemented
+
+D7-03 on 2026-10-17 improved the business details page: backend `GET /api/businesses/{business}/amenities` + detail route eager-loads `user`/`amenities`/`reviews` + `BusinessResource` exposes `owner`/`amenities`/`reviews`; frontend detail page renders full info block (description, type, website, phone), owner name, amenities list, and reviews — all live API data; `notFound()`/`connection()`/`instant=false` preserved. Verification: Pint clean; `php -l` clean ×2; Laravel narrow `BusinessDetailsTest` **4/4 green, 14 assertions**; full suite **71/71 green, 535 assertions** (67 baseline + 4 new); `tsc` exit 0; `lint` exit 0; vitest **5 files 12/12**; `build` exit 0 (`/businesses/[id]` ◐ partial); `git diff --check` clean; browser proof on `dev :3101` + rebuilt compose `laravel`: detail shows amenities ("Pet Friendly, Snorkeling Gear"), 8 reviews with ratings/dates, full info block; owner omitted when null (correct). Finding: compose `laravel` serves baked image — required `docker compose build laravel && up -d` before UI reflected changes (D5-11/D7-02 precedent). No commit made. Next: D7-04 Improve Analytics Dashboard.
 
 Search-category-by-slug on 2026-10-16 switched the business-list category filter from `?category_id=<uuid>` to `?category=<slug>` (unique `categories.slug`, exact match, empty → all categories) across the Laravel list closure + feature tests and Next.js `page.tsx`/`CategoryFilter`/`SearchInput` islands (search preserved on category change; page resets to 1). Verification: Pint clean; `php -l` clean; `BusinessCategoryFilterTest` 2/2 (10 assertions), `BusinessSearchTest` 4/4 (15 assertions), full Laravel suite **67/67 green, 521 assertions**; `tsc` exit 0; `eslint` exit 0; vitest **5 files 12/12**; `npm run build` exit 0 (`/businesses` ◐ Partial Prerender). Breaking change: `?category_id=` removed; write routes keep UUID `category_id`; Go service untouched. No commit made.
 
