@@ -16,6 +16,9 @@ class BusinessDataSeeder extends Seeder
      */
     public function run(): void
     {
+        mt_srand(2026);
+        srand(2026);
+
         $typesByCategory = [
             'hotels' => 'Boutique hotel',
             'restaurants' => 'Café',
@@ -37,6 +40,8 @@ class BusinessDataSeeder extends Seeder
             throw new RuntimeException('Seed amenities before creating business data.');
         }
 
+        $categorySlugs = array_keys($typesByCategory);
+
         $businesses = collect();
 
         foreach ($typesByCategory as $categorySlug => $type) {
@@ -48,7 +53,14 @@ class BusinessDataSeeder extends Seeder
             );
         }
 
-        $businesses = $businesses->merge(Business::factory()->count(37)->create());
+        foreach (range(1, 37) as $i) {
+            $categorySlug = $categorySlugs[$i % count($categorySlugs)];
+            $businesses->push(
+                Business::factory()
+                    ->for($categories->get($categorySlug))
+                    ->create(),
+            );
+        }
 
         foreach ($businesses as $business) {
             $business->amenities()->attach(
