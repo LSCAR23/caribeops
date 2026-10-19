@@ -8,12 +8,24 @@ import type { AnalyticsOverview } from "@/types/analytics";
 // the three aggregate KPI cards independently, so a slow Go delays only these
 // pixels while the shell and the Laravel card resolve on their own timing.
 // No connection() call — the page already opts the tree dynamic.
-export default async function GoKpiSection() {
+export default async function GoKpiSection({
+  from,
+  to,
+}: {
+  from?: string | null;
+  to?: string | null;
+}) {
   // D5-16: try wraps the fetch only — a Go outage degrades to the fallback
   // below, while a render bug still throws instead of being masked.
+  const params = new URLSearchParams();
+  if (from) params.set("from", from);
+  if (to) params.set("to", to);
+  const query = params.toString();
+  const path = query ? `/analytics/overview?${query}` : "/analytics/overview";
+
   let overview: AnalyticsOverview;
   try {
-    overview = await analyticsGet<AnalyticsOverview>("/analytics/overview");
+    overview = await analyticsGet<AnalyticsOverview>(path);
   } catch (error) {
     console.error(error);
     return <SectionFallback label="Aggregate KPIs" />;

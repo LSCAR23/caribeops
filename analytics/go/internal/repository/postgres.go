@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -24,19 +25,51 @@ func NewPostgres(pool *pgxpool.Pool) *Postgres {
 
 // BusinessCount returns the number of businesses (D4-06). Aggregation stays
 // in the database: COUNT(*) ships a single integer instead of every row.
-func (r *Postgres) BusinessCount(ctx context.Context) (int64, error) {
+// Optional inclusive [from, to] bounds on created_at (D7-05).
+func (r *Postgres) BusinessCount(ctx context.Context, from, to time.Time) (int64, error) {
+	query := `SELECT COUNT(*) FROM businesses`
+	args := []any{}
+	if !from.IsZero() || !to.IsZero() {
+		query = `SELECT COUNT(*) FROM businesses WHERE `
+		conditions := []string{}
+		if !from.IsZero() {
+			args = append(args, from)
+			conditions = append(conditions, fmt.Sprintf("created_at >= $%d::date", len(args)))
+		}
+		if !to.IsZero() {
+			args = append(args, to)
+			conditions = append(conditions, fmt.Sprintf("created_at <= $%d::date", len(args)))
+		}
+		query += strings.Join(conditions, " AND ")
+	}
 	var n int64
-	if err := r.pool.QueryRow(ctx, `SELECT COUNT(*) FROM businesses`).Scan(&n); err != nil {
+	if err := r.pool.QueryRow(ctx, query, args...).Scan(&n); err != nil {
 		return 0, fmt.Errorf("business count: %w", err)
 	}
 	return n, nil
 }
 
 // ReviewCount returns the number of reviews (D4-07), same single-row pattern
-// as BusinessCount.
-func (r *Postgres) ReviewCount(ctx context.Context) (int64, error) {
+// as BusinessCount. Optional inclusive [from, to] bounds on review_date
+// (D7-05).
+func (r *Postgres) ReviewCount(ctx context.Context, from, to time.Time) (int64, error) {
+	query := `SELECT COUNT(*) FROM reviews`
+	args := []any{}
+	if !from.IsZero() || !to.IsZero() {
+		query = `SELECT COUNT(*) FROM reviews WHERE `
+		conditions := []string{}
+		if !from.IsZero() {
+			args = append(args, from)
+			conditions = append(conditions, fmt.Sprintf("review_date >= $%d::date", len(args)))
+		}
+		if !to.IsZero() {
+			args = append(args, to)
+			conditions = append(conditions, fmt.Sprintf("review_date <= $%d::date", len(args)))
+		}
+		query += strings.Join(conditions, " AND ")
+	}
 	var n int64
-	if err := r.pool.QueryRow(ctx, `SELECT COUNT(*) FROM reviews`).Scan(&n); err != nil {
+	if err := r.pool.QueryRow(ctx, query, args...).Scan(&n); err != nil {
 		return 0, fmt.Errorf("review count: %w", err)
 	}
 	return n, nil
@@ -44,10 +77,26 @@ func (r *Postgres) ReviewCount(ctx context.Context) (int64, error) {
 
 // AverageRating returns the mean review rating (D4-08). AVG over an empty
 // table is NULL, so COALESCE keeps the float64 contract total: an empty
-// reviews table reads 0 instead of failing the scan.
-func (r *Postgres) AverageRating(ctx context.Context) (float64, error) {
+// reviews table reads 0 instead of failing the scan. Optional inclusive
+// [from, to] bounds on review_date (D7-05).
+func (r *Postgres) AverageRating(ctx context.Context, from, to time.Time) (float64, error) {
+	query := `SELECT COALESCE(AVG(rating), 0) FROM reviews`
+	args := []any{}
+	if !from.IsZero() || !to.IsZero() {
+		query = `SELECT COALESCE(AVG(rating), 0) FROM reviews WHERE `
+		conditions := []string{}
+		if !from.IsZero() {
+			args = append(args, from)
+			conditions = append(conditions, fmt.Sprintf("review_date >= $%d::date", len(args)))
+		}
+		if !to.IsZero() {
+			args = append(args, to)
+			conditions = append(conditions, fmt.Sprintf("review_date <= $%d::date", len(args)))
+		}
+		query += strings.Join(conditions, " AND ")
+	}
 	var avg float64
-	if err := r.pool.QueryRow(ctx, `SELECT COALESCE(AVG(rating), 0) FROM reviews`).Scan(&avg); err != nil {
+	if err := r.pool.QueryRow(ctx, query, args...).Scan(&avg); err != nil {
 		return 0, fmt.Errorf("average rating: %w", err)
 	}
 	return avg, nil
@@ -58,25 +107,31 @@ func (r *Postgres) AverageRating(ctx context.Context) (float64, error) {
 // businesses visible as zero rows instead of dropping them; ordering by
 // count (then slug) keeps the output deterministic for callers and tests.
 // A non-empty category slug filters to that category; unknown slugs return
-// an empty slice (D4-15).
-func (r *Postgres) BusinessesByCategory(ctx context.Context, category string) ([]CategoryCount, error) {
+// an empty slice (D4-15). Optional inclusive [from, to] bounds on business
+// created_at (D7-05).
+func (r *Postgres) BusinessesByCategory(ctx context.Context, category string, from, to time.Time) ([]CategoryCount, error) {
 	query := `
 		SELECT c.slug, c.name, COUNT(b.id)
 		FROM categories c
-		LEFT JOIN businesses b ON b.category_id = c.id
-		GROUP BY c.slug, c.name
-		ORDER BY COUNT(b.id) DESC, c.slug ASC`
+		LEFT JOIN businesses b ON b.category_id = c.id`
 	args := []any{}
+	conditions := []string{}
 	if category != "" {
-		query = `
-			SELECT c.slug, c.name, COUNT(b.id)
-			FROM categories c
-			LEFT JOIN businesses b ON b.category_id = c.id
-			WHERE c.slug = $1
-			GROUP BY c.slug, c.name
-			ORDER BY COUNT(b.id) DESC, c.slug ASC`
 		args = append(args, category)
+		conditions = append(conditions, fmt.Sprintf("c.slug = $%d", len(args)))
 	}
+	if !from.IsZero() {
+		args = append(args, from)
+		conditions = append(conditions, fmt.Sprintf("b.created_at >= $%d::date", len(args)))
+	}
+	if !to.IsZero() {
+		args = append(args, to)
+		conditions = append(conditions, fmt.Sprintf("b.created_at <= $%d::date", len(args)))
+	}
+	if len(conditions) > 0 {
+		query += " WHERE " + strings.Join(conditions, " AND ")
+	}
+	query += "\nGROUP BY c.slug, c.name\nORDER BY COUNT(b.id) DESC, c.slug ASC"
 	rows, err := r.pool.Query(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("businesses by category: %w", err)
@@ -146,18 +201,33 @@ func (r *Postgres) ReviewsByMonth(ctx context.Context, from, to time.Time) ([]Mo
 // unreviewed rows carry NULL averages, and PostgreSQL sorts DESC NULLs first,
 // which would crown unrated businesses without it. The id tail keeps ties
 // fully deterministic. Non-positive limits short-circuit to empty since
-// PostgreSQL rejects negative LIMIT.
-func (r *Postgres) TopBusinesses(ctx context.Context, limit int) ([]TopBusiness, error) {
+// PostgreSQL rejects negative LIMIT. Optional inclusive [from, to] bounds on
+// review_date (D7-05).
+func (r *Postgres) TopBusinesses(ctx context.Context, limit int, from, to time.Time) ([]TopBusiness, error) {
 	if limit <= 0 {
 		return []TopBusiness{}, nil
 	}
-	rows, err := r.pool.Query(ctx, `
+	query := `
 		SELECT b.id, b.name, AVG(r.rating), COUNT(r.id)
 		FROM businesses b
-		INNER JOIN reviews r ON r.business_id = b.id
-		GROUP BY b.id, b.name
-		ORDER BY AVG(r.rating) DESC, COUNT(r.id) DESC, b.id ASC
-		LIMIT $1`, limit)
+		INNER JOIN reviews r ON r.business_id = b.id`
+	args := []any{}
+	conditions := []string{}
+	if !from.IsZero() {
+		args = append(args, from)
+		conditions = append(conditions, fmt.Sprintf("r.review_date >= $%d::date", len(args)))
+	}
+	if !to.IsZero() {
+		args = append(args, to)
+		conditions = append(conditions, fmt.Sprintf("r.review_date <= $%d::date", len(args)))
+	}
+	if len(conditions) > 0 {
+		query += " WHERE " + strings.Join(conditions, " AND ")
+	}
+	query += "\nGROUP BY b.id, b.name\nORDER BY AVG(r.rating) DESC, COUNT(r.id) DESC, b.id ASC"
+	args = append(args, limit)
+	query += fmt.Sprintf("\nLIMIT $%d", len(args))
+	rows, err := r.pool.Query(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("top businesses: %w", err)
 	}

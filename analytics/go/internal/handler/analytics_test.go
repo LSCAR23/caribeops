@@ -27,8 +27,9 @@ type fakeAnalyticsProvider struct {
 	gotLimit    int
 }
 
-func (f *fakeAnalyticsProvider) BusinessesByCategory(_ context.Context, category string) ([]repository.CategoryCount, error) {
+func (f *fakeAnalyticsProvider) BusinessesByCategory(_ context.Context, category string, from, to time.Time) ([]repository.CategoryCount, error) {
 	f.gotCategory = category
+	f.gotFrom, f.gotTo = from, to
 	return f.byCategory, f.err
 }
 
@@ -37,8 +38,9 @@ func (f *fakeAnalyticsProvider) ReviewsByMonth(_ context.Context, from, to time.
 	return f.byMonth, f.err
 }
 
-func (f *fakeAnalyticsProvider) TopBusinesses(_ context.Context, limit int) ([]repository.TopBusiness, error) {
+func (f *fakeAnalyticsProvider) TopBusinesses(_ context.Context, limit int, from, to time.Time) ([]repository.TopBusiness, error) {
 	f.gotLimit = limit
+	f.gotFrom, f.gotTo = from, to
 	return f.top, f.err
 }
 

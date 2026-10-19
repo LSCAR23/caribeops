@@ -33,21 +33,27 @@ type TopBusiness struct {
 // PostgreSQL (pgx, from D4-06 on); services and handlers depend only on this
 // interface, never on SQL or driver details.
 type Repository interface {
-	// BusinessCount feeds the overview (D4-06, D4-09).
-	BusinessCount(ctx context.Context) (int64, error)
-	// ReviewCount feeds the overview (D4-07, D4-09).
-	ReviewCount(ctx context.Context) (int64, error)
-	// AverageRating feeds the overview (D4-08, D4-09). Empty-table NULL
-	// handling is the D4-08 implementation's job (COALESCE), not this contract's.
-	AverageRating(ctx context.Context) (float64, error)
+	// BusinessCount returns the number of businesses within the optional
+	// inclusive [from, to] date range on created_at (D4-06, D4-09, D7-05).
+	BusinessCount(ctx context.Context, from, to time.Time) (int64, error)
+	// ReviewCount returns the number of reviews within the optional
+	// inclusive [from, to] date range on review_date (D4-07, D4-09, D7-05).
+	ReviewCount(ctx context.Context, from, to time.Time) (int64, error)
+	// AverageRating returns the mean review rating within the optional
+	// inclusive [from, to] date range on review_date. Empty-table NULL
+	// handling is the D4-08 implementation's job (COALESCE), not this
+	// contract's (D4-08, D4-09, D7-05).
+	AverageRating(ctx context.Context, from, to time.Time) (float64, error)
 	// BusinessesByCategory groups businesses per category (D4-11, D4-14).
 	// An empty category returns every category; a slug filters to that
 	// category, and an unknown slug yields an empty slice (D4-15).
-	BusinessesByCategory(ctx context.Context, category string) ([]CategoryCount, error)
+	// from/to are optional inclusive bounds on business created_at (D7-05).
+	BusinessesByCategory(ctx context.Context, category string, from, to time.Time) ([]CategoryCount, error)
 	// ReviewsByMonth groups review volume by month (D4-12, D4-14). Zero from
-	// or to leaves that side unbounded (D4-15).
+	// or to leaves that side unbounded (D4-15); bounds are inclusive.
 	ReviewsByMonth(ctx context.Context, from, to time.Time) ([]MonthlyReviews, error)
 	// TopBusinesses ranks businesses, returning at most limit rows (D4-13,
-	// D4-14). The limit parameter anticipates D4-15's ?limit=.
-	TopBusinesses(ctx context.Context, limit int) ([]TopBusiness, error)
+	// D4-14). The limit parameter anticipates D4-15's ?limit=. Ranking is
+	// computed over the filtered date range only (D7-05).
+	TopBusinesses(ctx context.Context, limit int, from, to time.Time) ([]TopBusiness, error)
 }

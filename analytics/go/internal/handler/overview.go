@@ -3,8 +3,11 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"net/url"
+	"time"
 
 	"caribeops/analytics/internal/service"
 )
@@ -13,7 +16,24 @@ import (
 // *service.OverviewService satisfies it implicitly; tests stub it in ~10
 // lines instead of faking the six-method repository.
 type OverviewProvider interface {
-	GetOverview(ctx context.Context) (service.Overview, error)
+	GetOverview(ctx context.Context, from, to time.Time) (service.Overview, error)
+}
+
+// parseDateRange parses optional ?from=/?to= query params (YYYY-MM-DD).
+// Empty values are unbounded; from after to is an error.
+func parseDateRange(query url.Values) (from, to time.Time, err error) {
+	from, err = parseDateParam(query.Get("from"), "from")
+	if err != nil {
+		return time.Time{}, time.Time{}, err
+	}
+	to, err = parseDateParam(query.Get("to"), "to")
+	if err != nil {
+		return time.Time{}, time.Time{}, err
+	}
+	if !from.IsZero() && !to.IsZero() && from.After(to) {
+		return time.Time{}, time.Time{}, fmt.Errorf("invalid date range: from is after to")
+	}
+	return from, to, nil
 }
 
 // NewOverviewHandler serves GET /analytics/overview from the provider: 200
@@ -22,7 +42,12 @@ type OverviewProvider interface {
 // D4-16's task — internals never leak here).
 func NewOverviewHandler(provider OverviewProvider) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		overview, err := provider.GetOverview(r.Context())
+		from, to, err := parseDateRange(r.URL.Query())
+		if err != nil {
+			writeAnalyticsBadRequest(w, err.Error())
+			return
+		}
+		overview, err := provider.GetOverview(r.Context(), from, to)
 		if err != nil {
 			log.Printf("overview: %v", err)
 			w.Header().Set("Content-Type", "application/json")

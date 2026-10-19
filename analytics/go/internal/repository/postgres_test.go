@@ -29,7 +29,7 @@ func TestPostgresBusinessCount(t *testing.T) {
 	}
 	defer pool.Close()
 
-	got, err := NewPostgres(pool).BusinessCount(ctx)
+	got, err := NewPostgres(pool).BusinessCount(ctx, time.Time{}, time.Time{})
 	if err != nil {
 		t.Fatalf("BusinessCount failed: %v", err)
 	}
@@ -62,7 +62,7 @@ func TestPostgresReviewCount(t *testing.T) {
 	}
 	defer pool.Close()
 
-	got, err := NewPostgres(pool).ReviewCount(ctx)
+	got, err := NewPostgres(pool).ReviewCount(ctx, time.Time{}, time.Time{})
 	if err != nil {
 		t.Fatalf("ReviewCount failed: %v", err)
 	}
@@ -96,7 +96,7 @@ func TestPostgresAverageRating(t *testing.T) {
 	}
 	defer pool.Close()
 
-	got, err := NewPostgres(pool).AverageRating(ctx)
+	got, err := NewPostgres(pool).AverageRating(ctx, time.Time{}, time.Time{})
 	if err != nil {
 		t.Fatalf("AverageRating failed: %v", err)
 	}
@@ -132,7 +132,7 @@ func TestPostgresBusinessesByCategory(t *testing.T) {
 	defer pool.Close()
 
 	repo := NewPostgres(pool)
-	got, err := repo.BusinessesByCategory(ctx, "")
+	got, err := repo.BusinessesByCategory(ctx, "", time.Time{}, time.Time{})
 	if err != nil {
 		t.Fatalf("BusinessesByCategory failed: %v", err)
 	}
@@ -171,7 +171,7 @@ func TestPostgresBusinessesByCategory(t *testing.T) {
 		}
 		sum += got[i].Businesses
 	}
-	total, err := repo.BusinessCount(ctx)
+	total, err := repo.BusinessCount(ctx, time.Time{}, time.Time{})
 	if err != nil {
 		t.Fatalf("BusinessCount failed: %v", err)
 	}
@@ -240,7 +240,7 @@ func TestPostgresReviewsByMonth(t *testing.T) {
 		}
 		sum += got[i].Reviews
 	}
-	total, err := repo.ReviewCount(ctx)
+	total, err := repo.ReviewCount(ctx, time.Time{}, time.Time{})
 	if err != nil {
 		t.Fatalf("ReviewCount failed: %v", err)
 	}
@@ -270,7 +270,7 @@ func TestPostgresTopBusinesses(t *testing.T) {
 
 	const limit = 5
 	repo := NewPostgres(pool)
-	got, err := repo.TopBusinesses(ctx, limit)
+	got, err := repo.TopBusinesses(ctx, limit, time.Time{}, time.Time{})
 	if err != nil {
 		t.Fatalf("TopBusinesses failed: %v", err)
 	}
@@ -343,7 +343,7 @@ func TestPostgresFilteredQueries(t *testing.T) {
 
 	repo := NewPostgres(pool)
 
-	top2, err := repo.TopBusinesses(ctx, 2)
+	top2, err := repo.TopBusinesses(ctx, 2, time.Time{}, time.Time{})
 	if err != nil {
 		t.Fatalf("TopBusinesses(2) failed: %v", err)
 	}
@@ -351,7 +351,7 @@ func TestPostgresFilteredQueries(t *testing.T) {
 		t.Errorf("TopBusinesses(2) returned %d rows, want 2", len(top2))
 	}
 
-	tours, err := repo.BusinessesByCategory(ctx, "tours")
+	tours, err := repo.BusinessesByCategory(ctx, "tours", time.Time{}, time.Time{})
 	if err != nil {
 		t.Fatalf("BusinessesByCategory(tours) failed: %v", err)
 	}
@@ -359,7 +359,7 @@ func TestPostgresFilteredQueries(t *testing.T) {
 		t.Errorf("BusinessesByCategory(tours) = %+v, want the single tours row", tours)
 	}
 
-	unknown, err := repo.BusinessesByCategory(ctx, "no-such-category")
+	unknown, err := repo.BusinessesByCategory(ctx, "no-such-category", time.Time{}, time.Time{})
 	if err != nil {
 		t.Fatalf("BusinessesByCategory(unknown) failed: %v", err)
 	}
@@ -380,7 +380,7 @@ func TestPostgresFilteredQueries(t *testing.T) {
 		}
 		sum += row.Reviews
 	}
-	total, err := repo.ReviewCount(ctx)
+	total, err := repo.ReviewCount(ctx, time.Time{}, time.Time{})
 	if err != nil {
 		t.Fatalf("ReviewCount failed: %v", err)
 	}
@@ -397,7 +397,7 @@ func TestPostgresFilteredQueries(t *testing.T) {
 func TestTopBusinessesNonPositiveLimit(t *testing.T) {
 	repo := NewPostgres(nil)
 	for _, limit := range []int{0, -1} {
-		rows, err := repo.TopBusinesses(context.Background(), limit)
+		rows, err := repo.TopBusinesses(context.Background(), limit, time.Time{}, time.Time{})
 		if err != nil {
 			t.Errorf("limit %d: expected nil error, got %v", limit, err)
 		}

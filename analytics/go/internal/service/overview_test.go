@@ -21,28 +21,28 @@ type fakeRepository struct {
 	failOn     string
 }
 
-func (f *fakeRepository) BusinessCount(context.Context) (int64, error) {
+func (f *fakeRepository) BusinessCount(context.Context, time.Time, time.Time) (int64, error) {
 	if f.failOn == "businesses" {
 		return 0, errors.New("boom businesses")
 	}
 	return f.businesses, nil
 }
 
-func (f *fakeRepository) ReviewCount(context.Context) (int64, error) {
+func (f *fakeRepository) ReviewCount(context.Context, time.Time, time.Time) (int64, error) {
 	if f.failOn == "reviews" {
 		return 0, errors.New("boom reviews")
 	}
 	return f.reviews, nil
 }
 
-func (f *fakeRepository) AverageRating(context.Context) (float64, error) {
+func (f *fakeRepository) AverageRating(context.Context, time.Time, time.Time) (float64, error) {
 	if f.failOn == "average" {
 		return 0, errors.New("boom average")
 	}
 	return f.average, nil
 }
 
-func (f *fakeRepository) BusinessesByCategory(context.Context, string) ([]repository.CategoryCount, error) {
+func (f *fakeRepository) BusinessesByCategory(context.Context, string, time.Time, time.Time) ([]repository.CategoryCount, error) {
 	return nil, nil
 }
 
@@ -50,14 +50,14 @@ func (f *fakeRepository) ReviewsByMonth(context.Context, time.Time, time.Time) (
 	return nil, nil
 }
 
-func (f *fakeRepository) TopBusinesses(context.Context, int) ([]repository.TopBusiness, error) {
+func (f *fakeRepository) TopBusinesses(context.Context, int, time.Time, time.Time) ([]repository.TopBusiness, error) {
 	return nil, nil
 }
 
 func TestGetOverviewCombines(t *testing.T) {
 	var repo repository.Repository = &fakeRepository{businesses: 42, reviews: 350, average: 4.2}
 
-	got, err := NewOverviewService(repo).GetOverview(context.Background())
+	got, err := NewOverviewService(repo).GetOverview(context.Background(), time.Time{}, time.Time{})
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -71,7 +71,7 @@ func TestGetOverviewPropagatesStepErrors(t *testing.T) {
 	for _, step := range []string{"businesses", "reviews", "average"} {
 		var repo repository.Repository = &fakeRepository{failOn: step}
 
-		_, err := NewOverviewService(repo).GetOverview(context.Background())
+		_, err := NewOverviewService(repo).GetOverview(context.Background(), time.Time{}, time.Time{})
 		if err == nil {
 			t.Errorf("step %q: expected error, got nil", step)
 			continue

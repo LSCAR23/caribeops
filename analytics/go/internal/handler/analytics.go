@@ -26,9 +26,9 @@ const dateLayout = "2006-01-02"
 // coordination logic ever belongs between repository and HTTP, a service can
 // interpose behind this same interface without touching the handlers.
 type AnalyticsProvider interface {
-	BusinessesByCategory(ctx context.Context, category string) ([]repository.CategoryCount, error)
+	BusinessesByCategory(ctx context.Context, category string, from, to time.Time) ([]repository.CategoryCount, error)
 	ReviewsByMonth(ctx context.Context, from, to time.Time) ([]repository.MonthlyReviews, error)
-	TopBusinesses(ctx context.Context, limit int) ([]repository.TopBusiness, error)
+	TopBusinesses(ctx context.Context, limit int, from, to time.Time) ([]repository.TopBusiness, error)
 }
 
 func writeAnalyticsJSON(w http.ResponseWriter, route string, value any) {
@@ -56,11 +56,19 @@ func writeAnalyticsBadRequest(w http.ResponseWriter, message string) {
 // NewBusinessesByCategoryHandler serves GET
 // /analytics/businesses-by-category. An optional ?category= slug filters to
 // that category; unknown slugs return an empty list (listing semantics, never
-// 404). Failures log server-side; the client gets a generic 500 (full error
-// mapping is D4-16's task).
+// 404). Optional ?from=/?to= (YYYY-MM-DD, inclusive) bound business
+// created_at; malformed dates or from after to are 400s. Failures log
+// server-side; the client gets a generic 500 (full error mapping is D4-16's
+// task).
 func NewBusinessesByCategoryHandler(provider AnalyticsProvider) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		rows, err := provider.BusinessesByCategory(r.Context(), r.URL.Query().Get("category"))
+		query := r.URL.Query()
+		from, to, err := parseDateRange(query)
+		if err != nil {
+			writeAnalyticsBadRequest(w, err.Error())
+			return
+		}
+		rows, err := provider.BusinessesByCategory(r.Context(), query.Get("category"), from, to)
 		if err != nil {
 			writeAnalyticsError(w, "businesses-by-category", "businesses by category unavailable", err)
 			return
@@ -113,11 +121,19 @@ func parseDateParam(value, name string) (time.Time, error) {
 
 // NewTopBusinessesHandler serves GET /analytics/top-businesses. ?limit=
 // defaults to DefaultTopLimit and clamps at MaxTopLimit; anything else is a
-// 400. Failure contract matches the sibling endpoints.
+// 400. Optional ?from=/?to= (YYYY-MM-DD, inclusive) bound review_date;
+// malformed dates or from after to are 400s. Failure contract matches the
+// sibling endpoints.
 func NewTopBusinessesHandler(provider AnalyticsProvider) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query()
+		from, to, err := parseDateRange(query)
+		if err != nil {
+			writeAnalyticsBadRequest(w, err.Error())
+			return
+		}
 		limit := DefaultTopLimit
-		if raw := r.URL.Query().Get("limit"); raw != "" {
+		if raw := query.Get("limit"); raw != "" {
 			n, err := strconv.Atoi(raw)
 			if err != nil || n < 1 || n > MaxTopLimit {
 				writeAnalyticsBadRequest(w, fmt.Sprintf("invalid limit %q: must be a number between 1 and %d", raw, MaxTopLimit))
@@ -125,7 +141,7 @@ func NewTopBusinessesHandler(provider AnalyticsProvider) http.Handler {
 			}
 			limit = n
 		}
-		rows, err := provider.TopBusinesses(r.Context(), limit)
+		rows, err := provider.TopBusinesses(r.Context(), limit, from, to)
 		if err != nil {
 			writeAnalyticsError(w, "top-businesses", "top businesses unavailable", err)
 			return

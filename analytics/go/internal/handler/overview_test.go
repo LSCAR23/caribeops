@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"caribeops/analytics/internal/service"
 )
@@ -16,7 +17,7 @@ type stubProvider struct {
 	err      error
 }
 
-func (s *stubProvider) GetOverview(context.Context) (service.Overview, error) {
+func (s *stubProvider) GetOverview(context.Context, time.Time, time.Time) (service.Overview, error) {
 	return s.overview, s.err
 }
 

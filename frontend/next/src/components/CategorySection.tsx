@@ -6,13 +6,26 @@ import type { CategoryCount } from "@/types/analytics";
 // Async Server Component island (D5-15): fetches and renders the category
 // section independently, so a slow Go delays only this section's pixels.
 // No connection() call — the page already opts the tree dynamic.
-export default async function CategorySection() {
+export default async function CategorySection({
+  from,
+  to,
+}: {
+  from?: string | null;
+  to?: string | null;
+}) {
   // D5-16: try wraps the fetch only — a Go outage degrades to the fallback
   // below, while a render bug still throws instead of being masked.
+  const params = new URLSearchParams();
+  if (from) params.set("from", from);
+  if (to) params.set("to", to);
+  const query = params.toString();
+  const path = query
+    ? `/analytics/businesses-by-category?${query}`
+    : "/analytics/businesses-by-category";
+
   let rows: CategoryCount[];
   try {
-    rows =
-      await analyticsGet<CategoryCount[]>("/analytics/businesses-by-category");
+    rows = await analyticsGet<CategoryCount[]>(path);
   } catch (error) {
     console.error(error);
     return (

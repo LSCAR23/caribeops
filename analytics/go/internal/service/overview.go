@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"time"
 )
 
 // Overview is the analytics dashboard summary (D4-09). JSON keys match the
@@ -19,9 +20,9 @@ type Overview struct {
 // service stays testable with small fakes. *service.OverviewService in turn
 // satisfies handler.OverviewProvider.
 type OverviewRepository interface {
-	BusinessCount(ctx context.Context) (int64, error)
-	ReviewCount(ctx context.Context) (int64, error)
-	AverageRating(ctx context.Context) (float64, error)
+	BusinessCount(ctx context.Context, from, to time.Time) (int64, error)
+	ReviewCount(ctx context.Context, from, to time.Time) (int64, error)
+	AverageRating(ctx context.Context, from, to time.Time) (float64, error)
 }
 
 // OverviewService combines repository reads into application behavior. It
@@ -41,16 +42,18 @@ func NewOverviewService(repo OverviewRepository) *OverviewService {
 // GetOverview reads the three overview inputs sequentially and composes them.
 // Sequential is deliberate: three sub-millisecond local aggregates gain
 // nothing from goroutines but would pay concurrency complexity for it.
-func (s *OverviewService) GetOverview(ctx context.Context) (Overview, error) {
-	businesses, err := s.repo.BusinessCount(ctx)
+// Optional inclusive [from, to] bounds are passed through to each repository
+// call (D7-05).
+func (s *OverviewService) GetOverview(ctx context.Context, from, to time.Time) (Overview, error) {
+	businesses, err := s.repo.BusinessCount(ctx, from, to)
 	if err != nil {
 		return Overview{}, fmt.Errorf("overview businesses: %w", err)
 	}
-	reviews, err := s.repo.ReviewCount(ctx)
+	reviews, err := s.repo.ReviewCount(ctx, from, to)
 	if err != nil {
 		return Overview{}, fmt.Errorf("overview reviews: %w", err)
 	}
-	average, err := s.repo.AverageRating(ctx)
+	average, err := s.repo.AverageRating(ctx, from, to)
 	if err != nil {
 		return Overview{}, fmt.Errorf("overview average rating: %w", err)
 	}

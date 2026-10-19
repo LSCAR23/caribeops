@@ -13,11 +13,11 @@ import (
 
 type stubOverviewProvider struct{}
 
-func (stubOverviewProvider) GetOverview(context.Context) (service.Overview, error) {
+func (stubOverviewProvider) GetOverview(context.Context, time.Time, time.Time) (service.Overview, error) {
 	return service.Overview{}, nil
 }
 
-func (stubOverviewProvider) BusinessesByCategory(context.Context, string) ([]repository.CategoryCount, error) {
+func (stubOverviewProvider) BusinessesByCategory(context.Context, string, time.Time, time.Time) ([]repository.CategoryCount, error) {
 	return nil, nil
 }
 
@@ -25,7 +25,7 @@ func (stubOverviewProvider) ReviewsByMonth(context.Context, time.Time, time.Time
 	return nil, nil
 }
 
-func (stubOverviewProvider) TopBusinesses(context.Context, int) ([]repository.TopBusiness, error) {
+func (stubOverviewProvider) TopBusinesses(context.Context, int, time.Time, time.Time) ([]repository.TopBusiness, error) {
 	return nil, nil
 }
 
