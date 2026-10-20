@@ -1,35 +1,28 @@
 import Link from "next/link";
-import LogoutButton from "@/components/LogoutButton";
+import NavLinks from "@/components/NavLinks";
 
-const links = [
-  { href: "/", label: "Dashboard" },
-  { href: "/businesses", label: "Businesses" },
-  { href: "/analytics", label: "Analytics" },
-  { href: "/login", label: "Login" },
-] as const;
-
+// Server header (UI redesign, Phase 3): brand + layout stay on the
+// server; the link list lives in the NavLinks island because the
+// active-route indicator needs usePathname. Links are never hidden at
+// any breakpoint (wrapping row, no hamburger) so keyboard users and
+// the Playwright role selectors always reach them.
 export default function Navigation() {
   return (
-    <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+    <header className="sticky top-0 z-40 border-b border-ink-100 bg-ivory/85 backdrop-blur supports-[backdrop-filter]:bg-ivory/80">
+      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-6 gap-y-1 px-5 py-3 sm:px-6">
         <Link
           href="/"
-          className="text-sm font-semibold uppercase tracking-[0.25em] text-teal-700 dark:text-teal-400"
+          className="group inline-flex items-baseline gap-1.5 rounded-lg py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
         >
-          CaribeOps
+          <span className="font-display text-lg font-semibold tracking-tight text-brand-700 transition-colors group-hover:text-brand-800">
+            CaribeOps
+          </span>
+          <span
+            aria-hidden="true"
+            className="h-1.5 w-1.5 rounded-full bg-accent-400 transition-colors group-hover:bg-accent-500"
+          />
         </Link>
-        <nav aria-label="Primary" className="flex items-center gap-6">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-50 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
-            >
-              {link.label}
-            </Link>
-          ))}
-          <LogoutButton />
-        </nav>
+        <NavLinks />
       </div>
     </header>
   );
