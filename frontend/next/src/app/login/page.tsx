@@ -1,19 +1,22 @@
 import LoginForm from "@/components/LoginForm";
+import Card from "@/components/Card";
+import PageContainer from "@/components/PageContainer";
+import SectionHeading from "@/components/SectionHeading";
 
 // Static page: nothing is fetched server-side, so the build
 // never needs Laravel to be up.
 export default function LoginPage() {
   return (
-    <main className="mx-auto w-full max-w-5xl px-6 py-12">
-      <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-        Log in
-      </h1>
-      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-        Sign in with your CaribeOps account.
-      </p>
-      <div className="mt-6 max-w-md">
+    <PageContainer className="max-w-lg">
+      <section className="anim-fade-up">
+        <SectionHeading as="h1">Log in</SectionHeading>
+        <p className="mt-2 text-sm text-ink-500">
+          Sign in with your CaribeOps account.
+        </p>
+      </section>
+      <Card className="mt-6">
         <LoginForm />
-      </div>
-    </main>
+      </Card>
+    </PageContainer>
   );
 }

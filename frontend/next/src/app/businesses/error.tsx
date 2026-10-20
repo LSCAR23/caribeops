@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { buttonClassName } from '@/lib/ui';
 
 export default function BusinessesError({
   error,
@@ -14,17 +15,15 @@ export default function BusinessesError({
   }, [error]);
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-6 py-12">
-      <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-        Businesses
-      </h1>
-      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+    <main className="mx-auto w-full max-w-5xl px-5 py-10 sm:px-6 sm:py-14">
+      <h1 className="text-3xl tracking-tight">Businesses</h1>
+      <p className="mt-2 text-sm text-ink-500">
         Something went wrong loading businesses. Please try again.
       </p>
       <button
         type="button"
         onClick={() => retry()}
-        className="mt-6 rounded bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500"
+        className={buttonClassName('primary', 'mt-6')}
       >
         Try again
       </button>

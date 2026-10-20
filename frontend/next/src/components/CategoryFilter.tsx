@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { inputClassName, labelClassName } from "@/lib/ui";
 import type { Category } from "@/types/category";
 
 // Category select for the business list (D3-19, slug switch). This island
@@ -33,10 +34,7 @@ export default function CategoryFilter({
 
   return (
     <div className="mt-4">
-      <label
-        htmlFor="category-filter"
-        className="block text-sm font-medium text-zinc-900 dark:text-zinc-50"
-      >
+      <label htmlFor="category-filter" className={labelClassName}>
         Filter by category
       </label>
       <select
@@ -45,7 +43,7 @@ export default function CategoryFilter({
         value={currentCategorySlug ?? ""}
         onChange={(event) => handleChange(event.target.value)}
         autoComplete="off"
-        className="mt-1 w-full max-w-xs rounded border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+        className={`${inputClassName} max-w-xs`}
       >
         <option value="">All categories</option>
         {categories.map((category) => (

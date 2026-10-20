@@ -57,7 +57,7 @@ export default function NewBusinessForm({
     <div className={status.state === "pending" ? "pointer-events-none opacity-70" : undefined}>
       <BusinessForm categories={categories} onValid={handleValid} />
       {status.state === "error" ? (
-        <p role="alert" className="mt-4 text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="mt-4 text-sm font-medium text-red-600">
           Could not create the business. Please try again.
         </p>
       ) : null}

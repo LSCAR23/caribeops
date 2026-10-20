@@ -4,18 +4,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiPost } from "@/lib/api-client";
 import { setToken } from "@/lib/auth";
+import { buttonClassName, inputClassName, labelClassName } from "@/lib/ui";
 
 type SubmitStatus =
   | { state: "idle" }
   | { state: "pending" }
   | { state: "error" }
   | { state: "success" };
-
-const inputClassName =
-  "mt-1 w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50";
-
-const labelClassName =
-  "block text-sm font-medium text-zinc-900 dark:text-zinc-50";
 
 // Login island (D6-12). Mirrors the NewBusinessForm submit seam:
 // idle → pending → error|success with a double-submit guard.
@@ -92,18 +87,18 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={status.state === "pending"}
-          className="rounded bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+          className={buttonClassName("primary", "w-full sm:w-auto")}
         >
           {status.state === "pending" ? "Logging in…" : "Log in"}
         </button>
       </form>
       {status.state === "error" ? (
-        <p role="alert" className="mt-4 text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="mt-4 text-sm font-medium text-red-600">
           Invalid email or password.
         </p>
       ) : null}
       {status.state === "success" ? (
-        <p role="status" className="mt-4 text-sm text-teal-700 dark:text-teal-400">
+        <p role="status" className="mt-4 text-sm font-medium text-brand-700">
           Logged in successfully.
         </p>
       ) : null}

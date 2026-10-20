@@ -3,6 +3,9 @@ import Link from "next/link";
 import BusinessList from "@/components/BusinessList";
 import CategoryFilter from "@/components/CategoryFilter";
 import SearchInput from "@/components/SearchInput";
+import PageContainer from "@/components/PageContainer";
+import SectionHeading from "@/components/SectionHeading";
+import { buttonClassName, focusRing } from "@/lib/ui";
 import { apiGet } from "@/lib/api-client";
 import type { ApiCollectionResponse, ApiListResponse } from "@/types/api";
 import type { Business } from "@/types/business";
@@ -38,6 +41,8 @@ function pageUrl({
   const query = params.toString();
   return query === "" ? "/businesses" : `/businesses?${query}`;
 }
+
+const pageLinkClassName = `font-medium text-brand-700 rounded underline-offset-4 hover:underline ${focusRing}`;
 
 export default async function BusinessesPage({
   searchParams,
@@ -75,35 +80,34 @@ export default async function BusinessesPage({
   const lastPage = result.meta.last_page;
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-6 py-12">
-      <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-        Businesses
-      </h1>
-      <div className="mt-4">
-        <Link
-          href="/businesses/new"
-          className="rounded bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500"
-        >
+    <PageContainer>
+      <section className="anim-fade-up flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <SectionHeading as="h1">Businesses</SectionHeading>
+          <p className="mt-2 text-sm text-ink-500">
+            Showing {result.data.length} of {result.meta.total} businesses
+          </p>
+        </div>
+        <Link href="/businesses/new" className={buttonClassName("primary")}>
           New business
         </Link>
+      </section>
+      <div className="mt-6 flex flex-col gap-x-6 gap-y-1 sm:flex-row sm:items-start">
+        <SearchInput
+          key={search ?? ""}
+          currentSearch={search ?? null}
+          currentCategorySlug={categorySlug ?? null}
+        />
+        <CategoryFilter
+          categories={categoriesResult.data}
+          currentCategorySlug={categorySlug ?? null}
+          currentSearch={search ?? null}
+        />
       </div>
-      <SearchInput
-        key={search ?? ""}
-        currentSearch={search ?? null}
-        currentCategorySlug={categorySlug ?? null}
-      />
-      <CategoryFilter
-        categories={categoriesResult.data}
-        currentCategorySlug={categorySlug ?? null}
-        currentSearch={search ?? null}
-      />
-      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-        Showing {result.data.length} of {result.meta.total} businesses
-      </p>
       <BusinessList businesses={result.data} />
       <nav
         aria-label="Pagination"
-        className="mt-6 flex items-center gap-4 text-sm"
+        className="mt-8 flex items-center gap-4 text-sm"
       >
         {currentPage > 1 ? (
           <Link
@@ -112,19 +116,16 @@ export default async function BusinessesPage({
               search,
               page: currentPage - 1,
             })}
-            className="font-medium text-teal-700 underline-offset-4 hover:underline dark:text-teal-400 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+            className={pageLinkClassName}
           >
             Previous
           </Link>
         ) : (
-          <span
-            aria-disabled="true"
-            className="font-medium text-zinc-400 dark:text-zinc-600"
-          >
+          <span aria-disabled="true" className="font-medium text-ink-300">
             Previous
           </span>
         )}
-        <p className="text-zinc-600 dark:text-zinc-300">
+        <p className="text-ink-500">
           Page {currentPage} of {lastPage}
         </p>
         {currentPage < lastPage ? (
@@ -134,19 +135,16 @@ export default async function BusinessesPage({
               search,
               page: currentPage + 1,
             })}
-            className="font-medium text-teal-700 underline-offset-4 hover:underline dark:text-teal-400 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+            className={pageLinkClassName}
           >
             Next
           </Link>
         ) : (
-          <span
-            aria-disabled="true"
-            className="font-medium text-zinc-400 dark:text-zinc-600"
-          >
+          <span aria-disabled="true" className="font-medium text-ink-300">
             Next
           </span>
         )}
       </nav>
-    </main>
+    </PageContainer>
   );
 }

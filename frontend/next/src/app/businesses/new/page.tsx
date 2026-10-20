@@ -1,5 +1,8 @@
 import { connection } from "next/server";
 import NewBusinessForm from "@/components/NewBusinessForm";
+import Card from "@/components/Card";
+import PageContainer from "@/components/PageContainer";
+import SectionHeading from "@/components/SectionHeading";
 import { apiGet } from "@/lib/api-client";
 import type { ApiCollectionResponse } from "@/types/api";
 import type { Category } from "@/types/category";
@@ -14,14 +17,16 @@ export default async function NewBusinessPage() {
     await apiGet<ApiCollectionResponse<Category>>("/api/categories");
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-6 py-12">
-      <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-        New business
-      </h1>
-      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-        Fill in the details for the new business.
-      </p>
-      <NewBusinessForm categories={result.data} />
-    </main>
+    <PageContainer className="max-w-2xl">
+      <section className="anim-fade-up">
+        <SectionHeading as="h1">New business</SectionHeading>
+        <p className="mt-2 text-sm text-ink-500">
+          Fill in the details for the new business.
+        </p>
+      </section>
+      <Card className="mt-6">
+        <NewBusinessForm categories={result.data} />
+      </Card>
+    </PageContainer>
   );
 }

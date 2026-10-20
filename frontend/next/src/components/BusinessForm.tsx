@@ -7,14 +7,7 @@ import {
   type BusinessFormErrors,
   type BusinessFormField,
 } from "@/lib/validate-business";
-
-const inputClassName =
-  "mt-1 w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50";
-
-const labelClassName =
-  "block text-sm font-medium text-zinc-900 dark:text-zinc-50";
-
-const errorClassName = "mt-1 text-sm text-red-600 dark:text-red-400";
+import { buttonClassName, errorClassName, inputClassName, labelClassName } from "@/lib/ui";
 
 const FIELDS: BusinessFormField[] = [
   "name",
@@ -211,7 +204,7 @@ export default function BusinessForm({
       </div>
       <button
         type="submit"
-        className="rounded bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+        className={buttonClassName("primary", "mt-2 w-full sm:w-auto")}
       >
         Create business
       </button>
