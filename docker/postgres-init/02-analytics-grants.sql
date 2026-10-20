@@ -16,6 +16,17 @@
 --     table-adding migration cannot silently break the analytics service.
 --     (Owner verified via pg_tables: all public tables owned by caribeops.)
 GRANT USAGE ON SCHEMA public TO analytics;
-GRANT SELECT ON businesses, categories, reviews TO analytics;
+
+-- Table-level grants are wrapped in a DO block because, on fresh-volume init,
+-- this script runs before Laravel migrations create the tables. The exception
+-- handler silently skips missing tables; the grants are re-proven (and succeed)
+-- when this file is re-run explicitly after migrations (see file header).
+DO $$
+BEGIN
+    GRANT SELECT ON businesses, categories, reviews TO analytics;
+EXCEPTION
+    WHEN undefined_table THEN NULL;
+END $$;
+
 ALTER DEFAULT PRIVILEGES FOR ROLE caribeops IN SCHEMA public
     GRANT SELECT ON TABLES TO analytics;
