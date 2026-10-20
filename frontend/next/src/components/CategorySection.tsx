@@ -1,4 +1,4 @@
-import CategoryChart from "@/components/CategoryChart";
+﻿import CategoryChart from "@/components/CategoryChart";
 import SectionFallback from "@/components/SectionFallback";
 import { analyticsGet } from "@/lib/analytics-client";
 import type { CategoryCount } from "@/types/analytics";
@@ -30,7 +30,7 @@ export default async function CategorySection({
     console.error(error);
     return (
       <>
-        <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+        <h2 className="text-xl">
           Businesses by category
         </h2>
         <SectionFallback label="Category data" />
@@ -40,7 +40,7 @@ export default async function CategorySection({
 
   return (
     <>
-      <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+      <h2 className="text-xl">
         Businesses by category
       </h2>
       <CategoryChart rows={rows} />

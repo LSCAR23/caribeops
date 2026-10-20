@@ -5,6 +5,9 @@ import GoKpiSection from "@/components/GoKpiSection";
 import CategorySection from "@/components/CategorySection";
 import MonthlySection from "@/components/MonthlySection";
 import TopSection from "@/components/TopSection";
+import Card from "@/components/Card";
+import PageContainer from "@/components/PageContainer";
+import SectionHeading from "@/components/SectionHeading";
 import {
   ChartSkeleton,
   KpiGridSkeleton,
@@ -29,43 +32,38 @@ export default async function AnalyticsPage({
   const { from, to } = await searchParams;
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-6 py-12">
-      <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-        Analytics
-      </h1>
-      <DateRangeSelector />
-      <section aria-labelledby="kpis-heading" className="mt-8">
-        <h2 id="kpis-heading" className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+    <PageContainer>
+      <section className="anim-fade-up">
+        <SectionHeading as="h1">Analytics</SectionHeading>
+        <DateRangeSelector />
+      </section>
+      <section aria-labelledby="kpis-heading" className="mt-10">
+        <SectionHeading as="h2" id="kpis-heading">
           Aggregate KPIs
-        </h2>
-        <Suspense fallback={<KpiGridSkeleton />}>
-          <GoKpiSection from={from ?? null} to={to ?? null} />
-        </Suspense>
+        </SectionHeading>
+        {/* Grid wraps the (DOM-transparent) Suspense, so both the shimmer
+            cards and the resolved KPI cards are direct grid items. */}
+        <div className="mt-5 grid grid-cols-2 gap-4 md:grid-cols-3">
+          <Suspense fallback={<KpiGridSkeleton />}>
+            <GoKpiSection from={from ?? null} to={to ?? null} />
+          </Suspense>
+        </div>
       </section>
-      <section className="mt-10">
+      <Card className="mt-10">
         <Suspense fallback={<ChartSkeleton />}>
-          <CategorySection
-            from={from ?? null}
-            to={to ?? null}
-          />
+          <CategorySection from={from ?? null} to={to ?? null} />
         </Suspense>
-      </section>
-      <section className="mt-10">
+      </Card>
+      <Card className="mt-8">
         <Suspense fallback={<ChartSkeleton rows={12} />}>
-          <MonthlySection
-            from={from ?? null}
-            to={to ?? null}
-          />
+          <MonthlySection from={from ?? null} to={to ?? null} />
         </Suspense>
-      </section>
-      <section className="mt-10">
+      </Card>
+      <Card className="mt-8">
         <Suspense fallback={<RankListSkeleton />}>
-          <TopSection
-            from={from ?? null}
-            to={to ?? null}
-          />
+          <TopSection from={from ?? null} to={to ?? null} />
         </Suspense>
-      </section>
-    </main>
+      </Card>
+    </PageContainer>
   );
 }

@@ -1,4 +1,4 @@
-import MonthlyChart from "@/components/MonthlyChart";
+﻿import MonthlyChart from "@/components/MonthlyChart";
 import SectionFallback from "@/components/SectionFallback";
 import { analyticsGet } from "@/lib/analytics-client";
 import type { MonthlyReviews } from "@/types/analytics";
@@ -30,7 +30,7 @@ export default async function MonthlySection({
     console.error(error);
     return (
       <>
-        <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+        <h2 className="text-xl">
           Reviews by month
         </h2>
         <SectionFallback label="Monthly data" />
@@ -40,7 +40,7 @@ export default async function MonthlySection({
 
   return (
     <>
-      <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+      <h2 className="text-xl">
         Reviews by month
       </h2>
       <MonthlyChart rows={rows} />

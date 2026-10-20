@@ -8,7 +8,7 @@ export default function SectionFallback({ label }: { label: string }) {
   return (
     <p
       role="status"
-      className="mt-4 rounded border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100"
+      className="mt-4 rounded-xl border border-accent-300 bg-accent-100 px-4 py-3 text-sm font-medium text-ink-800"
     >
       {label} is unavailable right now. The rest of this page is unaffected —
       reload to try again.
