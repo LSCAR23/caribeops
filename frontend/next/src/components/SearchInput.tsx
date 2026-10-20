@@ -50,13 +50,14 @@ export default function SearchInput({
           id="business-search"
           name="search"
           type="search"
+          autoComplete="off"
           defaultValue={currentSearch ?? ""}
           placeholder="Search by name"
           className="w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
         />
         <button
           type="submit"
-          className="shrink-0 rounded bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500"
+          className="shrink-0 rounded bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
         >
           Search
         </button>
@@ -64,7 +65,7 @@ export default function SearchInput({
       {currentSearch !== null && currentSearch !== "" ? (
         <Link
           href={buildUrl("")}
-          className="mt-2 inline-block text-sm font-medium text-teal-700 underline-offset-4 hover:underline dark:text-teal-400"
+          className="mt-2 inline-block text-sm font-medium text-teal-700 underline-offset-4 hover:underline dark:text-teal-400 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
         >
           Clear search
         </Link>

@@ -1,5 +1,6 @@
 import { connection } from "next/server";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { apiGet, ApiError } from "@/lib/api-client";
 import { formatRating } from "@/components/BusinessList";
 import ReviewList from "@/components/ReviewList";
@@ -80,7 +81,13 @@ export default async function BusinessDetailsPage({
         </p>
         {business.website && (
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-            Website:{business.website}
+            Website:{" "}
+            <Link
+              href={business.website}
+              className="text-teal-700 hover:underline dark:text-teal-400 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+            >
+              {business.website}
+            </Link>
           </p>
         )}
         {business.phone && (

@@ -4,10 +4,14 @@
 // state for assistive tech. One module, one shape per consumer below.
 
 function Shimmer({ className }: { className?: string }) {
+  let prefersReduced = false;
+  if (typeof window !== "undefined" && window.matchMedia) {
+    prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
   return (
     <div
       aria-hidden="true"
-      className={`animate-pulse rounded bg-zinc-200 dark:bg-zinc-800 ${className ?? ""}`}
+      className={`rounded bg-zinc-200 dark:bg-zinc-800 ${className ?? ""} animate-pulse ${prefersReduced ? "animate-none" : ""}`}
     />
   );
 }

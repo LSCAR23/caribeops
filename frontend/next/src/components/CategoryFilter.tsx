@@ -41,8 +41,10 @@ export default function CategoryFilter({
       </label>
       <select
         id="category-filter"
+        name="category-filter"
         value={currentCategorySlug ?? ""}
         onChange={(event) => handleChange(event.target.value)}
+        autoComplete="off"
         className="mt-1 w-full max-w-xs rounded border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
       >
         <option value="">All categories</option>

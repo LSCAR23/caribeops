@@ -67,6 +67,7 @@ export default function LoginForm() {
             type="email"
             required
             autoComplete="email"
+            spellCheck={false}
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             className={inputClassName}
@@ -82,6 +83,7 @@ export default function LoginForm() {
             type="password"
             required
             autoComplete="current-password"
+            spellCheck={false}
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             className={inputClassName}
@@ -90,7 +92,7 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={status.state === "pending"}
-          className="rounded bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 disabled:opacity-50"
+          className="rounded bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
         >
           {status.state === "pending" ? "Logging in…" : "Log in"}
         </button>

@@ -112,7 +112,7 @@ export default async function BusinessesPage({
               search,
               page: currentPage - 1,
             })}
-            className="font-medium text-teal-700 underline-offset-4 hover:underline dark:text-teal-400"
+            className="font-medium text-teal-700 underline-offset-4 hover:underline dark:text-teal-400 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
           >
             Previous
           </Link>
@@ -134,7 +134,7 @@ export default async function BusinessesPage({
               search,
               page: currentPage + 1,
             })}
-            className="font-medium text-teal-700 underline-offset-4 hover:underline dark:text-teal-400"
+            className="font-medium text-teal-700 underline-offset-4 hover:underline dark:text-teal-400 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
           >
             Next
           </Link>

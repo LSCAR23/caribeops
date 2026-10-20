@@ -22,7 +22,13 @@ export default async function Home() {
   const summary = result.data;
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-6 py-12">
+    <main id="main-content" className="mx-auto w-full max-w-5xl px-6 py-12">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-zinc-900 dark:focus:bg-zinc-950 dark:focus:text-white focus:rounded-md"
+      >
+        Skip to main content
+      </a>
       <p className="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-teal-700 dark:text-teal-400">
         CaribeOps
       </p>
@@ -37,19 +43,19 @@ export default async function Home() {
       <nav aria-label="Get started" className="mt-6 flex flex-wrap gap-3">
         <Link
           href="/businesses"
-          className="rounded bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500"
+          className="rounded bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
         >
           View businesses
         </Link>
         <Link
           href="/businesses/new"
-          className="rounded border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:text-zinc-200 dark:hover:border-zinc-500 dark:hover:text-zinc-50"
+          className="rounded border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:text-zinc-200 dark:hover:border-zinc-500 dark:hover:text-zinc-50 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
         >
           Add business
         </Link>
         <Link
           href="/analytics"
-          className="rounded border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:text-zinc-200 dark:hover:border-zinc-500 dark:hover:text-zinc-50"
+          className="rounded border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:text-zinc-200 dark:hover:border-zinc-500 dark:hover:text-zinc-50 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
         >
           View analytics
         </Link>
@@ -87,7 +93,7 @@ export default async function Home() {
             Businesses and categories — browse and filter the directory in{" "}
             <Link
               href="/businesses"
-              className="font-medium text-teal-700 underline-offset-4 hover:underline dark:text-teal-400"
+              className="font-medium text-teal-700 underline-offset-4 hover:underline dark:text-teal-400 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
             >
               Businesses
             </Link>
@@ -102,7 +108,7 @@ export default async function Home() {
             businesses in{" "}
             <Link
               href="/analytics"
-              className="font-medium text-teal-700 underline-offset-4 hover:underline dark:text-teal-400"
+              className="font-medium text-teal-700 underline-offset-4 hover:underline dark:text-teal-400 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
             >
               Analytics
             </Link>

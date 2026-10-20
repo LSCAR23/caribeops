@@ -45,7 +45,7 @@ export default function LogoutButton() {
       type="button"
       onClick={handleLogout}
       disabled={pending}
-      className="text-sm font-medium text-zinc-600 hover:text-zinc-900 disabled:opacity-50 dark:text-zinc-300 dark:hover:text-zinc-50"
+      className="text-sm font-medium text-zinc-600 hover:text-zinc-900 disabled:opacity-50 dark:text-zinc-300 dark:hover:text-zinc-50 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
     >
       {pending ? "Logging out…" : "Logout"}
     </button>

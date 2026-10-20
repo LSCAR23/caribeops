@@ -73,6 +73,7 @@ export default function BusinessForm({
           type="text"
           required
           maxLength={255}
+          autoComplete="off"
           className={inputClassName}
         />
         <FieldError message={errors.name} />
@@ -86,6 +87,7 @@ export default function BusinessForm({
           name="description"
           required
           rows={4}
+          autoComplete="off"
           className={inputClassName}
         />
         <FieldError message={errors.description} />
@@ -99,6 +101,7 @@ export default function BusinessForm({
           name="category_id"
           required
           defaultValue=""
+          autoComplete="off"
           className={inputClassName}
         >
           <option value="" disabled>
@@ -122,6 +125,7 @@ export default function BusinessForm({
           type="text"
           required
           maxLength={120}
+          autoComplete="off"
           className={inputClassName}
         />
         <FieldError message={errors.type} />
@@ -135,6 +139,7 @@ export default function BusinessForm({
           name="address"
           required
           rows={2}
+          autoComplete="off"
           className={inputClassName}
         />
         <FieldError message={errors.address} />
@@ -152,6 +157,7 @@ export default function BusinessForm({
             min={-90}
             max={90}
             step="any"
+            autoComplete="off"
             className={inputClassName}
           />
           <FieldError message={errors.latitude} />
@@ -168,6 +174,7 @@ export default function BusinessForm({
             min={-180}
             max={180}
             step="any"
+            autoComplete="off"
             className={inputClassName}
           />
           <FieldError message={errors.longitude} />
@@ -182,6 +189,7 @@ export default function BusinessForm({
           name="website"
           type="url"
           placeholder="https://example.com"
+          autoComplete="off"
           className={inputClassName}
         />
         <FieldError message={errors.website} />
@@ -196,13 +204,14 @@ export default function BusinessForm({
           type="tel"
           required
           maxLength={32}
+          autoComplete="off"
           className={inputClassName}
         />
         <FieldError message={errors.phone} />
       </div>
       <button
         type="submit"
-        className="rounded bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500"
+        className="rounded bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
       >
         Create business
       </button>

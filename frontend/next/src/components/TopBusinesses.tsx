@@ -28,7 +28,7 @@ export default function TopBusinesses({ rows }: { rows: TopBusiness[] }) {
               <p className="text-base font-medium text-zinc-900 dark:text-zinc-50">
                 <Link
                   href={`/businesses/${row.id}`}
-                  className="hover:underline"
+                  className="hover:underline focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
                 >
                   {row.name}
                 </Link>

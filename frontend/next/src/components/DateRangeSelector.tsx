@@ -97,7 +97,7 @@ export default function DateRangeSelector() {
               key={days}
               type="button"
               onClick={() => handlePreset(days)}
-              className={`rounded border px-3 py-1.5 text-sm font-medium transition-colors ${
+              className={`rounded border px-3 py-1.5 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 ${
                 isActive
                   ? "border-teal-700 bg-teal-700 text-white dark:bg-teal-600"
                   : "border-zinc-300 text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
@@ -113,14 +113,14 @@ export default function DateRangeSelector() {
             setCustom((c) => !c);
             if (!custom) pushRange(fromParam, toParam);
           }}
-          className="rounded border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          className="rounded border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
         >
           {custom ? "Hide custom" : "Custom range"}
         </button>
         <button
           type="button"
           onClick={handleClear}
-          className="text-xs font-medium text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+          className="text-xs font-medium text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
         >
           Clear
         </button>
@@ -205,7 +205,14 @@ function CalendarPicker({
           key={ds}
           type="button"
           onClick={() => onDayClick(ds)}
-          className={classes}
+          className={[
+            "rounded h-9 w-9 text-sm text-center cursor-pointer",
+            selected ? "bg-teal-700 text-white" : "bg-white text-zinc-900",
+            inRange ? "bg-teal-100" : "",
+            today ? "ring-1 ring-teal-700" : "",
+            darkModeClass(),
+            "focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2",
+          ].join(" ")}
         >
           {day}
         </button>
@@ -234,7 +241,7 @@ function CalendarPicker({
               new Date(focusMonth.getFullYear(), focusMonth.getMonth() - 1, 1),
             )
           }
-          className="rounded-full h-9 w-9 flex items-center justify-center text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300"
+          className="rounded-full h-9 w-9 flex items-center justify-center text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
         >
           〈
         </button>
@@ -248,7 +255,7 @@ function CalendarPicker({
               new Date(focusMonth.getFullYear(), focusMonth.getMonth() + 1, 1),
             )
           }
-          className="rounded-full h-9 w-9 flex items-center justify-center text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300"
+          className="rounded-full h-9 w-9 flex items-center justify-center text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
         >
           〉
         </button>
