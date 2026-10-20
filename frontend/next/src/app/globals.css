@@ -1,26 +1,209 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ------------------------------------------------------------------
+   CaribeOps design foundation (UI redesign)
+   Brand: green #009B4D · mandarin #FFCC00 (accents only) · ivory #FAF5E9
+   Type: Fraunces (display serif) + Geist Sans (body/UI).
+   Light-only theme: dark-mode utilities are removed as each surface
+   is redesigned (no prefers-color-scheme fork in this release).
+------------------------------------------------------------------- */
+@theme {
+  /* Brand green ramp */
+  --color-brand-50: #e7f6ed;
+  --color-brand-100: #c9ecdb;
+  --color-brand-200: #99dabb;
+  --color-brand-300: #61c295;
+  --color-brand-400: #2eaa6f;
+  --color-brand-500: #009b4d;
+  --color-brand-600: #008a45;
+  --color-brand-700: #00713a;
+  --color-brand-800: #00592e;
+  --color-brand-900: #004524;
+
+  /* Mandarin yellow — accents only (badges, dots, highlights) */
+  --color-accent-100: #fff2c2;
+  --color-accent-300: #ffdb4d;
+  --color-accent-400: #ffcc00;
+  --color-accent-500: #e6b800;
+  --color-accent-600: #cc9f00;
+
+  /* Ivory surfaces */
+  --color-ivory: #faf5e9;
+  --color-ivory-100: #f4eddc;
+  --color-ivory-200: #ede4ce;
+  --color-surface: #fffdf6;
+
+  /* Warm ink neutrals (text + borders on ivory) */
+  --color-ink-50: #f7f5ef;
+  --color-ink-100: #eae7dd;
+  --color-ink-200: #d7d3c6;
+  --color-ink-300: #b6b1a2;
+  --color-ink-400: #8f8a7b;
+  --color-ink-500: #6e6a5c;
+  --color-ink-600: #575347;
+  --color-ink-700: #423f36;
+  --color-ink-800: #2e2c26;
+  --color-ink-900: #1e1d19;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    color-scheme: light;
+  }
+
+  body {
+    background: var(--color-ivory);
+    color: var(--color-ink-800);
+    font-family: var(--font-sans);
+  }
+
+  /* Display serif for headings by default; utility classes still win. */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--color-ink-900);
+  }
+
+  ::selection {
+    background: var(--color-brand-200);
+    color: var(--color-ink-900);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ------------------------------------------------------------------
+   Motion primitives — subtle, meaningful, and reduced-motion safe.
+------------------------------------------------------------------- */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes column-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: var(--draw-from, 1000);
+  }
+  to {
+    stroke-dashoffset: var(--draw-to, 0);
+  }
+}
+
+/* Donut segments grow from zero arc length; each segment supplies its
+   own --donut-len / --donut-c via inline custom properties. */
+@keyframes donut-grow {
+  from {
+    stroke-dasharray: 0 var(--donut-c, 377);
+  }
+  to {
+    stroke-dasharray: var(--donut-len, 377) var(--donut-c, 377);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes soft-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.anim-fade-up {
+  animation: fade-up 0.45s ease-out both;
+}
+
+.anim-bar-grow {
+  animation: bar-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: left center;
+}
+
+.anim-column-grow {
+  animation: column-grow 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: bottom center;
+}
+
+.anim-draw {
+  animation: draw 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.anim-donut {
+  animation: donut-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.anim-fade-in {
+  animation: fade-in 0.6s ease-out both;
+}
+
+/* Stagger helpers for lists/bars/columns */
+.anim-delay-1 {
+  animation-delay: 60ms;
+}
+.anim-delay-2 {
+  animation-delay: 120ms;
+}
+.anim-delay-3 {
+  animation-delay: 180ms;
+}
+.anim-delay-4 {
+  animation-delay: 240ms;
+}
+.anim-delay-5 {
+  animation-delay: 300ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-fade-up,
+  .anim-bar-grow,
+  .anim-column-grow,
+  .anim-draw,
+  .anim-donut,
+  .anim-fade-in,
+  .anim-delay-1,
+  .anim-delay-2,
+  .anim-delay-3,
+  .anim-delay-4,
+  .anim-delay-5 {
+    animation: none !important;
+  }
 }
