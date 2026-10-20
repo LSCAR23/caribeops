@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 920 660" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#0f766e"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="20" y="36" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#111827">CaribeOps &#8212; Architecture</text>
+  <text x="20" y="56" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#6b7280">Matches actual implementation &#8212; Docker Compose boundary</text>
+
+  <!-- Browser (outside Docker) -->
+  <rect x="30" y="95" width="150" height="52" rx="10" fill="#ffffff" stroke="#6b7280" stroke-width="2"/>
+  <text x="105" y="125" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#111827" text-anchor="middle">Browser</text>
+
+  <!-- Docker Compose boundary -->
+  <rect x="200" y="75" width="700" height="525" rx="12" fill="#f3f4f6" stroke="#9ca3af" stroke-width="2" stroke-dasharray="10 6"/>
+  <text x="220" y="98" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#374151">Docker Compose &#8212; `backend` network</text>
+
+  <!-- Next.js -->
+  <rect x="410" y="120" width="190" height="95" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+  <rect x="410" y="120" width="190" height="30" rx="6" fill="#0f766e"/>
+  <text x="505" y="140" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">Next.js :3000</text>
+  <text x="420" y="160" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#374151">Dashboard &#183; forms &#183; API calls</text>
+  <text x="420" y="174" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#374151">No direct DB access</text>
+
+  <!-- Laravel -->
+  <rect x="220" y="275" width="170" height="100" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+  <rect x="220" y="275" width="170" height="30" rx="6" fill="#0f766e"/>
+  <text x="305" y="297" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">Laravel :8000</text>
+  <text x="230" y="317" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#374151">REST API &#183; 13 routes</text>
+  <text x="230" y="331" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#374151">Sanctum auth &#183; rate limits</text>
+
+  <!-- Go -->
+  <rect x="530" y="275" width="170" height="100" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+  <rect x="530" y="275" width="170" height="30" rx="6" fill="#0f766e"/>
+  <text x="615" y="297" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">Go :8080</text>
+  <text x="540" y="317" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#374151">Analytics API</text>
+  <text x="540" y="331" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#374151">read-only &#183; no auth</text>
+
+  <!-- PostgreSQL -->
+  <rect x="300" y="430" width="320" height="115" rx="6" fill="#ffffff" stroke="#374151" stroke-width="2"/>
+  <rect x="300" y="430" width="320" height="30" rx="6" fill="#374151"/>
+  <text x="460" y="452" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">PostgreSQL :5432</text>
+  <text x="310" y="472" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#374151">caribeops: read/write</text>
+  <text x="310" y="486" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#374151">analytics: SELECT only</text>
+  <text x="310" y="500" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#374151">businesses &#183; categories &#183; reviews</text>
+
+  <!-- postgres_data volume -->
+  <text x="460" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-style="italic" fill="#6b7280" text-anchor="middle">postgres_data volume</text>
+
+  <!-- Boundary annotation -->
+  <text x="220" y="592" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#6b7280">service-name addressing &#183; healthchecks &#183; published ports 3000/8000/8080/5433</text>
+
+  <!-- Edges -->
+  <!-- Browser -> Next.js -->
+  <line x1="165" y1="121" x2="410" y2="150" stroke="#0f766e" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="250" y="105" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#0f766e" font-weight="600">HTTP 127.0.0.1:3000</text>
+
+  <!-- Next.js -> Laravel -->
+  <line x1="410" y1="200" x2="245" y2="295" stroke="#0f766e" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="250" y="225" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#0f766e" font-weight="600">Bearer &#183; Sanctum &#183; 13 routes</text>
+
+  <!-- Next.js -> Go -->
+  <line x1="580" y1="200" x2="600" y2="295" stroke="#0f766e" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="640" y="225" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#0f766e" font-weight="600">JSON &#183; read-only analytics</text>
+
+  <!-- Laravel -> PostgreSQL -->
+  <line x1="290" y1="355" x2="320" y2="430" stroke="#0f766e" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="310" y="372" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#0f766e" font-weight="600">SQL &#183; read/write</text>
+
+  <!-- Go -> PostgreSQL -->
+  <line x1="600" y1="355" x2="590" y2="430" stroke="#0f766e" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="610" y="372" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#0f766e" font-weight="600">SQL &#183; SELECT only</text>
+</svg>

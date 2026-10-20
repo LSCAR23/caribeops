@@ -2,6 +2,8 @@
 
 Tourism operations and analytics platform for Caribbean businesses — hotels, restaurants, and tour operators — with live listings, customer reviews and ratings, and analytics trends.
 
+![CaribeOps architecture](docs/images/architecture.svg)
+
 ## Screenshots
 
 | | |

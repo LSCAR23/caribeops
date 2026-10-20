@@ -43,6 +43,9 @@ service-name addressing (laravel:8000, analytics:8080), healthchecks
 on every service.
 ```
 
+A visual version of this component diagram is available as `docs/images/architecture.svg`
+(also embedded in the root README).
+
 ### What each box owns
 
 | Box | Role | Key detail |
