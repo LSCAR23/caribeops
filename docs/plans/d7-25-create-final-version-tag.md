@@ -2,7 +2,7 @@
 
 - Task: D7-25 — Create Final Version Tag
 - Date: 2026-10-19
-- Status: Checked — awaiting user approval
+- Status: Implemented — verified
 
 ## Desired outcome
 
@@ -88,6 +88,23 @@ Findings (verified against the current repository):
 - Plan's verification commands are correct: `git tag -l`, `git rev-parse`, `git diff --check`, `git status --short`
 - No evidence-based scope changes required.
 
+## Implementation outcome
+
+Implemented and verified on 2026-10-19. Summary:
+
+**Final version tag created:**
+1. Committed all D7-20 through D7-24 changes (9 files, 869 insertions): MEMORY.md, docker/postgres-init/02-analytics-grants.sql, and 7 plan files
+2. Commit `19026cc` — "D7-20 through D7-25: test suites, Docker rebuild, clean start, smoke test, final tag"
+3. Created lightweight tag `v1.0.0` on commit `19026cc`
+
+**Verification:**
+- `git tag -l v1.0.0` → `v1.0.0` listed
+- `git log --oneline -1 v1.0.0` → `19026cc D7-20 through D7-25: test suites, Docker rebuild, clean start, smoke test, final tag`
+- `git diff --check` → exit 0 (clean)
+- `git status --short` → clean working tree
+
+**Tag created locally only** — not pushed to remote (user did not request push).
+
 ## Reminder
 
-Implementation is not authorized until you review this checked plans and explicitly invoke `/implement "docs/plans/d7-25-create-final-version-tag.md"` with this plan path.
+This plan is now `Implemented — verified`. All D7 tasks (D7-13 through D7-25) are complete. The Day-7 block is finished.
