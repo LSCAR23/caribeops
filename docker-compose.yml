@@ -66,10 +66,12 @@ services:
       NEXT_TELEMETRY_DISABLED: "1"
       # Server-side fetches run inside this container: reach Laravel over the
       # Compose backend network, not host loopback (D3-10 diagnosis).
-      NEXT_PUBLIC_API_URL: http://laravel:8000
+      # Override at runtime (e.g. NEXT_PUBLIC_API_URL=http://host.docker.internal:8000)
+      # when the browser also needs to reach the APIs directly.
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://laravel:8000}
       # Same for Go analytics: the dashboard KPIs fetch the overview over the
       # backend network (D5-11); host-local dev falls back to localhost:8080.
-      NEXT_PUBLIC_ANALYTICS_URL: http://analytics:8080
+      NEXT_PUBLIC_ANALYTICS_URL: ${NEXT_PUBLIC_ANALYTICS_URL:-http://analytics:8080}
     ports:
       - "127.0.0.1:3000:3000"
     networks:
