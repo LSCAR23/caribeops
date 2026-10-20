@@ -34,14 +34,21 @@ export default async function GoKpiSection({
 
   return (
     <>
+      {/* Staggered entrance: optional className keeps the KpiCard props
+          contract (label, value) untouched for KpiCard.test. */}
       <KpiCard
         label="Total businesses"
         value={String(overview.businesses)}
       />
-      <KpiCard label="Total reviews" value={String(overview.reviews)} />
+      <KpiCard
+        label="Total reviews"
+        value={String(overview.reviews)}
+        className="anim-delay-1"
+      />
       <KpiCard
         label="Average rating"
         value={average !== null ? average : "—"}
+        className="anim-delay-2"
       />
     </>
   );

@@ -4,6 +4,9 @@ import { connection } from "next/server";
 import KpiCard from "@/components/KpiCard";
 import GoKpiSection from "@/components/GoKpiSection";
 import { KpiGridSkeleton } from "@/components/LoadingSkeleton";
+import PageContainer from "@/components/PageContainer";
+import SectionHeading from "@/components/SectionHeading";
+import { buttonClassName } from "@/lib/ui";
 import { apiGet } from "@/lib/api-client";
 import type { ApiItemResponse } from "@/types/api";
 import type { DashboardSummary } from "@/types/dashboard";
@@ -22,78 +25,74 @@ export default async function Home() {
   const summary = result.data;
 
   return (
-    <main id="main-content" className="mx-auto w-full max-w-5xl px-6 py-12">
+    <PageContainer id="main-content">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-zinc-900 dark:focus:bg-zinc-950 dark:focus:text-white focus:rounded-md"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-xl focus:bg-brand-700 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
       >
         Skip to main content
       </a>
-      <p className="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-teal-700 dark:text-teal-400">
-        CaribeOps
-      </p>
-      <h1 className="text-4xl font-semibold tracking-tight text-zinc-900 sm:text-6xl dark:text-zinc-50">
-        Tourism Operations &amp; Analytics
-      </h1>
-      <p className="mt-4 max-w-2xl text-base text-zinc-600 dark:text-zinc-300">
-        CaribeOps manages Caribbean tourism businesses — hotels, restaurants,
-        and tour operators — with live listings, customer reviews and ratings,
-        and analytics trends.
-      </p>
-      <nav aria-label="Get started" className="mt-6 flex flex-wrap gap-3">
-        <Link
-          href="/businesses"
-          className="rounded bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
-        >
-          View businesses
-        </Link>
-        <Link
-          href="/businesses/new"
-          className="rounded border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:text-zinc-200 dark:hover:border-zinc-500 dark:hover:text-zinc-50 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
-        >
-          Add business
-        </Link>
-        <Link
-          href="/analytics"
-          className="rounded border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:text-zinc-200 dark:hover:border-zinc-500 dark:hover:text-zinc-50 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
-        >
-          View analytics
-        </Link>
-      </nav>
-      <section aria-labelledby="snapshot-heading" className="mt-10">
-        <h2
-          id="snapshot-heading"
-          className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50"
-        >
+
+      {/* Hero — display serif heading on ivory, mandarin eyebrow dot */}
+      <section className="anim-fade-up">
+        <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.25em] text-brand-700">
+          <span
+            aria-hidden="true"
+            className="inline-block h-2 w-2 rounded-full bg-accent-400"
+          />
+          CaribeOps
+        </p>
+        <h1 className="mt-3 text-4xl tracking-tight sm:text-5xl">
+          Tourism Operations &amp; Analytics
+        </h1>
+        <p className="mt-4 max-w-2xl text-base leading-relaxed text-ink-600">
+          CaribeOps manages Caribbean tourism businesses — hotels, restaurants,
+          and tour operators — with live listings, customer reviews and ratings,
+          and analytics trends.
+        </p>
+        <nav aria-label="Get started" className="mt-6 flex flex-wrap gap-3">
+          <Link href="/businesses" className={buttonClassName("primary")}>
+            View businesses
+          </Link>
+          <Link href="/businesses/new" className={buttonClassName("secondary")}>
+            Add business
+          </Link>
+          <Link href="/analytics" className={buttonClassName("secondary")}>
+            View analytics
+          </Link>
+        </nav>
+      </section>
+
+      <section aria-labelledby="snapshot-heading" className="mt-12">
+        <SectionHeading as="h2" id="snapshot-heading">
           Live operations snapshot
-        </h2>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+        </SectionHeading>
+        <p className="mt-1 text-sm text-ink-500">
           Totals are live across all businesses; average shows — when no
           reviews exist yet.
         </p>
-        <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="mt-5 grid grid-cols-2 gap-4 md:grid-cols-4">
           <Suspense fallback={<KpiGridSkeleton />}>
             <GoKpiSection />
           </Suspense>
           <KpiCard
             label="New (7 days)"
             value={String(summary.new_businesses)}
+            className="anim-delay-1"
           />
         </div>
       </section>
-      <section aria-labelledby="data-heading" className="mt-10">
-        <h2
-          id="data-heading"
-          className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50"
-        >
+
+      <section aria-labelledby="data-heading" className="mt-12">
+        <SectionHeading as="h2" id="data-heading">
           What data is available
-        </h2>
-        <ul className="mt-3 list-disc space-y-2 pl-6 text-sm text-zinc-600 dark:text-zinc-300">
+        </SectionHeading>
+        <ul className="mt-4 list-disc space-y-2.5 pl-6 text-sm text-ink-600 marker:text-brand-500">
           <li>
             Businesses and categories — browse and filter the directory in{" "}
             <Link
               href="/businesses"
-              className="font-medium text-teal-700 underline-offset-4 hover:underline dark:text-teal-400 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+              className="font-semibold text-brand-700 underline decoration-brand-300 underline-offset-4 transition-colors hover:text-brand-800 hover:decoration-brand-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
             >
               Businesses
             </Link>
@@ -108,7 +107,7 @@ export default async function Home() {
             businesses in{" "}
             <Link
               href="/analytics"
-              className="font-medium text-teal-700 underline-offset-4 hover:underline dark:text-teal-400 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+              className="font-semibold text-brand-700 underline decoration-brand-300 underline-offset-4 transition-colors hover:text-brand-800 hover:decoration-brand-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
             >
               Analytics
             </Link>
@@ -116,6 +115,6 @@ export default async function Home() {
           </li>
         </ul>
       </section>
-    </main>
+    </PageContainer>
   );
 }
