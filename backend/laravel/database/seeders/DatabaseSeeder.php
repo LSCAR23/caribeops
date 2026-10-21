@@ -25,5 +25,12 @@ class DatabaseSeeder extends Seeder
         $this->call(CategorySeeder::class);
         $this->call(AmenitySeeder::class);
         $this->call(BusinessDataSeeder::class);
+
+        // D7-27: optional high-volume synthetic dataset for development and
+        // testing. Default off, so the deterministic demo counts
+        // (3/20/40/320, docs/deterministic-demo-seed.md) stay pinned.
+        if (filter_var(env('SEED_VOLUME', false), FILTER_VALIDATE_BOOL)) {
+            $this->call(CaribbeanVolumeSeeder::class);
+        }
     }
 }
