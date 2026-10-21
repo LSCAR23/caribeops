@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import DateRangeSelector, {
   formatLocalDate,
@@ -164,6 +164,104 @@ describe("DateRangeSelector", () => {
 
     expect(
       screen.getByText("Select a start date, then an end date."),
+    ).toBeInTheDocument();
+  });
+
+  it("highlights no preset when the range does not end today", () => {
+    // A 30-day span ending YESTERDAY matches the preset's length but not
+    // its meaning — no pill may light (D7-28).
+    const to = new Date();
+    to.setDate(to.getDate() - 1);
+    const from = new Date();
+    from.setDate(from.getDate() - 30);
+    state.params = `from=${formatLocalDate(from)}&to=${formatLocalDate(to)}`;
+    render(<DateRangeSelector />);
+
+    for (const name of ["Last 7 days", "Last 30 days", "Last 90 days"]) {
+      expect(screen.getByRole("button", { name })).toHaveAttribute(
+        "aria-pressed",
+        "false",
+      );
+    }
+  });
+
+  it("highlights Last 30 days when the range ends today", () => {
+    const to = new Date();
+    const from = new Date();
+    from.setDate(to.getDate() - 29); // inclusive: 30 days ending today
+    state.params = `from=${formatLocalDate(from)}&to=${formatLocalDate(to)}`;
+    render(<DateRangeSelector />);
+
+    expect(
+      screen.getByRole("button", { name: "Last 30 days" }),
+    ).toHaveAttribute("aria-pressed", "true");
+    expect(
+      screen.getByRole("button", { name: "Last 7 days" }),
+    ).toHaveAttribute("aria-pressed", "false");
+    expect(
+      screen.getByRole("button", { name: "Last 90 days" }),
+    ).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("month and year selects jump the displayed month", () => {
+    state.params = "from=2026-05-05";
+    render(<DateRangeSelector />);
+    expect(
+      screen.getByRole("group", { name: "May 2026 days" }),
+    ).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole("combobox", { name: "Year" }), {
+      target: { value: "2023" },
+    });
+    expect(
+      screen.getByRole("group", { name: "May 2023 days" }),
+    ).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole("combobox", { name: "Month" }), {
+      target: { value: "0" },
+    });
+    expect(
+      screen.getByRole("group", { name: "January 2023 days" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /January 1, 2023/ }),
+    ).toBeInTheDocument();
+  });
+
+  it("month and year selects cover the bounded window", () => {
+    const nowYear = new Date().getFullYear();
+    state.params = "";
+    render(<DateRangeSelector />);
+    fireEvent.click(screen.getByRole("button", { name: "Custom range" }));
+
+    // Exactly ±5 years around the current year for an in-bounds focus.
+    const yearSelect = screen.getByRole("combobox", { name: "Year" });
+    expect(
+      within(yearSelect)
+        .getAllByRole("option")
+        .map((option) => option.textContent),
+    ).toEqual(Array.from({ length: 11 }, (_, i) => String(nowYear - 5 + i)));
+
+    const monthOptions = within(
+      screen.getByRole("combobox", { name: "Month" }),
+    ).getAllByRole("option");
+    expect(monthOptions).toHaveLength(12);
+    expect(monthOptions[0]).toHaveTextContent("January");
+    expect(monthOptions[11]).toHaveTextContent("December");
+
+    // A hand-edited out-of-bounds ?from= stays representable: the year
+    // window widens to include the focus year. cleanup() ends the first
+    // render (it runs afterEach, not between renders within a test).
+    cleanup();
+    state.params = "from=2015-01-15";
+    render(<DateRangeSelector />);
+    const outOfBoundsYear = screen.getByRole(
+      "combobox",
+      { name: "Year" },
+    ) as HTMLSelectElement;
+    expect(outOfBoundsYear.value).toBe("2015");
+    expect(
+      within(outOfBoundsYear).getByRole("option", { name: "2015" }),
     ).toBeInTheDocument();
   });
 });

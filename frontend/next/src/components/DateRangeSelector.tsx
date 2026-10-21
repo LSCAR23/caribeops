@@ -22,6 +22,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 // - Full keyboard map (arrows/Home/End/PageUp/PageDown), polite live
 //   region, aria-pressed state, ±5-year month bounds, reduced-motion
 //   friendly transitions, 40px tap targets.
+// - D7-28: preset pills light only when the URL range ends today (a
+//   same-length past range lights nothing), and the month heading is
+//   month/year <select>s so any month in the ±5-year window is one jump
+//   away. Arrows, bounds, and keyboard map unchanged.
 
 // ---- Local-date helpers (exported for the unit tests) --------------------
 
@@ -73,6 +77,23 @@ const monthHeading = new Intl.DateTimeFormat("en-US", {
 
 const WEEKDAY_HEADERS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
+// English month names for the header <select> (matches the en-US Intl
+// style used for the grid labels).
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 export default function DateRangeSelector() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -87,9 +108,12 @@ export default function DateRangeSelector() {
 
   // Derive which preset matches the current URL range (pure computation;
   // local-date parsing + Math.round keeps DST hour-skew from breaking it).
+  // A pill means "the last N days", so the range must ALSO end today — a
+  // same-length custom range in the past lights nothing (D7-28).
   const presetDays = useMemo(() => [7, 30, 90], []);
   const activePreset = useMemo(() => {
     if (!fromParam || !toParam) return null;
+    if (toParam !== formatLocalDate(new Date())) return null;
     const to = parseLocalDate(toParam);
     const from = parseLocalDate(fromParam);
     const diffDays =
@@ -262,6 +286,16 @@ function CalendarPicker({
   const prevDisabled = new Date(year, month, 1) <= minMonth;
   const nextDisabled = new Date(year, month, 1) >= maxMonth;
 
+  // Year <select> options: the same ±5-year window as the arrows, widened
+  // only when the URL's focus month already sits outside it (a hand-edited
+  // ?from= pointing years back must stay representable in the control).
+  const minYear = Math.min(now.getFullYear() - 5, year);
+  const maxYear = Math.max(now.getFullYear() + 5, year);
+  const yearOptions = Array.from(
+    { length: maxYear - minYear + 1 },
+    (_, i) => minYear + i,
+  );
+
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   // Sunday-based: getDay() is 0 for Sundays, matching the SUN…SAT header.
   const leadingBlanks = new Date(year, month, 1).getDay();
@@ -331,8 +365,35 @@ function CalendarPicker({
         >
           ‹
         </button>
-        <h3 className="font-display text-base font-semibold tracking-tight text-ink-900">
-          {monthHeading.format(focusMonth)}
+        <h3 className="flex items-center gap-1.5 font-display text-base font-semibold tracking-tight text-ink-900">
+          <select
+            aria-label="Month"
+            value={String(month)}
+            onChange={(event) =>
+              onFocusMonthChange(new Date(year, Number(event.target.value), 1))
+            }
+            className="h-10 cursor-pointer rounded-full border border-ink-200 bg-surface px-3 text-sm text-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
+          >
+            {MONTH_NAMES.map((name, index) => (
+              <option key={name} value={String(index)}>
+                {name}
+              </option>
+            ))}
+          </select>
+          <select
+            aria-label="Year"
+            value={String(year)}
+            onChange={(event) =>
+              onFocusMonthChange(new Date(Number(event.target.value), month, 1))
+            }
+            className="h-10 cursor-pointer rounded-full border border-ink-200 bg-surface px-2.5 text-sm text-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
+          >
+            {yearOptions.map((optionYear) => (
+              <option key={optionYear} value={String(optionYear)}>
+                {optionYear}
+              </option>
+            ))}
+          </select>
         </h3>
         <button
           type="button"
