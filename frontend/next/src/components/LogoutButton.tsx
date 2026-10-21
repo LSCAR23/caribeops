@@ -17,10 +17,16 @@ export default function LogoutButton() {
 
   // Intentional post-hydration read (see RequireAuth): the server render
   // must not see the token, and the layout never remounts on client
-  // navigation, so re-adopt the token on every route change.
+  // navigation, so re-adopt the token on every route change. The same run
+  // also resets transient request state (D7-29): `pending` must not
+  // outlive its route, or a logout → login round-trip re-renders this
+  // persistent island with a stale, disabled "Logging out…" label.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- single run per route, no cascade
     setAuthed(getToken() !== null);
+    // No disable needed here: the rule only flags the computed setAuthed
+    // above (verified by lint reporting this directive as unused).
+    setPending(false);
   }, [pathname]);
 
   if (!authed) {
