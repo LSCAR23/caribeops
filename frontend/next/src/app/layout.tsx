@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
-import NightBackdrop from "@/components/NightBackdrop";
 import RequireAuth from "@/components/RequireAuth";
 import "./globals.css";
 
@@ -19,16 +18,17 @@ export const metadata: Metadata = {
   description: "Tourism operations and analytics for Caribbean businesses.",
 };
 
-// The photographic backdrop lives at the root so login and every app
-// view share ONE cached download — client navigations never re-fetch it
-// or flash. It renders behind all content (fixed + -z-10); everything
-// else sits above it. colorScheme:dark steers native form controls,
-// scrollbars and :root semantics to match.
+// The photographic backdrop lives in the (app) layout (authenticated
+// views share ONE cached download — client navigations never re-fetch
+// it or flash). /login renders its own mockup photo instead
+// (public/login/caribbean-night.webp), so it is deliberately not here.
+// RequireAuth guards the authenticated area from the root.
+// colorScheme:dark steers native form controls, scrollbars and :root
+// semantics to match.
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${dmSans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">
-        <NightBackdrop />
         <RequireAuth />
         {children}
       </body>

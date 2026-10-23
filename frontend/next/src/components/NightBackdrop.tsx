@@ -1,9 +1,11 @@
 import Image from "next/image";
 
-// Fixed full-viewport Caribbean night backdrop, shared by every route via
-// the root layout. One <Image> download is cached and reused across client
-// navigations; `fixed` + `fill` keeps it compositor-only (no reflow as
-// content scrolls over it).
+// Fixed full-viewport Caribbean night backdrop, shared by the (app)
+// routes via the authenticated layout. One <Image> download is cached
+// and reused across client navigations; `fixed` + `fill` keeps it
+// compositor-only (no reflow as content scrolls over it). /login does
+// not use this component — it renders its own vivid mockup photo
+// (public/login/caribbean-night.webp) with no scrim.
 //
 // Layering (all compositor-only):
 //   1. base   — deep-sea gradient: the paint shown before the photo decodes

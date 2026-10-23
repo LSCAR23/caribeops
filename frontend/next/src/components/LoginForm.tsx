@@ -36,19 +36,22 @@ type SubmitStatus =
 const focusRing =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06232a]";
 
+// Card per the mockup: cyan hairline + soft cyan glow around the glass,
+// roomier padding (p-8), deep drop shadow for separation from the photo.
 const cardClassName =
-  "mt-8 rounded-2xl border border-white/25 bg-[rgba(6,28,36,0.55)] p-7 shadow-[0_30px_60px_-24px_rgba(2,12,16,0.8)] supports-[backdrop-filter]:bg-[rgba(6,28,36,0.38)] supports-[backdrop-filter]:backdrop-blur-md";
+  "mt-8 rounded-2xl border border-brand-400/45 bg-[rgba(6,28,36,0.55)] p-8 shadow-[0_0_24px_-6px_rgba(46,163,158,0.4),0_30px_60px_-24px_rgba(2,12,16,0.8)] supports-[backdrop-filter]:bg-[rgba(6,28,36,0.38)] supports-[backdrop-filter]:backdrop-blur-md";
 
 const labelClassName = "block text-sm font-semibold text-brand-100";
 
 // Inputs are transparent so the glass shows through; padding leaves
 // room for the leading icon (and the trailing toggle on password).
-const inputClassName = `w-full rounded-xl border border-white/25 bg-white/5 py-2.5 pl-11 pr-3.5 text-sm text-white placeholder:text-white/45 transition-colors focus:border-brand-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/40`;
+// Cyan-tinted borders match the mockup (focus goes solid brand-400).
+const inputClassName = `w-full rounded-xl border border-brand-400/40 bg-white/5 py-2.5 pl-11 pr-3.5 text-sm text-white placeholder:text-white/45 transition-colors focus:border-brand-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/40`;
 
 const iconClassName =
   "pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-brand-100/70";
 
-const submitClassName = `mt-7 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-400 to-brand-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_28px_-10px_rgba(46,163,158,0.9)] transition-opacity hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none sm:w-auto ${focusRing}`;
+const submitClassName = `mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-400 to-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-[0_10px_28px_-10px_rgba(46,163,158,0.9)] transition-opacity hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none sm:w-auto ${focusRing}`;
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -137,6 +140,7 @@ export default function LoginForm() {
               type="email"
               required
               autoComplete="email"
+              placeholder="you@example.com"
               spellCheck={false}
               value={email}
               onChange={(event) => setEmail(event.target.value)}

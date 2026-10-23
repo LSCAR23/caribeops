@@ -1,11 +1,13 @@
 import Navigation from "@/components/Navigation";
+import NightBackdrop from "@/components/NightBackdrop";
 
-// Authenticated shell (Caribbean night theme): the sticky glass top nav
-// plus the routed content. The shared photographic backdrop is already
-// rendered once at the root layout (behind everything, one cached
-// download across navigations), so this shell does not duplicate it.
-// /login lives in the (auth) group, outside this layout, so it keeps its
-// own full-bleed framing with no nav.
+// Authenticated shell (Caribbean night theme): the shared photographic
+// backdrop (general-caribbean-night.jpg, fixed + -z-10, one cached
+// download across navigations) plus the sticky glass top nav and the
+// routed content. /login lives in the (auth) group, outside this
+// layout: it renders its OWN vivid mockup photo
+// (public/login/caribbean-night.webp) and keeps its full-bleed framing
+// with no nav, so the two photos never stack or double-download.
 export default function AppLayout({
   children,
 }: {
@@ -13,6 +15,7 @@ export default function AppLayout({
 }) {
   return (
     <>
+      <NightBackdrop />
       <Navigation />
       {children}
     </>
