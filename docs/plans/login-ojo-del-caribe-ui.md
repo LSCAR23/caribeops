@@ -2,7 +2,7 @@
 
 - **Task**: "regresa el login a como estaba antes e implementemos esta interfaz para el login [Image 1] utiliza todos los skills que requieras y buscas librerias que nos podrian ayudar a implementar este tipo de interfaz y proponlas para que el desarrollo y el performance de la web se lo mas optimo posible"
 - **Date**: 2026-10-22
-- **Status**: Implemented 2026-10-23 — approved and executed ("acepta todo con la opción recomendada… tú terminas"); verified, screenshots regenerated, 7 commits on `master` (not pushed)
+- **Status**: Implemented 2026-10-23 — approved and executed ("acepta todo con la opción recomendada… tú terminas"); verified (incl. e2e 1/1), screenshots regenerated, 8 commits on `master` (not pushed)
 
 > Este plan se materializa primero en `C:\Users\larao\.opencode\plan\login-ojo-del-caribe-ui.md` por las restricciones de Plan mode (precedente D7-28/D6-27/figma-3d-redesign). **El primer paso de `/implement` es copiarlo a `docs/plans/login-ojo-del-caribe-ui.md`** y operar desde allí.
 
@@ -186,6 +186,6 @@ Sin decisiones materiales pendientes: el alcance, branding, fondo y nav fueron r
 **Deviations from the plan's mechanics (all intentional, none change the outcome):**
 - Background asset = `public/general-caribbean-night.jpg` via shared `NightBackdrop` (one cached download for login + app) rather than `public/login/caribbean-night.webp`; the provided webp stays on disk unused/uncommitted.
 - Password toggle's name comes from **`title`**, not `aria-label`: the screenshot/e2e run exposed that Playwright's `getByLabel("Password")` case-insensitively substring-matches `aria-label="Show password"` (strict-mode violation). `title` keeps the exact accessible name for `getByRole`/assistive tech while `getByLabel("Password")` resolves to the input alone. Test line 72's `aria-label` note is stale on this point.
-- E2E spec untouched — contract selectors work as written.
+- E2E: run for the first time since D7-01 → **1/1 passed (4.1s)** after one fix: the nav step's `getByRole('link',{name:'Businesses'})` was a pre-existing strict-mode break (the dashboard's "View businesses" CTA and inline "Businesses" bullet substring-matched too — 3 elements since D7-01, unrelated to this work); the click is now scoped to `getByRole('navigation',{name:'Primary'})`, same contract semantics. The login selectors (`getByLabel("Email"/"Password")`, `Log in` button) work exactly as written — validated by both the e2e and the screenshot run.
 
-**Commits (7, `master`, not pushed):** `6905235` Next.js 16.4.2 upgrade · `20e6d75` route groups `(app)`/`(auth)` · `4691e99` night theme foundation · `7954a31` theme applied to views · `71174fe` toggle `title` contract fix · `bf51fa7` regenerated screenshots · plus this plan/MEMORY bookkeeping.
+**Commits (8, `master`, not pushed):** `6905235` Next.js 16.4.2 upgrade · `20e6d75` route groups `(app)`/`(auth)` · `4691e99` night theme foundation · `7954a31` theme applied to views · `71174fe` toggle `title` contract fix · `bf51fa7` regenerated screenshots · `1221380` plan/MEMORY bookkeeping · plus the e2e nav-step fix with the bookkeeping amendment in this file.

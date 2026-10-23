@@ -23,7 +23,15 @@ test("login transitions through dashboard and businesses to a detail page", asyn
   ).toBeVisible();
 
   // 3. Businesses list shows seeded rows.
-  await page.getByRole("link", { name: "Businesses" }).click();
+  // Scoped to the Primary nav: since D7-01 the dashboard also has the hero
+  // "View businesses" CTA and the "What data is available" inline link, and
+  // getByRole name matching is case-insensitive substring — the unscoped
+  // locator resolved to 3 elements (strict-mode violation). The contract
+  // stays "the Businesses nav link"; only the scope got precise.
+  await page
+    .getByRole("navigation", { name: "Primary" })
+    .getByRole("link", { name: "Businesses" })
+    .click();
   await expect(page).toHaveURL("/businesses");
   const firstLink = page.getByRole("listitem").first().getByRole("link");
   await expect(firstLink).toBeVisible();
