@@ -40,13 +40,13 @@ export default async function Home() {
             aria-hidden="true"
             className="inline-block h-2 w-2 rounded-full bg-accent-400"
           />
-          Ojo del Caribe
+          Caribe OPS
         </p>
         <h1 className="mt-3 text-4xl tracking-tight sm:text-5xl">
           Tourism Operations &amp; Analytics
         </h1>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-ink-600">
-          Ojo del Caribe manages Caribbean tourism businesses — hotels,
+          Caribe OPS manages Caribbean tourism businesses — hotels,
           restaurants, and tour operators — with live listings, customer
           reviews and ratings, and analytics trends.
         </p>
