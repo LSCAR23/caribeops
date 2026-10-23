@@ -25,7 +25,7 @@ export default function TopBusinesses({ rows }: { rows: TopBusiness[] }) {
   }
 
   return (
-    <ol className="anim-fade-up mt-5 space-y-4">
+    <ol className="anim-fade-up mt-3 flex flex-col">
       {rows.map((row, index) => {
         const rating = formatRating(row.average_rating);
         const ratingWidth =
@@ -33,37 +33,37 @@ export default function TopBusinesses({ rows }: { rows: TopBusiness[] }) {
         return (
           <li
             key={row.id}
-            className="flex items-baseline gap-4 border-b border-ink-100 pb-4 last:border-b-0 last:pb-0"
+            className="group/row flex items-start gap-4 border-b border-brand-400/14 py-4 last:border-b-0"
           >
             <span
-              className={`w-8 shrink-0 rounded-full text-center font-display text-xl font-semibold tabular-nums leading-8 ${
+              className={`flex size-[34px] flex-none items-center justify-center rounded-full text-base font-bold tabular-nums ${
                 index === 0
-                  ? "bg-accent-400 text-[#2a0f04]"
-                  : "border border-brand-400/30 bg-brand-400/15 text-brand-200"
+                  ? "bg-accent-400 text-[#1e1405] shadow-[0_0_14px_color-mix(in_oklab,var(--color-accent-400)_50%,transparent)]"
+                  : "border border-brand-400/60 bg-brand-500/14 text-brand-200"
               }`}
             >
               {index + 1}
             </span>
-            <div className="min-w-0 flex-1">
-              <p className="text-base font-medium text-ink-900">
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+              <p className="text-[17px] font-semibold">
                 <Link
                   href={`/businesses/${row.id}`}
-                  className="rounded text-brand-300 transition-colors hover:text-brand-200 hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
+                  className="rounded text-brand-300 transition-colors hover:text-brand-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
                 >
                   {row.name}
                 </Link>
               </p>
-              <p className="mt-1 text-sm text-ink-500">
+              <p className="text-sm text-ink-600/75">
                 {rating !== null ? rating : "—"} average · {row.review_count}{" "}
                 reviews
               </p>
               {/* Decorative rating progress (data duplicated above) */}
               <div
                 aria-hidden="true"
-                className="mt-2 h-1.5 w-full max-w-64 overflow-hidden rounded-full bg-ivory-200"
+                className="mt-1.5 h-1 w-[260px] max-w-full overflow-hidden rounded bg-brand-400/14"
               >
                 <div
-                  className={`anim-bar-grow h-full rounded-full bg-brand-500 ${DELAY_CLASSES[index % DELAY_CLASSES.length]}`}
+                  className={`anim-bar-grow h-full rounded bg-gradient-to-r from-brand-700 to-brand-400 ${DELAY_CLASSES[index % DELAY_CLASSES.length]}`}
                   style={{ width: `${ratingWidth}%` }}
                 />
               </div>

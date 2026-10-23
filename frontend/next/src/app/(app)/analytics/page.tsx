@@ -32,34 +32,34 @@ export default async function AnalyticsPage({
   const { from, to } = await searchParams;
 
   return (
-    <PageContainer>
+    <PageContainer className="ml-auto flex max-w-[860px] flex-col gap-10">
       <section className="anim-fade-up">
         <SectionHeading as="h1">Analytics</SectionHeading>
         <DateRangeSelector />
       </section>
-      <section aria-labelledby="kpis-heading" className="mt-10">
+      <section aria-labelledby="kpis-heading" className="flex flex-col gap-[18px]">
         <SectionHeading as="h2" id="kpis-heading">
           Aggregate KPIs
         </SectionHeading>
         {/* Grid wraps the (DOM-transparent) Suspense, so both the shimmer
             cards and the resolved KPI cards are direct grid items. */}
-        <div className="mt-5 grid grid-cols-2 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-3 gap-[18px] max-[1000px]:grid-cols-1">
           <Suspense fallback={<KpiGridSkeleton />}>
             <GoKpiSection from={from ?? null} to={to ?? null} />
           </Suspense>
         </div>
       </section>
-      <Card className="mt-10">
+      <Card className="glass-hover">
         <Suspense fallback={<ChartSkeleton />}>
           <CategorySection from={from ?? null} to={to ?? null} />
         </Suspense>
       </Card>
-      <Card className="mt-8">
+      <Card className="glass-hover">
         <Suspense fallback={<ChartSkeleton rows={12} />}>
           <MonthlySection from={from ?? null} to={to ?? null} />
         </Suspense>
       </Card>
-      <Card className="mt-8">
+      <Card className="glass-hover">
         <Suspense fallback={<RankListSkeleton />}>
           <TopSection from={from ?? null} to={to ?? null} />
         </Suspense>

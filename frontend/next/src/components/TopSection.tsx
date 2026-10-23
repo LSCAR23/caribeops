@@ -1,4 +1,4 @@
-﻿import TopBusinesses from "@/components/TopBusinesses";
+import TopBusinesses from "@/components/TopBusinesses";
 import SectionFallback from "@/components/SectionFallback";
 import { analyticsGet } from "@/lib/analytics-client";
 import type { TopBusiness } from "@/types/analytics";
@@ -31,7 +31,7 @@ export default async function TopSection({
     console.error(error);
     return (
       <>
-        <h2 className="text-xl">
+        <h2 className="text-[22px] font-semibold">
           Top businesses
         </h2>
         <SectionFallback label="Ranking data" />
@@ -41,7 +41,7 @@ export default async function TopSection({
 
   return (
     <>
-      <h2 className="text-xl">
+      <h2 className="text-[22px] font-semibold">
         Top businesses
       </h2>
       <TopBusinesses rows={rows} />

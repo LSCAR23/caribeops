@@ -182,8 +182,8 @@ export default function DateRangeSelector() {
         : `Selected: ${fullDayLabel.format(parseLocalDate(fromParam))} – ${fullDayLabel.format(parseLocalDate(toParam))}`;
 
   return (
-    <section aria-label="Date range" className="mt-6">
-      <div className="flex flex-wrap items-center gap-2">
+    <section aria-label="Date range" className="mt-4">
+      <div className="flex flex-wrap items-center gap-2.5">
         {presetDays.map((days) => {
           const isActive = activePreset === days;
           return (
@@ -192,10 +192,10 @@ export default function DateRangeSelector() {
               type="button"
               aria-pressed={isActive}
               onClick={() => handlePreset(days)}
-              className={`motion-safe:transition-colors rounded-full px-3.5 py-1.5 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory ${
+              className={`motion-safe:transition-colors cursor-pointer rounded-full h-9 px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory ${
                 isActive
-                  ? "bg-brand-700 text-white"
-                  : "border border-ink-200 bg-surface text-ink-600 hover:border-ink-300 hover:text-ink-900"
+                  ? "border border-brand-400 bg-brand-500/25 font-semibold text-brand-100"
+                  : "border border-brand-400/30 bg-surface text-ink-600 hover:border-brand-400/70 hover:text-white"
               }`}
             >
               Last {days} days
@@ -209,10 +209,10 @@ export default function DateRangeSelector() {
             setCustom((c) => !c);
             if (!custom) pushRange(fromParam, toParam);
           }}
-          className={`motion-safe:transition-colors inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory ${
+          className={`motion-safe:transition-colors inline-flex items-center gap-2 cursor-pointer rounded-full h-9 px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory ${
             custom
-              ? "bg-brand-700 text-white"
-              : "border border-ink-200 bg-surface text-ink-600 hover:border-ink-300 hover:text-ink-900"
+              ? "border border-brand-400 bg-brand-500/25 font-semibold text-brand-100"
+              : "border border-brand-400/30 bg-surface text-ink-600 hover:border-brand-400/70 hover:text-white"
           }`}
         >
           {custom ? "Hide custom" : "Custom range"}
@@ -226,7 +226,7 @@ export default function DateRangeSelector() {
         <button
           type="button"
           onClick={handleClear}
-          className="ml-auto rounded-full px-3 py-1.5 text-xs font-medium text-ink-500 motion-safe:transition-colors hover:text-ink-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
+          className="ml-auto rounded-full px-3 py-1.5 text-xs font-medium text-ink-500 motion-safe:transition-colors hover:text-ink-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
         >
           Clear
         </button>
@@ -354,14 +354,14 @@ function CalendarPicker({
   };
 
   return (
-    <div className="mt-3 rounded-2xl border border-ink-100 bg-surface p-4 shadow-[0_1px_2px_rgba(30,29,25,0.04),0_8px_24px_-12px_rgba(30,29,25,0.12)] sm:p-5">
+    <div className="glass-card mt-3 rounded-2xl p-4 sm:p-5">
       <div className="flex items-center justify-between px-1">
         <button
           type="button"
           aria-label="Previous month"
           disabled={prevDisabled}
           onClick={() => onFocusMonthChange(new Date(year, month - 1, 1))}
-          className="flex h-10 w-10 items-center justify-center rounded-full text-lg text-ink-400 motion-safe:transition-colors hover:bg-ivory-100 hover:text-ink-800 disabled:pointer-events-none disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
+          className="flex h-10 w-10 items-center justify-center rounded-full text-lg text-ink-400 motion-safe:transition-colors hover:bg-ivory-100 hover:text-ink-800 disabled:pointer-events-none disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
         >
           ‹
         </button>
@@ -372,7 +372,7 @@ function CalendarPicker({
             onChange={(event) =>
               onFocusMonthChange(new Date(year, Number(event.target.value), 1))
             }
-            className="h-10 cursor-pointer rounded-full border border-ink-200 bg-surface px-3 text-sm text-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
+            className="h-10 glass-field cursor-pointer rounded-full px-3 text-sm text-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
           >
             {MONTH_NAMES.map((name, index) => (
               <option key={name} value={String(index)}>
@@ -386,7 +386,7 @@ function CalendarPicker({
             onChange={(event) =>
               onFocusMonthChange(new Date(Number(event.target.value), month, 1))
             }
-            className="h-10 cursor-pointer rounded-full border border-ink-200 bg-surface px-2.5 text-sm text-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
+            className="h-10 glass-field cursor-pointer rounded-full px-2.5 text-sm text-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
           >
             {yearOptions.map((optionYear) => (
               <option key={optionYear} value={String(optionYear)}>
@@ -400,7 +400,7 @@ function CalendarPicker({
           aria-label="Next month"
           disabled={nextDisabled}
           onClick={() => onFocusMonthChange(new Date(year, month + 1, 1))}
-          className="flex h-10 w-10 items-center justify-center rounded-full text-lg text-ink-400 motion-safe:transition-colors hover:bg-ivory-100 hover:text-ink-800 disabled:pointer-events-none disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
+          className="flex h-10 w-10 items-center justify-center rounded-full text-lg text-ink-400 motion-safe:transition-colors hover:bg-ivory-100 hover:text-ink-800 disabled:pointer-events-none disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
         >
           ›
         </button>
@@ -454,9 +454,9 @@ function CalendarPicker({
               aria-pressed={isEndpoint}
               onClick={() => onDayClick(dateStr)}
               onKeyDown={(event) => handleDayKeyDown(event, dateStr)}
-              className={`relative mx-auto flex h-10 w-10 items-center justify-center text-sm motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1 focus-visible:ring-offset-ivory ${
+              className={`relative mx-auto flex h-10 w-10 items-center justify-center text-sm motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-1 focus-visible:ring-offset-ivory ${
                 isEndpoint
-                  ? "rounded-full bg-brand-700 font-semibold text-white"
+                  ? "rounded-full bg-brand-400 font-semibold text-[var(--on-accent)]"
                   : isInRange
                     ? "rounded-none bg-brand-400/25 font-medium text-brand-100"
                     : "rounded-full text-ink-800 hover:bg-ivory-100"

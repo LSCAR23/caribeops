@@ -1,7 +1,7 @@
 import type { MonthlyReviews } from "@/types/analytics";
 
-// Presentational review-volume time series as a custom SVG area chart
-// (D5-13, redesigned in the UI pass, Phase 5). Owns pixels only; the
+// Presentational review-volume time series as an area chart (D5-13),
+// drawn to the analytics artboard of the "Login Ojo del Caribe" design. Owns pixels only; the
 // analytics page owns fetching (same split as CategoryChart, D5-12).
 // Shows the most recent 12 buckets with an explicit caption — a labeled
 // window, never a silent truncation. Month labels are UTC-anchored so the
@@ -21,14 +21,11 @@ const monthShort = new Intl.DateTimeFormat("en-US", {
   timeZone: "UTC",
 });
 
-// Plot geometry (viewBox units; the svg scales responsively via w-full).
-const W = 640;
-const H = 260;
-const PAD_X = 40;
-const PAD_TOP = 16;
-const PAD_BOTTOM = 34;
-const PLOT_W = W - PAD_X * 2;
-const PLOT_H = H - PAD_TOP - PAD_BOTTOM;
+// Plot geometry: the line/area live in a 1000×280 viewBox stretched to
+// the panel (preserveAspectRatio="none", non-scaling stroke); labels and
+// points are HTML so text never distorts — same build as the design.
+const W = 1000;
+const H = 280;
 
 const DELAY_CLASSES = [
   "",
@@ -38,12 +35,16 @@ const DELAY_CLASSES = [
   "anim-delay-4",
 ];
 
+function yearSuffix(date: Date): string {
+  return `’${String(date.getUTCFullYear()).slice(-2)}`;
+}
+
 export default function MonthlyChart({ rows }: { rows: MonthlyReviews[] }) {
   const shown = rows.slice(-12);
   const max = Math.max(0, ...shown.map((row) => row.reviews)) || 1;
 
   const caption = (
-    <p className="mt-3 text-sm text-ink-500">
+    <p className="text-sm text-ink-600/75">
       Showing last {shown.length} of {rows.length} months.
     </p>
   );
@@ -53,154 +54,136 @@ export default function MonthlyChart({ rows }: { rows: MonthlyReviews[] }) {
   }
 
   const n = shown.length;
+  const peak = Math.max(...shown.map((row) => row.reviews));
   const points = shown.map((row, index) => {
-    const x =
-      PAD_X + (n === 1 ? PLOT_W / 2 : (index * PLOT_W) / (n - 1));
-    const y = PAD_TOP + PLOT_H * (1 - row.reviews / max);
-    return { row, index, x, y, label: monthLabel.format(new Date(row.month)) };
+    const date = new Date(row.month);
+    const fx = (index + 0.5) / n;
+    const fy = 1 - row.reviews / max;
+    const short = monthShort.format(date);
+    return {
+      row,
+      index,
+      x: fx * W,
+      y: fy * H,
+      left: `${(fx * 100).toFixed(3)}%`,
+      top: `${(fy * 100).toFixed(3)}%`,
+      label: monthLabel.format(date),
+      tick:
+        index === 0 || date.getUTCMonth() === 0
+          ? `${short} ${yearSuffix(date)}`
+          : short,
+      isPeak: row.reviews === peak && peak > 0,
+    };
   });
 
   const linePath = points
-    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
+    .map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`)
     .join(" ");
-  const baseline = PAD_TOP + PLOT_H;
-  const areaPath = `${linePath} L ${points[n - 1].x} ${baseline} L ${points[0].x} ${baseline} Z`;
-
-  const gridLevels = [0, 0.5, 1];
+  const areaPath = `${linePath} L${points[n - 1].x.toFixed(1)} ${H} L${points[0].x.toFixed(1)} ${H} Z`;
 
   return (
-    <div className="anim-fade-up mt-4">
-      <svg
-        viewBox={`0 0 ${W} ${H}`}
-        className="h-auto w-full"
+    <div className="anim-fade-up mt-[22px] flex flex-col gap-[22px]">
+      <div
         role="group"
         aria-label="Monthly review volume"
+        className="grid grid-cols-[48px_minmax(0,1fr)] gap-x-3"
       >
-        {/* Minimal grid: three horizontal rules + y labels */}
-        {gridLevels.map((level) => {
-          const y = PAD_TOP + PLOT_H * (1 - level);
-          return (
-            <g key={level}>
-              <line
-                x1={PAD_X}
-                y1={y}
-                x2={W - PAD_X}
-                y2={y}
-                stroke="var(--color-ink-200)"
-                strokeWidth="1"
-              />
-              <text
-                x={PAD_X - 8}
-                y={y + 3.5}
-                textAnchor="end"
-                className="fill-ink-400 text-[10px] tabular-nums"
-              >
-                {Math.round(max * level)}
-              </text>
-            </g>
-          );
-        })}
+        {/* Y axis: max / half / zero */}
+        <div
+          aria-hidden="true"
+          className="flex h-[280px] -translate-y-[9px] flex-col justify-between text-right text-[13px] tabular-nums text-ink-400"
+        >
+          <span>{max}</span>
+          <span>{Math.round(max / 2)}</span>
+          <span>0</span>
+        </div>
 
-        {/* Area fill under the line */}
-        <defs>
-          <linearGradient id="monthly-area" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--color-brand-500)" stopOpacity="0.28" />
-            <stop offset="100%" stopColor="var(--color-brand-500)" stopOpacity="0.02" />
-          </linearGradient>
-        </defs>
-        <path
-          d={areaPath}
-          fill="url(#monthly-area)"
-          className="anim-fade-in"
-        />
-
-        {/* Trend line, drawn in via normalized stroke-dashoffset */}
-        <path
-          d={linePath}
-          fill="none"
-          stroke="var(--color-brand-600)"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          pathLength={1000}
-          strokeDasharray={1000}
-          className="anim-draw"
-          style={{ "--draw-from": 1000, "--draw-to": 0 } as React.CSSProperties}
-        />
-
-        {/* X axis labels: full month+year on the first bucket, short after */}
-        {points.map((point) => (
-          <text
-            key={`label-${point.row.month}`}
-            x={point.x}
-            y={H - 12}
-            textAnchor={
-              point.index === 0
-                ? "start"
-                : point.index === n - 1
-                  ? "end"
-                  : "middle"
-            }
-            className="fill-ink-400 text-[10px] font-medium"
+        <div className="relative h-[280px]">
+          {/* Grid rules */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 flex flex-col justify-between"
           >
-            {point.index === 0 ? point.label : monthShort.format(new Date(point.row.month))}
-          </text>
-        ))}
+            <span className="h-px bg-brand-400/14" />
+            <span className="h-px bg-brand-400/14" />
+            <span className="h-px bg-brand-400/30" />
+          </div>
 
-        {/* Points with hover/focus tooltips (title + CSS-shown bubble) */}
-        {points.map((point) => {
-          const tooltipText = `${point.label}: ${point.row.reviews}`;
-          const tooltipW = tooltipText.length * 6.2 + 16;
-          const tooltipX = Math.min(
-            Math.max(point.x - tooltipW / 2, 2),
-            W - tooltipW - 2,
-          );
-          const tooltipY = point.y - 32 < 2 ? point.y + 12 : point.y - 32;
-          return (
-            <g
+          <svg
+            viewBox={`0 0 ${W} ${H}`}
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            className="absolute inset-0 size-full overflow-visible"
+          >
+            <defs>
+              <linearGradient id="monthly-area" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--color-brand-500)" stopOpacity="0.38" />
+                <stop offset="100%" stopColor="var(--color-brand-500)" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <path d={areaPath} fill="url(#monthly-area)" className="anim-fade-in" />
+            <path
+              d={linePath}
+              fill="none"
+              stroke="var(--color-brand-400)"
+              strokeWidth="2.5"
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
+              pathLength={1000}
+              strokeDasharray={1000}
+              className="anim-draw"
+              style={{ "--draw-from": 1000, "--draw-to": 0 } as React.CSSProperties}
+            />
+          </svg>
+
+          {/* Points: focusable, with hover/focus tooltip */}
+          {points.map((point) => (
+            <span
               key={point.row.month}
-              className={`group anim-fade-in focus:outline-none ${DELAY_CLASSES[point.index % DELAY_CLASSES.length]}`}
               tabIndex={0}
               role="img"
               aria-label={`${point.label}: ${point.row.reviews} reviews`}
+              title={`${point.label}: ${point.row.reviews} reviews`}
+              className={`group anim-fade-in absolute -mt-[6.5px] -ml-[6.5px] size-[13px] rounded-full focus:outline-none ${DELAY_CLASSES[point.index % DELAY_CLASSES.length]}`}
+              style={{ left: point.left, top: point.top }}
             >
-              <title>{`${point.label}: ${point.row.reviews} reviews`}</title>
-              {/* Generous invisible hit area */}
-              <circle cx={point.x} cy={point.y} r="16" fill="transparent" />
-              <circle
-                cx={point.x}
-                cy={point.y}
-                r="3.5"
-                fill="var(--color-surface)"
-                stroke="var(--color-brand-600)"
-                strokeWidth="2"
-                className="transition-[r] duration-150 group-hover:[r:5] group-focus-visible:[r:5]"
+              <span
+                aria-hidden="true"
+                className={`block size-full rounded-full border-2 bg-ivory shadow-[0_0_10px_color-mix(in_oklab,var(--color-brand-400)_50%,transparent)] transition-transform duration-150 group-hover:scale-125 group-focus-visible:scale-125 ${
+                  point.isPeak ? "border-accent-400" : "border-brand-400"
+                }`}
               />
-              {/* Tooltip bubble: hidden until hover or keyboard focus */}
-              <g className="pointer-events-none opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">
-                <rect
-                  x={tooltipX}
-                  y={tooltipY}
-                  width={tooltipW}
-                  height={22}
-                  rx="6"
-                  fill="#052029"
-                />
-                <text
-                  x={tooltipX + tooltipW / 2}
-                  y={tooltipY + 15}
-                  textAnchor="middle"
-                  className="fill-white text-[11px] font-medium"
-                >
-                  {tooltipText}
-                </text>
-              </g>
-            </g>
-          );
-        })}
-      </svg>
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-brand-400/30 bg-ivory px-2 py-1 text-[11px] font-medium text-white opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100"
+              >
+                {point.label}: {point.row.reviews}
+              </span>
+            </span>
+          ))}
+        </div>
+
+        <span />
+        <div
+          aria-hidden="true"
+          className="grid pt-3 text-center text-[13px] text-ink-400"
+          style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}
+        >
+          {points.map((point) => (
+            // Phones: one label in three, so "Nov ’25" never truncates.
+            <span
+              key={`tick-${point.row.month}`}
+              className={`whitespace-nowrap ${
+                point.index % 3 !== 0 ? "max-[560px]:invisible" : ""
+              }`}
+            >
+              {point.tick}
+            </span>
+          ))}
+        </div>
+      </div>
       {caption}
-      {/* Full data for assistive tech (charts above are visual) */}
+      {/* Full data for assistive tech (chart above is visual) */}
       <ul className="sr-only">
         {points.map((point) => (
           <li key={`sr-${point.row.month}`}>
