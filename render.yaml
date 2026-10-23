@@ -1,0 +1,59 @@
+# Render Blueprint for the Caribe Ops backends (plan:
+# docs/plans/deploy-vercel-neon-render.md). The frontend runs on Vercel
+# and the database on Neon; these two Docker services run on Render's
+# free plan in Ohio, next to Neon's aws-us-east-2.
+#
+# Secrets use `sync: false`: Render asks for their values when the
+# Blueprint is created; they never live in this file.
+services:
+  - type: web
+    name: caribeops-api
+    runtime: docker
+    region: ohio
+    plan: free
+    dockerContext: ./backend/laravel
+    dockerfilePath: ./backend/laravel/Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_SSLMODE
+        value: require
+      - key: CACHE_STORE
+        value: file
+      - key: SESSION_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: RUN_MIGRATIONS
+        value: "true"
+      - key: PHP_CLI_SERVER_WORKERS
+        value: "4"
+      # Secrets / deployment-specific values (entered in the Render dashboard):
+      - key: APP_KEY
+        sync: false
+      - key: DB_URL
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+
+  - type: web
+    name: caribeops-analytics
+    runtime: docker
+    region: ohio
+    plan: free
+    dockerContext: ./analytics/go
+    dockerfilePath: ./analytics/go/Dockerfile
+    healthCheckPath: /health
+    envVars:
+      # Read-only Neon role (analytics_reader); entered in the dashboard.
+      - key: DATABASE_URL
+        sync: false

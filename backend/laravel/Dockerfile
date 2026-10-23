@@ -13,4 +13,9 @@ RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoload
 
 EXPOSE 8000
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Listens on $PORT when the host provides one (Render), 8000 otherwise
+# (Docker Compose). RUN_MIGRATIONS=true is set only in deployed
+# environments: it applies pending migrations and caches config/routes
+# before serving. PHP_CLI_SERVER_WORKERS lets `artisan serve` handle
+# requests in parallel.
+CMD ["sh", "-c", "if [ \"$RUN_MIGRATIONS\" = \"true\" ]; then php artisan migrate --force && php artisan config:cache && php artisan route:cache; fi && exec php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]

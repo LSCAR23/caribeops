@@ -9,6 +9,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /analytics .
 
 FROM alpine
 
+# Root CAs for TLS connections to managed Postgres (Neon).
+RUN apk add --no-cache ca-certificates
+
 COPY --from=build /analytics /analytics
 
 EXPOSE 8080
