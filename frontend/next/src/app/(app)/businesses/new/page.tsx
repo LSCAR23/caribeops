@@ -3,18 +3,16 @@ import NewBusinessForm from "@/components/NewBusinessForm";
 import Card from "@/components/Card";
 import PageContainer from "@/components/PageContainer";
 import SectionHeading from "@/components/SectionHeading";
-import { apiGet } from "@/lib/api-client";
-import type { ApiCollectionResponse } from "@/types/api";
-import type { Category } from "@/types/category";
+import { getCategories } from "@/lib/data";
 
-// Rendered per request (never prerendered): the category select must read
-// live Laravel data, and builds must not require Laravel to be up.
+// Categories come from the cached data layer (src/lib/data.ts).
+// connection() keeps rendering at request time so builds never need
+// Laravel; the cached read is still reused across requests.
 export const instant = false;
 
 export default async function NewBusinessPage() {
   await connection();
-  const result =
-    await apiGet<ApiCollectionResponse<Category>>("/api/categories");
+  const result = await getCategories();
 
   return (
     <PageContainer className="flex max-w-[860px] flex-col gap-6">

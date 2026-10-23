@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import BusinessForm from "./BusinessForm";
+import { afterBusinessCreated } from "@/app/actions/revalidate";
 import { apiPost } from "@/lib/api-client";
 import type { ApiItemResponse } from "@/types/api";
 import type { Business } from "@/types/business";
@@ -47,6 +48,10 @@ export default function NewBusinessForm({
           phone: values.phone.trim(),
         },
       );
+      // Expire the cached list/categories/analytics so the new business
+      // shows up everywhere. Best-effort: on failure the business is still
+      // created and the cache refreshes on its own within a minute.
+      await afterBusinessCreated().catch(() => undefined);
       router.push(`/businesses/${created.data.id}`);
     } catch {
       setStatus({ state: "error" });

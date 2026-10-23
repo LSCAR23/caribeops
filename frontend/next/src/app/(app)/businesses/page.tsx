@@ -1,4 +1,3 @@
-import { connection } from "next/server";
 import Link from "next/link";
 import BusinessList from "@/components/BusinessList";
 import CategoryFilter from "@/components/CategoryFilter";
@@ -6,17 +5,11 @@ import SearchInput from "@/components/SearchInput";
 import PageContainer from "@/components/PageContainer";
 import SectionHeading from "@/components/SectionHeading";
 import { buttonClassName, focusRing } from "@/lib/ui";
-import { apiGet } from "@/lib/api-client";
-import type { ApiCollectionResponse, ApiListResponse } from "@/types/api";
-import type { Business } from "@/types/business";
-import type { Category } from "@/types/category";
+import { getBusinesses, getCategories } from "@/lib/data";
 
-// Rendered per request (never prerendered): the list must read live
-// Laravel data, and builds must not require Laravel to be up.
-// NOTE: `export const dynamic = "force-dynamic"` does not build under
-// nextConfig.cacheComponents (Next 16) — `await connection()` + opting out
-// of instant navigation below is the version-pinned equivalent
-// (see dist/docs caching guides). Streaming/Suspense stays D3-08 scope.
+// Reads go through the cached data layer (src/lib/data.ts); the filters
+// from searchParams become part of each cache key. Builds never need
+// Laravel: fetches happen at request time behind the cache.
 export const instant = false;
 
 function pageUrl({
@@ -53,28 +46,18 @@ export default async function BusinessesPage({
     page?: string;
   }>;
 }) {
-  await connection();
   const {
     category: categorySlug,
     search,
     page: pageParam,
   } = await searchParams;
-  const listParams = new URLSearchParams();
-  if (categorySlug !== undefined && categorySlug !== "") {
-    listParams.set("category", categorySlug);
-  }
-  if (search !== undefined && search !== "") {
-    listParams.set("search", search);
-  }
-  if (pageParam !== undefined && pageParam !== "") {
-    listParams.set("page", pageParam);
-  }
-  const listQuery = listParams.toString();
-  const listPath =
-    listQuery === "" ? "/api/businesses" : `/api/businesses?${listQuery}`;
   const [result, categoriesResult] = await Promise.all([
-    apiGet<ApiListResponse<Business>>(listPath),
-    apiGet<ApiCollectionResponse<Category>>("/api/categories"),
+    getBusinesses({
+      category: categorySlug ?? null,
+      search: search ?? null,
+      page: pageParam ?? null,
+    }),
+    getCategories(),
   ]);
   const currentPage = result.meta.current_page;
   const lastPage = result.meta.last_page;

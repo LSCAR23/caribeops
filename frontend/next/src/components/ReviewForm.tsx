@@ -12,6 +12,7 @@ import {
 } from "@/lib/ui";
 import type { ApiItemResponse } from "@/types/api";
 import type { Review } from "@/types/review";
+import { afterReviewCreated } from "@/app/actions/revalidate";
 
 type SubmitStatus =
   | { state: "idle" }
@@ -24,9 +25,9 @@ const STARS = [1, 2, 3, 4, 5] as const;
 // Comment box for a business (D7-30, reworked D7-31). Reviews store
 // rating + title + content (no author column), so the form collects all
 // three and the server stamps review_date. On 201 it clears the fields
-// and calls router.refresh(): the server component re-fetches, the new
-// comment lands on top of the (date DESC) list, and no client cache is
-// juggled.
+// expires the cached reads it touched (afterReviewCreated) and calls
+// router.refresh(): the server component re-fetches, and the new comment
+// lands on top of the (date DESC) list.
 //
 // D7-31 UX: the form is hidden behind a "Write a review" disclosure
 // button (aria-expanded/aria-controls), and the rating select became a
@@ -106,6 +107,10 @@ export default function ReviewForm({
       setContent("");
       setStatus({ state: "sent" });
       setOpen(false);
+      // Expire the cached reads this review touched (detail, list,
+      // analytics), then re-render. Best-effort: if it fails the review is
+      // still saved and the cache refreshes on its own within a minute.
+      await afterReviewCreated(businessId).catch(() => undefined);
       router.refresh();
     } catch {
       setStatus({ state: "error", kind: "request" });

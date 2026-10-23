@@ -1,11 +1,11 @@
 import MonthlyChart from "@/components/MonthlyChart";
 import SectionFallback from "@/components/SectionFallback";
-import { analyticsGet } from "@/lib/analytics-client";
+import { getReviewsByMonth } from "@/lib/data";
 import type { MonthlyReviews } from "@/types/analytics";
 
 // Async Server Component island (D5-15): fetches and renders the monthly
 // section independently, so a slow Go delays only this section's pixels.
-// No connection() call — the page already opts the tree dynamic.
+// Reads go through the cached data layer (src/lib/data.ts).
 export default async function MonthlySection({
   from,
   to,
@@ -15,17 +15,9 @@ export default async function MonthlySection({
 }) {
   // D5-16: try wraps the fetch only — a Go outage degrades to the fallback
   // below, while a render bug still throws instead of being masked.
-  const params = new URLSearchParams();
-  if (from) params.set("from", from);
-  if (to) params.set("to", to);
-  const query = params.toString();
-  const path = query
-    ? `/analytics/reviews-by-month?${query}`
-    : "/analytics/reviews-by-month";
-
   let rows: MonthlyReviews[];
   try {
-    rows = await analyticsGet<MonthlyReviews[]>(path);
+    rows = await getReviewsByMonth({ from: from ?? null, to: to ?? null });
   } catch (error) {
     console.error(error);
     return (

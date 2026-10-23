@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
   // Security upgrade provenance (next upgrade --agent=security).
   experimental: {
     agentUpgrade: "security",
+    // Client router cache: revisiting a section within 30s reuses what the
+    // browser already has instead of asking the server again. Server-side
+    // data caching lives in src/lib/data.ts ("use cache" + cacheLife).
+    staleTimes: {
+      dynamic: 30,
+    },
   },
   // Dev-only: trust the loopback IP as well as localhost, otherwise the
   // dev server answers HMR websocket upgrades with 401 Unauthorized.

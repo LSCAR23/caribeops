@@ -6,9 +6,10 @@ import ReviewForm from "../ReviewForm";
 // after a successful POST so the server component re-renders and the new
 // comment lands on top of the list (D7-30). D7-31 adds the disclosure
 // toggle + star radiogroup on top of that flow.
-const { refresh, apiPost } = vi.hoisted(() => ({
+const { refresh, apiPost, afterReviewCreated } = vi.hoisted(() => ({
   refresh: vi.fn(),
   apiPost: vi.fn(),
+  afterReviewCreated: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -19,10 +20,17 @@ vi.mock("@/lib/api-client", () => ({
   apiPost: (...args: unknown[]) => apiPost(...args),
 }));
 
+// Server Action that expires the cached reads after a new review.
+vi.mock("@/app/actions/revalidate", () => ({
+  afterReviewCreated: (...args: unknown[]) => afterReviewCreated(...args),
+}));
+
 beforeEach(() => {
   refresh.mockClear();
   apiPost.mockClear();
   apiPost.mockResolvedValue({ data: { id: "review-1" } });
+  afterReviewCreated.mockReset();
+  afterReviewCreated.mockResolvedValue(undefined);
 });
 
 // Open the disclosure and fill title/comment (padded whitespace so the
@@ -106,7 +114,9 @@ describe("ReviewForm", () => {
     expect(await screen.findByRole("status")).toHaveTextContent(
       "Comment posted.",
     );
-    expect(refresh).toHaveBeenCalledTimes(1);
+    // The cache for this business is expired before the re-render.
+    await waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
+    expect(afterReviewCreated).toHaveBeenCalledWith("biz-1");
     expect(
       screen.getByRole("button", { name: "Write a review" }),
     ).toHaveAttribute("aria-expanded", "false");
@@ -125,6 +135,7 @@ describe("ReviewForm", () => {
       "Could not post your comment. Please try again.",
     );
     expect(refresh).not.toHaveBeenCalled();
+    expect(afterReviewCreated).not.toHaveBeenCalled();
     expect(
       screen.getByRole("button", { name: "Hide review form" }),
     ).toHaveAttribute("aria-expanded", "true");

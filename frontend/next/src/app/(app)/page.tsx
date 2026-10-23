@@ -5,12 +5,14 @@ import KpiCard from "@/components/KpiCard";
 import GoKpiSection from "@/components/GoKpiSection";
 import { KpiGridSkeleton } from "@/components/LoadingSkeleton";
 import { buttonClassName } from "@/lib/ui";
-import { apiGet } from "@/lib/api-client";
-import type { ApiItemResponse } from "@/types/api";
-import type { DashboardSummary } from "@/types/dashboard";
+import { getDashboardSummary } from "@/lib/data";
 
-// Rendered per request (never prerendered): KPIs must read live data, and
-// builds must not require the backends to be up.
+// Data comes from the cached read layer (src/lib/data.ts): shared for a
+// few minutes and expired on demand after mutations, so moving between
+// sections no longer re-fetches everything. connection() keeps the render
+// at request time (this page reads no URL data, so it would otherwise be
+// prerendered at build and the build would need the backends up); the
+// cached reads are reused across those requests.
 export const instant = false;
 
 const inlineLinkClassName =
@@ -44,11 +46,10 @@ function Bullet() {
 }
 
 export default async function Home() {
-  await connection();
   // The recency card stays on Laravel (D5-11); the Go aggregate cards
   // resolve — and show their skeleton — independently inside the island.
-  const result =
-    await apiGet<ApiItemResponse<DashboardSummary>>("/api/dashboard/summary");
+  await connection();
+  const result = await getDashboardSummary();
   const summary = result.data;
 
   return (

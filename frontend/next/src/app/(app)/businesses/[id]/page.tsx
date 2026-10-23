@@ -1,7 +1,6 @@
-import { connection } from "next/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { apiGet, ApiError } from "@/lib/api-client";
+import { getBusiness } from "@/lib/data";
 import { formatRating } from "@/components/BusinessList";
 import Card from "@/components/Card";
 import PageContainer from "@/components/PageContainer";
@@ -9,11 +8,9 @@ import SectionHeading from "@/components/SectionHeading";
 import ReviewList from "@/components/ReviewList";
 import ReviewForm from "@/components/ReviewForm";
 import { focusRing } from "@/lib/ui";
-import type { ApiItemResponse } from "@/types/api";
-import type { Business } from "@/types/business";
 
-// Per-request rendering like the list: the id is only known at request time,
-// and builds must not require Laravel to be up.
+// The id is only known at request time; the read itself is cached per id
+// (src/lib/data.ts) and expired after a new review.
 // Detail now composes business + owner + amenities + reviews from one
 // Laravel endpoint (eager-loaded user, amenities, reviews).
 export const instant = false;
@@ -23,23 +20,11 @@ export default async function BusinessDetailsPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await connection();
   const { id } = await params;
 
-  let business: Business;
-  try {
-    const businessRes = await apiGet<ApiItemResponse<Business>>(
-      `/api/businesses/${id}`,
-    );
-    business = businessRes.data;
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 404) {
-      notFound();
-    }
-    throw error;
-  }
-
-  if (business === null || business === undefined) {
+  // Cached read; null means Laravel answered 404 (unknown business).
+  const business = await getBusiness(id);
+  if (business === null) {
     notFound();
   }
 

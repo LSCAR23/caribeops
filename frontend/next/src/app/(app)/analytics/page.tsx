@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { connection } from "next/server";
 import DateRangeSelector from "@/components/DateRangeSelector";
 import GoKpiSection from "@/components/GoKpiSection";
 import CategorySection from "@/components/CategorySection";
@@ -28,7 +27,6 @@ export default async function AnalyticsPage({
 }: {
   searchParams: Promise<{ from?: string; to?: string }>;
 }) {
-  await connection();
   const { from, to } = await searchParams;
 
   return (
