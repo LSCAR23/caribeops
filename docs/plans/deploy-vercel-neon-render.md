@@ -2,7 +2,7 @@
 
 - **Task**: "conecta el mcp de vercel para subir los servicios y el front y no sé si puedes conectar el mcp de alguna herramienta como neon para subir la base de datos" → "ya conecté los mcp, sigue la recomendación que propusiste para subir los servicios"
 - **Date**: 2026-10-23
-- **Status**: Checked — awaiting user approval
+- **Status**: Implemented 2026-10-23 — live at https://caribeops.vercel.app (e2e 1/1 against production)
 
 ## Desired outcome
 
@@ -112,7 +112,17 @@ Done:
 3. Migrated + seeded Neon from the local machine (`SEED_VOLUME=true`): 3 categories, 314 businesses, 18,323 reviews, 101 users. (Local Docker DB shows 274 businesses: Neon also has `BusinessDataSeeder`'s 40.)
 4. `render.yaml` + Dockerfile changes (Laravel `$PORT` + `RUN_MIGRATIONS`, Go root CAs), pushed as `366ec4a`. Verified locally first: both production images ran against Neon → `/api/health` 200, `/health` 200, real data from both APIs, CORS header OK, "Nothing to migrate", config/routes cached.
 
-Blocked / pending:
-- **Vercel MCP**: `create_project` and `list_projects` return 403 for scope `oscars-projects-f04a604f` (the account's personal team), and `authorize_team_access` is refused for this token. The user must re-authenticate the Vercel MCP and grant that scope.
-- **Render**: the user must create the Blueprint in the dashboard and paste the values from the local file `RENDER-valores-para-pegar.txt` (scratchpad).
-- Then: Vercel project + env vars + deploy, CORS final, end-to-end verification.
+5. **Render** (user, via dashboard Blueprint): `https://caribeops-api.onrender.com` and `https://caribeops-analytics.onrender.com` — both `/health` 200 and serving Neon data (314 businesses / 18,323 reviews).
+6. **Vercel**: the MCP connection turned out to be read-only (403 on project create / deployment list even after re-auth), and the user's dashboard import never created a project. Created instead with the **Vercel CLI** (user ran `vercel login`; `vercel api POST /v11/projects`): project `caribeops` (`prj_1G7gcbqP5iMQtD7BGm8VGbGU540T`), linked to `LSCAR23/caribeops` (`master`), root `frontend/next`, functions in `cle1`, env `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_ANALYTICS_URL`, `NEXT_TELEMETRY_DISABLED`. No `.vercel` folder was created in the repo. A push (`62540a7`) triggered deployment `dpl_GPcG8MQRt9CfkkGF1nUtsUgHurYR` → **READY**, aliases `caribeops.vercel.app`, `caribeops-oscars-projects-f04a604f.vercel.app`.
+7. CORS: Laravel already had `CORS_ALLOWED_ORIGINS=https://caribeops.vercel.app` → preflight from that origin returns `access-control-allow-origin: https://caribeops.vercel.app`.
+
+Verification (production):
+- `https://caribeops.vercel.app/login` → 200, title "Caribe Ops | Tourism Operations & Analytics".
+- `E2E_BASE_URL=https://caribeops.vercel.app npx playwright test` → **1/1** (login → dashboard → businesses → detail, 9.6 s).
+- Playwright screenshots at 1440×900 and 390×844 of login, dashboard, analytics, businesses, new, detail and the burger menu: 0 console errors, no horizontal scroll, live Neon data.
+
+Open items:
+- Unused Neon API role `analytics` (inherits write access, cannot be altered by the owner) — delete only with the user's OK.
+- Render Free services sleep after ~15 min idle; the first request afterwards takes ~30–60 s.
+- Demo account `test@example.com` / `password` is public — change its password.
+- Secrets live only in Render/Vercel and in local scratchpad files (`deploy/`), never in the repo or chat; delete the local copies when no longer needed.
