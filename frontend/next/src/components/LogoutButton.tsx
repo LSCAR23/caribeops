@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { apiPost } from "@/lib/api-client";
 import { clearToken, getToken } from "@/lib/auth";
+import { focusRing } from "@/lib/ui";
 
 // Logout island (D6-15). Renders only when a token exists — the
 // server nav cannot see it. Revocation is best-effort: the local
@@ -51,7 +52,7 @@ export default function LogoutButton() {
       type="button"
       onClick={handleLogout}
       disabled={pending}
-      className="rounded-full px-3 py-1.5 text-sm font-medium text-ink-600 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
+      className={`site-link cursor-pointer disabled:opacity-50 ${focusRing}`}
     >
       {pending ? "Logging out…" : "Logout"}
     </button>

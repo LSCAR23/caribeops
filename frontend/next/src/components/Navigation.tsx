@@ -1,34 +1,27 @@
 import Link from "next/link";
 import NavLinks from "@/components/NavLinks";
+import { focusRing } from "@/lib/ui";
 
-// Shell (Caribbean night theme): a sticky glass top bar — brand lockup
-// on the left, a floating pill of nav links on the right — matching the
-// dashboard mockup. Replaces the old sidebar; PageContainer carries no
-// left offset anymore. Links are never hidden and there is no hamburger
-// at any width (the D7-28 constraint): the pill wraps below sm.
-// Server component: brand/layout stay on the server; the active-route
-// island stays in NavLinks.
+// Site header in the dashboard style on every page (user request):
+// transparent header, brand always "Caribe Ops" + an orange dot, and a
+// large glass pill whose active item glows underneath. Colours follow
+// the page theme (.site-* rules in globals.css). On phones (≤720px)
+// NavLinks swaps the pill for a burger menu.
 export default function Navigation() {
   return (
-    <header className="sticky top-0 z-40 border-b border-white/8 bg-ivory/55 backdrop-blur-xl supports-[backdrop-filter]:bg-ivory/45">
-      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-x-5 gap-y-2 px-5 py-3 sm:px-6">
+    <header className="site-header">
+      <div className="site-header-inner relative flex w-full items-center justify-between gap-4">
         <Link
           href="/"
-          className="group inline-flex items-baseline gap-1.5 rounded-lg py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
+          className={`group inline-flex items-baseline gap-1.5 rounded-lg py-1 ${focusRing}`}
         >
-          <span className="font-display text-lg font-semibold tracking-tight text-white transition-colors group-hover:text-brand-200">
-            Caribe OPS
+          <span className="site-brand font-semibold tracking-[-0.02em] text-white transition-colors group-hover:text-brand-200">
+            Caribe Ops
           </span>
-          <span
-            aria-hidden="true"
-            className="h-1.5 w-1.5 rounded-full bg-accent-400 shadow-[0_0_8px_rgba(255,133,82,0.9)] transition-colors group-hover:bg-accent-500"
-          />
+          <span aria-hidden="true" className="brand-dot size-[7px]" />
         </Link>
 
-        {/* Floating glass pill housing the nav links + auth actions */}
-        <div className="rounded-full border border-white/12 bg-white/7 p-1 shadow-[0_8px_28px_-14px_rgba(0,0,0,0.8)] backdrop-blur-md supports-[backdrop-filter]:bg-white/6">
-          <NavLinks />
-        </div>
+        <NavLinks />
       </div>
     </header>
   );
