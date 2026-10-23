@@ -17,7 +17,7 @@ export default function Navigation() {
           className="group inline-flex items-baseline gap-1.5 rounded-lg py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
         >
           <span className="font-display text-lg font-semibold tracking-tight text-white transition-colors group-hover:text-brand-200">
-            CaribeOps
+            Ojo del Caribe
           </span>
           <span
             aria-hidden="true"

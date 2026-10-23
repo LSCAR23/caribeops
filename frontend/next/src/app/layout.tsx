@@ -15,7 +15,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "CaribeOps | Tourism Operations & Analytics",
+  title: "Ojo del Caribe | Tourism Operations & Analytics",
   description: "Tourism operations and analytics for Caribbean businesses.",
 };
 
