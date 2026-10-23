@@ -1,82 +1,61 @@
 import Image from "next/image";
 import LoginForm from "@/components/LoginForm";
 
-// Full-bleed login ("ojo del caribe" mockup). Static page as before:
-// nothing is fetched server-side, so the build never needs Laravel.
-//
-// Background = the login's OWN asset, public/login/caribbean-night.webp
-// (the exact photo from the mockup), rendered full-bleed and VIVID: no
-// navy scrim, no radial wash on top of it — per the user's "la imagen de
-// fondo no debería verse opaca". The glass card carries its own contrast
-// and the heading sits over the photo's dark sky region, as in the
-// reference image. The shared root backdrop (general-caribbean-night.webp)
-// moved to the (app) layout, so the two photos never stack behind each
-// other or double-download.
-//
-// Layout follows the reference image minus the navbar ("lo único que no
-// va es el navbar"): brand lockup, h1, subtitle and card form a centered
-// column whose contents are LEFT-aligned like the mockup.
-
-// "ojo del caribe" wordmark: an eye whose iris is a wave.
-function EyeWaveMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 32 32" className={className} fill="none" aria-hidden="true">
-      <circle
-        cx="16"
-        cy="16"
-        r="14.5"
-        stroke="url(#ojo-ring)"
-        strokeWidth="1.6"
-      />
-      <path
-        d="M5 17c2.5-3 5-3 7.5 0s5 3 7.5 0 5-3 7.5 0"
-        stroke="url(#ojo-wave)"
-        strokeWidth="1.8"
-      />
-      <circle cx="16" cy="16" r="2.4" fill="#7fe6dd" />
-      <defs>
-        <linearGradient id="ojo-ring" x1="2" y1="2" x2="30" y2="30">
-          <stop stopColor="#8ff0e6" />
-          <stop offset="1" stopColor="#2ea39e" />
-        </linearGradient>
-        <linearGradient id="ojo-wave" x1="5" y1="17" x2="27" y2="17">
-          <stop stopColor="#8ff0e6" />
-          <stop offset="1" stopColor="#cdeae8" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-}
-
+// Login — "Login Ojo del Caribe" design, lapa (scarlet macaw) theme.
+// Static page: nothing is fetched server-side, so the build never needs
+// Laravel. Near-black page with a warm orange glow behind the form, the
+// macaw emerging bottom-right, and a left-aligned column: brand lockup
+// ("Caribe Ops" + orange dot — always this brand), heading, subtitle
+// and the glass sign-in card. On narrow screens the macaw shrinks,
+// peeks in from the bottom-right corner and fades behind the form.
 export default function LoginPage() {
   return (
-    <main className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-5 py-12">
-      {/* The mockup's own photo — decorative, eager (LCP), unfiltered */}
-      <Image
-        src="/login/caribbean-night.webp"
-        alt=""
-        fill
-        sizes="100vw"
-        priority
-        quality={75}
-        className="object-cover"
-      />
+    <main
+      data-theme="lapa"
+      className="theme-page flex items-center overflow-hidden"
+    >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute right-0 bottom-0 h-[min(927px,103dvh)] max-[820px]:-right-[14vw] max-[820px]:h-[min(560px,62dvh)] max-[820px]:opacity-40"
+      >
+        <Image
+          src="/animals/lapa.png"
+          alt=""
+          width={640}
+          height={1120}
+          preload
+          sizes="(max-width: 820px) 100vw, 530px"
+          className="anim-emerge h-full w-auto"
+          style={{
+            transformOrigin: "70% 60%",
+            maskImage: "linear-gradient(to bottom, #000 72%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, #000 72%, transparent 100%)",
+          }}
+        />
+      </div>
 
-      {/* Brand + heading + form, above the photo */}
-      <section className="anim-breach relative z-10 w-full max-w-lg">
-        <div className="flex items-center gap-2.5">
-          <EyeWaveMark className="h-8 w-8" />
-          <span className="font-display text-2xl font-semibold tracking-tight text-white">
-            ojo del caribe
+      <section className="relative z-[1] ml-[clamp(24px,24vw,380px)] box-border flex w-full max-w-[600px] flex-col gap-8 py-16 max-[820px]:mx-5 max-[820px]:w-auto max-[820px]:max-w-none max-[820px]:flex-1 max-[820px]:py-12">
+        {/* Warm orange glow centred behind the form */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-[58%] left-1/2 -z-10 size-[min(1000px,140vw)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,122,26,0.24)_0%,rgba(226,35,26,0.10)_38%,transparent_68%)]"
+        />
+        <div className="flex items-baseline gap-2">
+          <span className="text-[28px] font-bold tracking-[-0.02em] text-white">
+            Caribe Ops
           </span>
+          <span aria-hidden="true" className="brand-dot size-2" />
         </div>
 
-        <h1 className="mt-7 font-display text-5xl font-bold tracking-tight text-white sm:text-6xl">
-          Log in
-        </h1>
-        <p className="mt-3 text-base text-brand-100/90">
-          Sign in with your ojo del caribe account.
-        </p>
+        <div className="flex flex-col gap-2.5">
+          <h1 className="text-[72px] leading-none font-bold tracking-[-0.035em] text-white max-[480px]:text-5xl">
+            Log in
+          </h1>
+          <p className="text-lg text-ink-700/80">
+            Sign in with your Caribe Ops account.
+          </p>
+        </div>
 
         <LoginForm />
       </section>

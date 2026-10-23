@@ -5,7 +5,7 @@ import { useLayoutEffect, useState } from "react";
 import { apiPost } from "@/lib/api-client";
 import { setToken } from "@/lib/auth";
 
-// Login island (D6-12, restyled for the "ojo del caribe" mockup).
+// Login island (D6-12, restyled for the "Login Ojo del Caribe" design).
 // The auth logic is UNCHANGED: idle → pending → error|success with a
 // double-submit guard, one generic error line for every server
 // rejection (the backend answers unknown-email and wrong-password
@@ -32,26 +32,27 @@ type SubmitStatus =
   | { state: "error" }
   | { state: "success" };
 
-// Keyboard focus: brand-300 ring on the dark card.
+// Keyboard focus: yellow ring as in the design (#FFC72C ≈ brand-200).
 const focusRing =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06232a]";
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffc72c] focus-visible:ring-offset-[3px] focus-visible:ring-offset-ivory";
 
-// Card per the mockup: cyan hairline + soft cyan glow around the glass,
-// roomier padding (p-8), deep drop shadow for separation from the photo.
+// Warm glass card from the login artboard (lapa theme tokens).
 const cardClassName =
-  "mt-8 rounded-2xl border border-brand-400/45 bg-[rgba(6,28,36,0.55)] p-8 shadow-[0_0_24px_-6px_rgba(46,163,158,0.4),0_30px_60px_-24px_rgba(2,12,16,0.8)] supports-[backdrop-filter]:bg-[rgba(6,28,36,0.38)] supports-[backdrop-filter]:backdrop-blur-md";
+  "glass-card box-border flex w-full max-w-[600px] flex-col gap-6 rounded-[24px] p-10 max-[480px]:p-6";
 
-const labelClassName = "block text-sm font-semibold text-brand-100";
+const labelClassName = "block text-[15px] font-semibold text-ink-800";
 
-// Inputs are transparent so the glass shows through; padding leaves
-// room for the leading icon (and the trailing toggle on password).
-// Cyan-tinted borders match the mockup (focus goes solid brand-400).
-const inputClassName = `w-full rounded-xl border border-brand-400/40 bg-white/5 py-2.5 pl-11 pr-3.5 text-sm text-white placeholder:text-white/45 transition-colors focus:border-brand-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/40`;
+// The bordered "field" is the wrapper (icon + input [+ toggle]); the
+// input itself is transparent. Focus lights the wrapper (focus-within).
+const fieldClassName =
+  "glass-field mt-2.5 flex h-[56px] items-center gap-3 rounded-[14px] pl-4 max-[480px]:h-[50px]";
 
-const iconClassName =
-  "pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-brand-100/70";
+const inputClassName =
+  "h-full min-w-0 flex-1 border-0 bg-transparent text-base text-ink-800 placeholder:text-ink-700/45 focus:outline-none";
 
-const submitClassName = `mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-400 to-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-[0_10px_28px_-10px_rgba(46,163,158,0.9)] transition-opacity hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none sm:w-auto ${focusRing}`;
+const iconClassName = "pointer-events-none flex-none text-accent-300";
+
+const submitClassName = `btn-accent inline-flex h-14 cursor-pointer items-center gap-2.5 self-start rounded-full px-8 text-base font-bold disabled:opacity-50 disabled:pointer-events-none ${focusRing}`;
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -111,27 +112,20 @@ export default function LoginForm() {
           <label htmlFor="email" className={labelClassName}>
             Email
           </label>
-          <div className="relative mt-1.5">
+          <div className={`${fieldClassName} pr-3.5`}>
             <span className={iconClassName} aria-hidden="true">
               <svg
-                viewBox="0 0 20 20"
-                className="h-5 w-5"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.5"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <rect
-                  x="2.5"
-                  y="4.5"
-                  width="15"
-                  height="11"
-                  rx="2"
-                />
-                <path
-                  d="M3 6l7 5 7-5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
+                <rect x="3" y="5" width="18" height="14" rx="2" />
+                <path d="m3 7 9 6 9-6" />
               </svg>
             </span>
             <input
@@ -148,24 +142,24 @@ export default function LoginForm() {
             />
           </div>
         </div>
-        <div className="mt-4">
+        <div>
           <label htmlFor="password" className={labelClassName}>
             Password
           </label>
-          <div className="relative mt-1.5">
+          <div className={`${fieldClassName} pr-1`}>
             <span className={iconClassName} aria-hidden="true">
               <svg
-                viewBox="0 0 20 20"
-                className="h-5 w-5"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.5"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <rect x="4" y="8.5" width="12" height="8" rx="2" />
-                <path
-                  d="M7 8.5V6.5a3 3 0 016 0v2"
-                  strokeLinecap="round"
-                />
+                <rect x="5" y="11" width="14" height="10" rx="2" />
+                <path d="M8 11V8a4 4 0 0 1 8 0v3" />
               </svg>
             </span>
             <input
@@ -177,7 +171,7 @@ export default function LoginForm() {
               spellCheck={false}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className={`${inputClassName} pr-11`}
+              className={inputClassName}
             />
             <button
               type="button"
@@ -193,7 +187,7 @@ export default function LoginForm() {
               // getByLabel does not consider, and doubles as a hover hint.
               title={revealed ? "Hide password" : "Show password"}
               aria-pressed={revealed}
-              className={`absolute inset-y-0 right-2.5 flex items-center rounded p-1 text-brand-100/70 transition-colors hover:text-white ${focusRing}`}
+              className={`flex size-12 flex-none cursor-pointer items-center justify-center rounded-[10px] text-accent-300 transition-colors hover:text-white ${focusRing}`}
             >
               {revealed ? (
                 <svg
@@ -231,6 +225,7 @@ export default function LoginForm() {
             </button>
           </div>
         </div>
+        <div className="pt-1.5">
         <button
           type="submit"
           disabled={status.state === "pending"}
@@ -255,6 +250,7 @@ export default function LoginForm() {
             </svg>
           )}
         </button>
+        </div>
       </form>
       {status.state === "error" ? (
         <p role="alert" className="mt-4 text-sm font-medium text-red-300">
@@ -262,7 +258,7 @@ export default function LoginForm() {
         </p>
       ) : null}
       {status.state === "success" ? (
-        <p role="status" className="mt-4 text-sm font-medium text-brand-100">
+        <p role="status" className="mt-4 text-sm font-medium text-brand-200">
           Logged in successfully.
         </p>
       ) : null}
