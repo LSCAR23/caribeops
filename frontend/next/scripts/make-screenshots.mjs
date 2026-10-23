@@ -57,7 +57,7 @@ await snap(page, "business-detail.png");
 // this can't be satisfied by a stale page or by the shell alone.
 await page.goto(`${BASE}/analytics`, { waitUntil: "networkidle" });
 await page
-  .locator('svg[viewBox="0 0 160 160"]')
+  .locator('svg[viewBox="0 0 120 120"]')
   .first()
   .waitFor({ timeout: 30000 })
   .catch(() => console.log("  (donut not seen; capturing anyway)"));
@@ -73,8 +73,9 @@ async function snap(page, name) {
   console.log(`captured ${name}`);
 }
 
-// Let entrance animations (anim-fade-up ~450ms) settle so the captured
-// frame is the resting state, not a mid-transition.
+// Let entrance animations settle so the captured frame is the resting
+// state, not a mid-transition: the animal "emerge" runs 2s after a
+// 0.1s delay (anim-fade-up is ~450ms).
 async function settle(page) {
-  await page.waitForTimeout(1200);
+  await page.waitForTimeout(2600);
 }
