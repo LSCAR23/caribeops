@@ -81,7 +81,10 @@ export default function AnimalBackdrop({ theme }: { theme: AppTheme }) {
   return (
     <div aria-hidden="true" className="pointer-events-none">
       <div className="absolute -right-[8%] -top-[10%] size-[900px] rounded-full bg-[radial-gradient(circle,rgba(20,184,170,0.14)_0%,rgba(14,116,144,0.05)_45%,transparent_70%)]" />
-      <div className="absolute right-[3%] top-10 w-[min(44vw,620px)] max-[820px]:-right-[25%] max-[820px]:top-[120px] max-[820px]:w-[90%] max-[820px]:opacity-35 max-[720px]:-right-[18vw] max-[720px]:top-[76px] max-[720px]:w-[78vw] max-[720px]:opacity-40">
+      {/* The turtle's head sits at the image's right edge, so on narrow
+          screens it stays flush right (never pushed off-screen); any
+          overflow trims the left flipper instead. */}
+      <div className="absolute right-[3%] top-10 w-[min(44vw,620px)] max-[820px]:right-0 max-[820px]:top-[120px] max-[820px]:w-[80%] max-[820px]:opacity-35 max-[720px]:top-[84px] max-[720px]:w-[74vw] max-[720px]:opacity-40">
         <Image
           src="/animals/tortuga.png"
           alt=""
