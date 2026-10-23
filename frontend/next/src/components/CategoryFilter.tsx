@@ -33,7 +33,7 @@ export default function CategoryFilter({
   }
 
   return (
-    <div className="mt-4">
+    <div className="flex flex-[0_1_220px] flex-col">
       <label htmlFor="category-filter" className={labelClassName}>
         Filter by category
       </label>
@@ -43,7 +43,7 @@ export default function CategoryFilter({
         value={currentCategorySlug ?? ""}
         onChange={(event) => handleChange(event.target.value)}
         autoComplete="off"
-        className={`${inputClassName} max-w-xs`}
+        className={`${inputClassName} cursor-pointer font-medium`}
       >
         <option value="">All categories</option>
         {categories.map((category) => (

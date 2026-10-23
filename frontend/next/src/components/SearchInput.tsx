@@ -90,11 +90,29 @@ export default function SearchInput({
   }
 
   return (
-    <form onSubmit={handleSubmit} role="search" className="mt-4">
+    <form
+      onSubmit={handleSubmit}
+      role="search"
+      className="flex max-w-[340px] flex-[1_1_260px] flex-col"
+    >
       <label htmlFor="business-search" className={labelClassName}>
         Search businesses
       </label>
-      <div className="mt-1 flex w-full max-w-xs gap-2">
+      <div className="relative">
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          aria-hidden="true"
+          className="pointer-events-none absolute top-[22px] left-3.5 text-brand-400"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
         <input
           id="business-search"
           name="search"
@@ -103,7 +121,7 @@ export default function SearchInput({
           value={value}
           onChange={(event) => setValue(event.target.value)}
           placeholder="Search by name"
-          className={inputClassName}
+          className={`${inputClassName} pl-[42px]`}
         />
       </div>
       {currentSearch !== null && currentSearch !== "" ? (

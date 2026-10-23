@@ -15,9 +15,9 @@ export default function BusinessesError({
   }, [error]);
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-5 py-10 sm:px-6 sm:py-14">
-      <h1 className="text-3xl tracking-tight">Businesses</h1>
-      <p className="mt-2 text-sm text-ink-500">
+    <main className="box-border w-full mx-auto max-w-[1360px] px-[clamp(20px,5vw,72px)] pt-14 pb-20">
+      <h1 className="text-[clamp(34px,5vw,44px)] font-bold leading-[1.05] tracking-[-0.03em]">Businesses</h1>
+      <p className="mt-2 text-[15px] text-ink-600/75">
         Something went wrong loading businesses. Please try again.
       </p>
       <button

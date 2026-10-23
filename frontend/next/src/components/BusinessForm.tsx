@@ -20,7 +20,7 @@ const BusinessLocationPicker = dynamic(
     loading: () => (
       <div
         aria-busy="true"
-        className="mt-1.5 flex h-72 w-full items-center justify-center rounded-xl border border-ink-200 bg-surface text-sm text-ink-500"
+        className="mt-1.5 flex h-72 w-full items-center justify-center rounded-xl glass-field text-sm text-ink-500"
       >
         Loading map…
       </div>

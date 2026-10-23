@@ -149,7 +149,7 @@ export default function ReviewForm({
                     onClick={() => setRating(score)}
                     onKeyDown={(event) => handleStarKey(event, score)}
                     className={`${buttonClassName("ghost", "px-1 text-2xl leading-none")} ${
-                      score <= rating ? "text-amber-500" : "text-ink-300"
+                      score <= rating ? "text-accent-400" : "text-ink-400"
                     }`}
                   >
                     {score <= rating ? "★" : "☆"}
@@ -204,7 +204,7 @@ export default function ReviewForm({
         </p>
       ) : null}
       {status.state === "sent" ? (
-        <p role="status" className="mt-4 text-sm font-medium text-green-700">
+        <p role="status" className="mt-4 text-sm font-medium text-brand-200">
           Comment posted.
         </p>
       ) : null}

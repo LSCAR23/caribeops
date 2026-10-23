@@ -29,7 +29,7 @@ const DEFAULT_ZOOM = 12;
 function pinIcon(): L.DivIcon {
   return L.divIcon({
     className: "",
-    html: '<div style="width:18px;height:18px;border-radius:9999px;background:#0f766e;border:3px solid white;box-shadow:0 1px 3px rgba(0,0,0,.5)"></div>',
+    html: '<div style="width:18px;height:18px;border-radius:9999px;background:#7fb85a;border:3px solid white;box-shadow:0 1px 3px rgba(0,0,0,.5)"></div>',
     iconSize: [18, 18],
     iconAnchor: [9, 9],
   });
@@ -89,7 +89,7 @@ export default function BusinessLocationPicker({
         center={position ?? DEFAULT_CENTER}
         zoom={DEFAULT_ZOOM}
         scrollWheelZoom={false}
-        className="mt-1.5 h-72 w-full rounded-xl border border-ink-200"
+        className="mt-1.5 h-72 w-full rounded-xl border border-[color:var(--field-border)]"
       >
         <TileLayer
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"

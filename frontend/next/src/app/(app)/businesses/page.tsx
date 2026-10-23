@@ -80,19 +80,36 @@ export default async function BusinessesPage({
   const lastPage = result.meta.last_page;
 
   return (
-    <PageContainer>
-      <section className="anim-fade-up flex flex-wrap items-end justify-between gap-4">
-        <div>
+    <PageContainer className="flex max-w-[900px] flex-col gap-8">
+      <section className="anim-fade-up flex flex-wrap items-end justify-between gap-5">
+        <div className="flex flex-col gap-2">
           <SectionHeading as="h1">Businesses</SectionHeading>
-          <p className="mt-2 text-sm text-ink-500">
-            Showing {result.data.length} of {result.meta.total} businesses
+          <p className="text-[15px] text-ink-600/75">
+            Showing{" "}
+            <span className="font-semibold text-brand-300">
+              {result.data.length}
+            </span>{" "}
+            of {result.meta.total} businesses
           </p>
         </div>
-        <Link href="/businesses/new" className={buttonClassName("primary")}>
+        <Link href="/businesses/new" className={buttonClassName("primary", "gap-2")}>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            aria-hidden="true"
+          >
+            <path d="M12 5v14" />
+            <path d="M5 12h14" />
+          </svg>
           New business
         </Link>
       </section>
-      <div className="mt-6 flex flex-col gap-x-6 gap-y-1 sm:flex-row sm:items-start">
+      <div className="flex flex-wrap items-start gap-5">
         <SearchInput
           currentSearch={search ?? null}
           currentCategorySlug={categorySlug ?? null}
@@ -106,7 +123,7 @@ export default async function BusinessesPage({
       <BusinessList businesses={result.data} />
       <nav
         aria-label="Pagination"
-        className="mt-8 flex items-center gap-4 text-sm"
+        className="flex items-center gap-4 text-sm"
       >
         {currentPage > 1 ? (
           <Link
@@ -120,11 +137,11 @@ export default async function BusinessesPage({
             Previous
           </Link>
         ) : (
-          <span aria-disabled="true" className="font-medium text-ink-300">
+          <span aria-disabled="true" className="font-medium text-ink-400/60">
             Previous
           </span>
         )}
-        <p className="text-ink-500">
+        <p className="text-ink-600/75">
           Page {currentPage} of {lastPage}
         </p>
         {currentPage < lastPage ? (
@@ -139,7 +156,7 @@ export default async function BusinessesPage({
             Next
           </Link>
         ) : (
-          <span aria-disabled="true" className="font-medium text-ink-300">
+          <span aria-disabled="true" className="font-medium text-ink-400/60">
             Next
           </span>
         )}

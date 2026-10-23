@@ -17,14 +17,14 @@ export default async function NewBusinessPage() {
     await apiGet<ApiCollectionResponse<Category>>("/api/categories");
 
   return (
-    <PageContainer className="max-w-2xl">
+    <PageContainer className="flex max-w-[860px] flex-col gap-6">
       <section className="anim-fade-up">
         <SectionHeading as="h1">New business</SectionHeading>
-        <p className="mt-2 text-sm text-ink-500">
+        <p className="mt-2 text-[15px] text-ink-600/75">
           Fill in the details for the new business.
         </p>
       </section>
-      <Card className="mt-6">
+      <Card>
         <NewBusinessForm categories={result.data} />
       </Card>
     </PageContainer>

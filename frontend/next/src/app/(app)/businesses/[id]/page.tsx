@@ -47,22 +47,22 @@ export default async function BusinessDetailsPage({
   const reviews = business.reviews ?? [];
 
   return (
-    <PageContainer>
+    <PageContainer className="flex max-w-[900px] flex-col gap-8">
       <section className="anim-fade-up">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-400">
+        <p className="text-[13px] font-semibold uppercase tracking-[0.28em] text-brand-300">
           {business.category_name ?? "—"}
         </p>
-        <h1 className="mt-2 text-3xl tracking-tight sm:text-4xl">
+        <h1 className="mt-3 text-[clamp(34px,5vw,44px)] font-bold leading-[1.05] tracking-[-0.03em]">
           {business.name}
         </h1>
-        <p className="mt-2 text-sm text-ink-500">{business.address}</p>
-        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
-          <span className="flex items-center gap-1.5 rounded-full border border-brand-400/30 bg-brand-400/12 px-3 py-1 font-medium text-brand-100">
+        <p className="mt-2 text-[15px] text-ink-600/75">{business.address}</p>
+        <div className="mt-4 flex flex-wrap items-center gap-2.5 text-sm">
+          <span className="flex h-9 items-center gap-2 rounded-full border border-brand-400/50 bg-brand-500/20 px-4 font-semibold text-brand-100">
             <svg
               aria-hidden="true"
               viewBox="0 0 20 20"
               fill="currentColor"
-              className="h-4 w-4 text-accent-500"
+              className="h-4 w-4 text-accent-400"
             >
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 0 0 .95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 0 0-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 0 0-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 0 0-.363-1.118L2.077 10.1c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 0 0 .951-.69l1.519-4.674Z" />
             </svg>
@@ -71,22 +71,22 @@ export default async function BusinessDetailsPage({
             </span>
           </span>
           {business.owner && (
-            <span className="rounded-full border border-white/12 bg-white/7 px-3 py-1 font-medium text-ink-700">
+            <span className="btn-glass flex h-9 items-center rounded-full px-4 font-medium text-ink-700">
               Owner: {business.owner.name}
             </span>
           )}
-          <span className="rounded-full border border-white/12 bg-white/7 px-3 py-1 font-medium text-ink-700">
+          <span className="btn-glass flex h-9 items-center rounded-full px-4 font-medium text-ink-700">
             {business.type}
           </span>
         </div>
         {business.amenities?.length ? (
-          <div className="mt-5">
-            <h2 className="text-xl">Amenities</h2>
+          <div className="mt-6">
+            <h2 className="text-[22px] font-semibold tracking-[-0.01em]">Amenities</h2>
             <ul className="mt-3 flex flex-wrap gap-2">
               {business.amenities.map((amenity) => (
                 <li
                   key={amenity}
-                  className="rounded-full border border-brand-400/30 bg-brand-400/12 px-3 py-1 text-sm font-medium text-brand-100"
+                  className="rounded-full border border-brand-400/30 bg-surface px-3.5 py-1.5 text-sm font-medium text-brand-100"
                 >
                   {amenity}
                 </li>
@@ -96,17 +96,17 @@ export default async function BusinessDetailsPage({
         ) : null}
       </section>
 
-      <Card className="mt-8">
+      <Card>
         <SectionHeading as="h2">Business information</SectionHeading>
         {business.description && (
-          <p className="mt-3 text-sm leading-relaxed text-ink-600">
+          <p className="mt-3 text-[15px] leading-relaxed text-ink-600/85">
             {business.description}
           </p>
         )}
         <dl className="mt-4 grid gap-x-8 gap-y-3 text-sm sm:grid-cols-2">
           {business.website && (
             <div>
-              <dt className="font-medium text-ink-500">Website</dt>
+              <dt className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-500">Website</dt>
               <dd>
                 <Link
                   href={business.website}
@@ -119,18 +119,18 @@ export default async function BusinessDetailsPage({
           )}
           {business.phone && (
             <div>
-              <dt className="font-medium text-ink-500">Phone</dt>
+              <dt className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-500">Phone</dt>
               <dd className="text-ink-800">{business.phone}</dd>
             </div>
           )}
           <div>
-            <dt className="font-medium text-ink-500">Type</dt>
+            <dt className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-500">Type</dt>
             <dd className="text-ink-800">{business.type}</dd>
           </div>
         </dl>
       </Card>
 
-      <section className="mt-8">
+      <section>
         <SectionHeading as="h2">Reviews ({reviews.length})</SectionHeading>
         <ReviewForm businessId={business.id} />
         <ReviewList reviews={reviews} />
