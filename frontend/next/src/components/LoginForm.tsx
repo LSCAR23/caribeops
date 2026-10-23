@@ -11,15 +11,15 @@ import { setToken } from "@/lib/auth";
 // rejection (the backend answers unknown-email and wrong-password
 // identically — D6-02), token persisted, redirect to "/".
 //
-// Styling lives in LOCAL class constants below on purpose: the shared
-// primitives in lib/ui.ts back every light surface of the app
-// (BusinessForm, SearchInput, ...), and this card is a dark glass one.
-// Touching lib/ui.ts would restyle the whole app — out of scope.
+// Styling: the login card composes the shared glass primitives from
+// lib/ui.ts (restyled for the night theme) with a few card-specific
+// classes below. The auth logic is unchanged from D6-12.
 //
-// The password toggle is the only new behavior: a sibling <button
-// type="button"> with a dynamic aria-label ("Show/Hide password"), so
-// the label↔input association behind getByLabel("Password") (e2e
-// contract) is untouched and the toggle never submits the form.
+// The password toggle is the only behavior beyond auth: a sibling
+// <button type="button"> whose accessible name ("Show/Hide password")
+// comes from `title` rather than `aria-label`, so Playwright's
+// getByLabel("Password") (the e2e/screenshot contract) resolves to the
+// field alone, and the toggle never submits the form.
 
 type SubmitStatus =
   | { state: "idle" }
@@ -155,7 +155,16 @@ export default function LoginForm() {
             <button
               type="button"
               onClick={() => setRevealed((current) => !current)}
-              aria-label={revealed ? "Hide password" : "Show password"}
+              // Named via `title` (not `aria-label`) on purpose: the name
+              // must remain exactly "Show password"/"Hide password" for
+              // getByRole in tests and for assistive tech, but an
+              // aria-label containing "password" would also be matched by
+              // Playwright's getByLabel("Password") (case-insensitive
+              // substring) and collide with the field it controls — the
+              // e2e/screenshot contract needs that to resolve to one input.
+              // `title` is the accessible-name fallback Playwright's
+              // getByLabel does not consider, and doubles as a hover hint.
+              title={revealed ? "Hide password" : "Show password"}
               aria-pressed={revealed}
               className={`absolute inset-y-0 right-2.5 flex items-center rounded p-1 text-brand-100/70 transition-colors hover:text-white ${focusRing}`}
             >
