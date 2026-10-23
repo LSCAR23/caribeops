@@ -2,6 +2,7 @@
 
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\StoreBusinessRequest;
+use App\Http\Requests\StoreReviewRequest;
 use App\Http\Resources\BusinessResource;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ReviewResource;
@@ -73,7 +74,7 @@ Route::get('/businesses', function (Request $request) {
 })->middleware('throttle:reads');
 
 Route::get('/businesses/{business}', function (Business $business) {
-    return new BusinessResource($business->load('user', 'amenities', 'reviews'));
+    return new BusinessResource($business->load(['user', 'amenities', 'reviews' => fn ($query) => $query->orderByDesc('review_date')]));
 })->whereUuid('business')->middleware('throttle:reads');
 
 Route::get('/businesses/{business}/amenities', function (Business $business) {
@@ -83,6 +84,15 @@ Route::get('/businesses/{business}/amenities', function (Business $business) {
 Route::get('/businesses/{business}/reviews', function (Business $business) {
     return ReviewResource::collection($business->reviews()->orderByDesc('review_date')->get());
 })->whereUuid('business')->middleware('throttle:reads');
+
+Route::post('/businesses/{business}/reviews', function (StoreReviewRequest $request, Business $business) {
+    $review = $business->reviews()->create([
+        ...$request->validated(),
+        'review_date' => now()->toDateString(),
+    ]);
+
+    return (new ReviewResource($review))->response()->setStatusCode(201);
+})->whereUuid('business')->middleware('auth:sanctum');
 
 Route::post('/businesses', function (StoreBusinessRequest $request) {
     $business = $request->user()->businesses()->create($request->validated());

@@ -24,8 +24,9 @@ The API uses Laravel Sanctum Bearer tokens.
 3. **Revoke it:** `POST /logout` (authenticated) → `204 No Content`.
 
 Endpoints marked **auth required** return `401` without a valid Bearer token.
-Write endpoints also require authorization (`can` policy) and return `403` when the
-authenticated user is not allowed.
+Business write endpoints also require authorization (`can` policy) and return `403`
+when the authenticated user is not allowed; posting a review comment only needs a
+valid token.
 
 ## Endpoints
 
@@ -239,6 +240,30 @@ List reviews for a business, newest first.
 - **Error cases:**
   - `404` — business not found, or `{business}` is not a valid UUID
   - `429` — rate limit exceeded
+
+### POST /businesses/{business}/reviews
+
+Post a comment (a review) on a business. Any authenticated user may comment — there
+is no review policy, and the comment stays anonymous (no author is stored).
+
+- **Auth:** required (Bearer token)
+- **Rate limiter:** none
+- **Path parameter:** `{business}` = UUID
+- **Request body:** validated by `StoreReviewRequest`:
+  ```json
+  {
+    "rating": "integer (1-5, required)",
+    "title": "string (required, max 255)",
+    "content": "string (required)"
+  }
+  ```
+  `business_id` and `review_date` are prohibited in the request — both are set
+  server-side (`review_date` is stamped with today's date).
+- **Response (201):** the created review object (`ReviewResource`, wrapped in `data`).
+- **Error cases:**
+  - `401` — no token or invalid/revoked token
+  - `404` — business not found, or `{business}` is not a valid UUID
+  - `422` — validation failed (missing field, rating outside 1–5)
 
 ### POST /businesses
 

@@ -94,7 +94,6 @@ export default async function BusinessesPage({
       </section>
       <div className="mt-6 flex flex-col gap-x-6 gap-y-1 sm:flex-row sm:items-start">
         <SearchInput
-          key={search ?? ""}
           currentSearch={search ?? null}
           currentCategorySlug={categorySlug ?? null}
         />
