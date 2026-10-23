@@ -34,7 +34,7 @@ export default function BusinessList({
             <p className="text-base font-medium">
               <Link
                 href={`/businesses/${business.id}`}
-                className="rounded text-ink-900 transition-colors hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
+                className="rounded text-ink-900 transition-colors hover:text-brand-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
               >
                 {business.name}
               </Link>

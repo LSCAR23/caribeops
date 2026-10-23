@@ -33,9 +33,9 @@ export default async function Home() {
         Skip to main content
       </a>
 
-      {/* Hero — display serif heading on ivory, mandarin eyebrow dot */}
+      {/* Hero — display heading over the night backdrop, mandarin eyebrow dot */}
       <section className="anim-fade-up">
-        <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.25em] text-brand-700">
+        <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.25em] text-brand-400">
           <span
             aria-hidden="true"
             className="inline-block h-2 w-2 rounded-full bg-accent-400"
@@ -92,7 +92,7 @@ export default async function Home() {
             Businesses and categories — browse and filter the directory in{" "}
             <Link
               href="/businesses"
-              className="font-semibold text-brand-700 underline decoration-brand-300 underline-offset-4 transition-colors hover:text-brand-800 hover:decoration-brand-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
+              className="font-semibold text-brand-300 underline decoration-brand-400 underline-offset-4 transition-colors hover:text-brand-200 hover:decoration-brand-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
             >
               Businesses
             </Link>
@@ -107,7 +107,7 @@ export default async function Home() {
             businesses in{" "}
             <Link
               href="/analytics"
-              className="font-semibold text-brand-700 underline decoration-brand-300 underline-offset-4 transition-colors hover:text-brand-800 hover:decoration-brand-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
+              className="font-semibold text-brand-300 underline decoration-brand-400 underline-offset-4 transition-colors hover:text-brand-200 hover:decoration-brand-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
             >
               Analytics
             </Link>

@@ -1,21 +1,23 @@
 import type { CategoryCount } from "@/types/analytics";
 
 // Presentational per-category chart as a custom SVG donut (D5-12,
-// redesigned in the UI pass, Phase 5). Owns pixels only; the analytics
-// page owns fetching (same split as KpiCard/BusinessList, D3-07).
-// No chart library, no interactivity logic: segments grow in via CSS
-// (--donut-len custom properties), expose the same per-row aria-label
-// the old bar version had, and thicken on hover/focus. Green ramp for
-// segments; mandarin appears only as the small center accent dot.
+// redesigned for the Caribbean night theme). Owns pixels only; the
+// analytics page owns fetching (same split as KpiCard/BusinessList,
+// D3-07). No chart library, no interactivity logic: segments grow in via
+// CSS (--donut-len custom properties), expose the same per-row aria-label
+// the old bar version had, and thicken on hover/focus. A bright
+// cyan→teal ramp so slices read on the dark glass; coral is only the
+// small center accent dot.
 
-// Brand green ramp, darkest first, cycled for extra categories.
+// Bright turquoise ramp, vivid first, cycled for extra categories —
+// tuned to stay legible over the night backdrop.
 const SEGMENT_COLORS = [
-  "#00713a",
-  "#008a45",
-  "#009b4d",
-  "#2eaa6f",
-  "#61c295",
-  "#99dabb",
+  "#5fe6dc",
+  "#35cdc4",
+  "#1fb6b0",
+  "#17b3ac",
+  "#0e8f8c",
+  "#0b7573",
 ];
 
 const R = 60;

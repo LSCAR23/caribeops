@@ -184,7 +184,7 @@ export default function MonthlyChart({ rows }: { rows: MonthlyReviews[] }) {
                   width={tooltipW}
                   height={22}
                   rx="6"
-                  fill="var(--color-ink-900)"
+                  fill="#052029"
                 />
                 <text
                   x={tooltipX + tooltipW / 2}

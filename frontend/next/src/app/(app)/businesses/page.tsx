@@ -42,7 +42,7 @@ function pageUrl({
   return query === "" ? "/businesses" : `/businesses?${query}`;
 }
 
-const pageLinkClassName = `font-medium text-brand-700 rounded underline-offset-4 hover:underline ${focusRing}`;
+const pageLinkClassName = `font-medium text-brand-300 rounded underline-offset-4 hover:underline ${focusRing}`;
 
 export default async function BusinessesPage({
   searchParams,

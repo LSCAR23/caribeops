@@ -458,7 +458,7 @@ function CalendarPicker({
                 isEndpoint
                   ? "rounded-full bg-brand-700 font-semibold text-white"
                   : isInRange
-                    ? "rounded-none bg-brand-50 text-ink-800"
+                    ? "rounded-none bg-brand-400/25 font-medium text-brand-100"
                     : "rounded-full text-ink-800 hover:bg-ivory-100"
               }`}
             >

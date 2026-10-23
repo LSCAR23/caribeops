@@ -49,7 +49,7 @@ export default async function BusinessDetailsPage({
   return (
     <PageContainer>
       <section className="anim-fade-up">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-700">
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-400">
           {business.category_name ?? "—"}
         </p>
         <h1 className="mt-2 text-3xl tracking-tight sm:text-4xl">
@@ -57,7 +57,7 @@ export default async function BusinessDetailsPage({
         </h1>
         <p className="mt-2 text-sm text-ink-500">{business.address}</p>
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
-          <span className="flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 font-medium text-brand-800">
+          <span className="flex items-center gap-1.5 rounded-full border border-brand-400/30 bg-brand-400/12 px-3 py-1 font-medium text-brand-100">
             <svg
               aria-hidden="true"
               viewBox="0 0 20 20"
@@ -71,11 +71,11 @@ export default async function BusinessDetailsPage({
             </span>
           </span>
           {business.owner && (
-            <span className="rounded-full bg-ivory-100 px-3 py-1 font-medium text-ink-700">
+            <span className="rounded-full border border-white/12 bg-white/7 px-3 py-1 font-medium text-ink-700">
               Owner: {business.owner.name}
             </span>
           )}
-          <span className="rounded-full bg-ivory-100 px-3 py-1 font-medium text-ink-700">
+          <span className="rounded-full border border-white/12 bg-white/7 px-3 py-1 font-medium text-ink-700">
             {business.type}
           </span>
         </div>
@@ -86,7 +86,7 @@ export default async function BusinessDetailsPage({
               {business.amenities.map((amenity) => (
                 <li
                   key={amenity}
-                  className="rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-sm font-medium text-brand-800"
+                  className="rounded-full border border-brand-400/30 bg-brand-400/12 px-3 py-1 text-sm font-medium text-brand-100"
                 >
                   {amenity}
                 </li>
@@ -110,7 +110,7 @@ export default async function BusinessDetailsPage({
               <dd>
                 <Link
                   href={business.website}
-                  className={`rounded font-medium text-brand-700 hover:underline underline-offset-4 ${focusRing}`}
+                  className={`rounded font-medium text-brand-300 hover:text-brand-200 hover:underline underline-offset-4 ${focusRing}`}
                 >
                   {business.website}
                 </Link>

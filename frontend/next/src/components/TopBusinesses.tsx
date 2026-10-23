@@ -38,8 +38,8 @@ export default function TopBusinesses({ rows }: { rows: TopBusiness[] }) {
             <span
               className={`w-8 shrink-0 rounded-full text-center font-display text-xl font-semibold tabular-nums leading-8 ${
                 index === 0
-                  ? "bg-accent-400 text-ink-900"
-                  : "bg-brand-100 text-brand-800"
+                  ? "bg-accent-400 text-[#2a0f04]"
+                  : "border border-brand-400/30 bg-brand-400/15 text-brand-200"
               }`}
             >
               {index + 1}
@@ -48,7 +48,7 @@ export default function TopBusinesses({ rows }: { rows: TopBusiness[] }) {
               <p className="text-base font-medium text-ink-900">
                 <Link
                   href={`/businesses/${row.id}`}
-                  className="rounded text-brand-700 transition-colors hover:text-brand-800 hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
+                  className="rounded text-brand-300 transition-colors hover:text-brand-200 hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
                 >
                   {row.name}
                 </Link>

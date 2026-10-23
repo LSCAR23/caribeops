@@ -109,7 +109,7 @@ export default function SearchInput({
       {currentSearch !== null && currentSearch !== "" ? (
         <Link
           href={buildUrl("", currentCategorySlug)}
-          className={`mt-2 inline-block text-sm font-medium text-brand-700 underline-offset-4 hover:underline ${focusRing}`}
+          className={`mt-2 inline-block text-sm font-medium text-brand-300 underline-offset-4 hover:underline ${focusRing}`}
         >
           Clear search
         </Link>
