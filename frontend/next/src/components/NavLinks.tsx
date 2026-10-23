@@ -14,11 +14,13 @@ const links = [
   { href: "/login", label: "Login" },
 ] as const;
 
-// Nav links island (UI redesign, Phase 3): active-route state needs
-// usePathname, so this part of the header is a client island — it still
+// Nav links island (Caribbean night theme): active-route state needs
+// usePathname, so this part of the shell is a client island — it still
 // server-renders, so every link exists in the DOM at all widths (the
-// e2e contract: getByRole("link", { name: "Businesses" })). Layout,
-// labels, order and hrefs are unchanged from the original server nav.
+// e2e contract: getByRole("link", { name: "Businesses" })). Links,
+// labels, order, hrefs and the LogoutButton placement contract are
+// unchanged; only the classes follow the top pill nav (a horizontal row
+// that wraps below sm, active item lit with a cyan glow).
 // D7-29: the Login link hides post-hydration while a token exists —
 // this supersedes the D6-15 acceptance ("Login link stays visible when
 // authed; the gate neutralizes it"), which the user found confusing.
@@ -34,7 +36,10 @@ export default function NavLinks() {
   }, [pathname]);
 
   return (
-    <nav aria-label="Primary" className="flex flex-wrap items-center gap-x-1 gap-y-1">
+    <nav
+      aria-label="Primary"
+      className="flex flex-wrap items-center justify-center gap-x-0.5 gap-y-1"
+    >
       {links
         // D7-29: drop Login only while authenticated; anonymous keeps
         // the original four-link list the server renders.
@@ -50,10 +55,10 @@ export default function NavLinks() {
               key={link.href}
               href={link.href}
               aria-current={active ? "page" : undefined}
-              className={`rounded-lg border-b-2 px-2.5 py-1.5 text-sm transition-colors ${focusRing} ${
+              className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${focusRing} ${
                 active
-                  ? "border-brand-500 font-semibold text-brand-700"
-                  : "border-transparent font-medium text-ink-600 hover:bg-ink-100/70 hover:text-ink-900"
+                  ? "bg-brand-500/20 font-semibold text-brand-200 shadow-[inset_0_0_0_1px_rgba(111,224,216,0.35)]"
+                  : "font-medium text-ink-600 hover:bg-white/8 hover:text-white"
               }`}
             >
               {link.label}

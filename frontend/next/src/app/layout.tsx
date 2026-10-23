@@ -1,25 +1,15 @@
 import type { Metadata } from "next";
-import { Fraunces, Geist, Geist_Mono } from "next/font/google";
-import Navigation from "@/components/Navigation";
+import { DM_Sans } from "next/font/google";
+import NightBackdrop from "@/components/NightBackdrop";
 import RequireAuth from "@/components/RequireAuth";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-// Display serif for headings/brand/KPI values (UI redesign): the free
-// next/font equivalent of the Moling reference — variable font, so no
-// weight option is needed (font.md: variable fonts default to the wght
-// axis). Body/UI stays Geist Sans (serif headings + sans body pairing).
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+// DM Sans is the single family of the night theme — variable font, so
+// no weight option is needed (font.md: variable fonts default to the
+// wght axis). Display treatment = same family at heavier weight with
+// tighter tracking (the --font-display token maps to it).
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
   display: "swap",
 });
@@ -29,16 +19,17 @@ export const metadata: Metadata = {
   description: "Tourism operations and analytics for Caribbean businesses.",
 };
 
+// The photographic backdrop lives at the root so login and every app
+// view share ONE cached download — client navigations never re-fetch it
+// or flash. It renders behind all content (fixed + -z-10); everything
+// else sits above it. colorScheme:dark steers native form controls,
+// scrollbars and :root semantics to match.
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
-      style={{ colorScheme: "light" }}
-    >
+    <html lang="en" className={`${dmSans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">
+        <NightBackdrop />
         <RequireAuth />
-        <Navigation />
         {children}
       </body>
     </html>

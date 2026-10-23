@@ -1,60 +1,71 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------
-   CaribeOps design foundation (UI redesign)
-   Brand: green #009B4D · mandarin #FFCC00 (accents only) · ivory #FAF5E9
-   Type: Fraunces (display serif) + Geist Sans (body/UI).
-   Light-only theme: dark-mode utilities are removed as each surface
-   is redesigned (no prefers-color-scheme fork in this release).
+   CaribeOps — Caribbean night theme
+   A single photographic backdrop (general-caribbean-night.jpg) sits
+   fixed behind every route; cards are translucent glass over it. The
+   glowing globe lives right-of-centre, so a directional scrim keeps
+   left-aligned text at WCAG AA while the globe stays vivid.
+
+   Token NAMES are unchanged from the light era on purpose: every
+   component keeps compiling while the VALUES retune for dark. The ink
+   ramp is inverted — ink-900 is now near-white (headings/values) and
+   ink-100/200 are faint white (borders/hover only, never body text).
+   Type: DM Sans everywhere. Motion is compositor-only.
 ------------------------------------------------------------------- */
 @theme {
-  /* Brand green ramp */
-  --color-brand-50: #e7f6ed;
-  --color-brand-100: #c9ecdb;
-  --color-brand-200: #99dabb;
-  --color-brand-300: #61c295;
-  --color-brand-400: #2eaa6f;
-  --color-brand-500: #009b4d;
-  --color-brand-600: #008a45;
-  --color-brand-700: #00713a;
-  --color-brand-800: #00592e;
-  --color-brand-900: #004524;
+  /* Brand turquoise ramp. 200–400 are the bright accents used for text
+     and glow ON dark; 500–900 stay deep so white text pops on them. */
+  --color-brand-50: #eaf6f5;
+  --color-brand-100: #cdeae8;
+  --color-brand-200: #9ad5d2;
+  --color-brand-300: #6fe0d8;
+  --color-brand-400: #35cdc4;
+  --color-brand-500: #17b3ac;
+  --color-brand-600: #0e8f8c;
+  --color-brand-700: #0b7573;
+  --color-brand-800: #095c5b;
+  --color-brand-900: #053534;
 
-  /* Mandarin yellow — accents only (badges, dots, highlights) */
-  --color-accent-100: #fff2c2;
-  --color-accent-300: #ffdb4d;
-  --color-accent-400: #ffcc00;
-  --color-accent-500: #e6b800;
-  --color-accent-600: #cc9f00;
+  /* Sun coral — accents only (badges, dots, highlights). Brightened so
+     it reads on dark. */
+  --color-accent-100: #ffe9e0;
+  --color-accent-300: #ffb489;
+  --color-accent-400: #ff8552;
+  --color-accent-500: #f26032;
+  --color-accent-600: #d44d24;
 
-  /* Ivory surfaces */
-  --color-ivory: #faf5e9;
-  --color-ivory-100: #f4eddc;
-  --color-ivory-200: #ede4ce;
-  --color-surface: #fffdf6;
+  /* Surfaces: deep-sea base + translucent white overlays. `surface` is
+     the card fill — translucent so the photo glows through. */
+  --color-ivory: #04141c;
+  --color-ivory-100: rgba(255, 255, 255, 0.06);
+  --color-ivory-200: rgba(255, 255, 255, 0.1);
+  --color-surface: rgba(9, 32, 41, 0.62);
 
-  /* Warm ink neutrals (text + borders on ivory) */
-  --color-ink-50: #f7f5ef;
-  --color-ink-100: #eae7dd;
-  --color-ink-200: #d7d3c6;
-  --color-ink-300: #b6b1a2;
-  --color-ink-400: #8f8a7b;
-  --color-ink-500: #6e6a5c;
-  --color-ink-600: #575347;
-  --color-ink-700: #423f36;
-  --color-ink-800: #2e2c26;
-  --color-ink-900: #1e1d19;
+  /* Ink ramp, inverted for dark. 100/200 are faint white (borders,
+     shimmer, hover washes — never body text). 300–900 brighten upward
+     to near-white for headings and values. */
+  --color-ink-50: #f7faf9;
+  --color-ink-100: rgba(255, 255, 255, 0.08);
+  --color-ink-200: rgba(255, 255, 255, 0.14);
+  --color-ink-300: #55686a;
+  --color-ink-400: #6f8583;
+  --color-ink-500: #8ba3a0;
+  --color-ink-600: #a9bebb;
+  --color-ink-700: #c4d4d1;
+  --color-ink-800: #dfe9e7;
+  --color-ink-900: #f4f8f7;
 }
 
 @theme inline {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
 }
 
 @layer base {
   :root {
-    color-scheme: light;
+    color-scheme: dark;
   }
 
   body {
@@ -63,7 +74,7 @@
     font-family: var(--font-sans);
   }
 
-  /* Display serif for headings by default; utility classes still win. */
+  /* Display weight for headings by default; utility classes still win. */
   h1,
   h2,
   h3 {
@@ -73,9 +84,48 @@
   }
 
   ::selection {
-    background: var(--color-brand-200);
-    color: var(--color-ink-900);
+    background: var(--color-brand-400);
+    color: #04212a;
   }
+}
+
+/* ------------------------------------------------------------------
+   Glass surfaces — the signature of the night theme. Translucent dark
+   fill + a hairline cyan border + blur so the photo reads through, and
+   a deep drop shadow so cards lift off the backdrop.
+------------------------------------------------------------------- */
+.glass-card {
+  background: linear-gradient(
+    158deg,
+    rgba(15, 48, 59, 0.72) 0%,
+    rgba(7, 26, 34, 0.6) 100%
+  );
+  border: 1px solid rgba(111, 224, 216, 0.16);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  box-shadow:
+    0 24px 60px -30px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* KPI/feature variant: adds the cyan glow along the top edge that the
+   dashboard mockup uses to signal "live" data. */
+.glass-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(53, 205, 196, 0.7),
+    transparent
+  );
 }
 
 /* ------------------------------------------------------------------
@@ -139,16 +189,6 @@
   }
 }
 
-@keyframes soft-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.55;
-  }
-}
-
 .anim-fade-up {
   animation: fade-up 0.45s ease-out both;
 }
@@ -192,6 +232,34 @@
   animation-delay: 300ms;
 }
 
+/* ------------------------------------------------------------------
+   Breach entrance — compositor-only: touches transform/opacity only.
+   Curve is the approved 420ms cubic-bezier(.23,1,.32,1).
+------------------------------------------------------------------- */
+@keyframes breach {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.anim-breach {
+  animation: breach 0.42s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+/* Hover lift for cards/rows: transform-only, static shadow. */
+.lift {
+  transition: transform 0.24s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.lift:hover {
+  transform: translateY(-3px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .anim-fade-up,
   .anim-bar-grow,
@@ -203,7 +271,12 @@
   .anim-delay-2,
   .anim-delay-3,
   .anim-delay-4,
-  .anim-delay-5 {
+  .anim-delay-5,
+  .anim-breach {
     animation: none !important;
+  }
+
+  .lift:hover {
+    transform: none;
   }
 }

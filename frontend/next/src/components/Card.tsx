@@ -1,5 +1,7 @@
-// Card primitive (UI redesign, Phase 2): the shared elevated surface
-// used by KPI cards, chart panels, detail blocks and form panels.
+// Card primitive (Caribbean night theme): the shared translucent glass
+// surface used by KPI cards, chart panels, detail blocks and form
+// panels — the photo glows through, a cyan hairline and deep shadow lift
+// it off the backdrop.
 export default function Card({
   className,
   children,
@@ -8,9 +10,7 @@ export default function Card({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      className={`rounded-2xl border border-ink-100 bg-surface p-6 shadow-[0_1px_2px_rgba(30,29,25,0.04),0_8px_24px_-12px_rgba(30,29,25,0.12)] ${className ?? ""}`.trim()}
-    >
+    <div className={`glass-card rounded-2xl p-6 ${className ?? ""}`.trim()}>
       {children}
     </div>
   );
