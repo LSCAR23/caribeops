@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { apiPost } from "@/lib/api-client";
 import { setToken } from "@/lib/auth";
 
@@ -15,11 +15,16 @@ import { setToken } from "@/lib/auth";
 // lib/ui.ts (restyled for the night theme) with a few card-specific
 // classes below. The auth logic is unchanged from D6-12.
 //
-// The password toggle is the only behavior beyond auth: a sibling
+// One behavior beyond auth is the password toggle: a sibling
 // <button type="button"> whose accessible name ("Show/Hide password")
 // comes from `title` rather than `aria-label`, so Playwright's
 // getByLabel("Password") (the e2e/screenshot contract) resolves to the
 // field alone, and the toggle never submits the form.
+//
+// The other addition is the Activity reset (useLayoutEffect below):
+// Next 16 keeps this route mounted-but-hidden across navigations, so
+// without it the fields would come back filled (old credentials + stale
+// status line) after logout.
 
 type SubmitStatus =
   | { state: "idle" }
@@ -51,6 +56,24 @@ export default function LoginForm() {
   const [revealed, setRevealed] = useState(false);
   const [status, setStatus] = useState<SubmitStatus>({ state: "idle" });
   const router = useRouter();
+
+  // Next 16 (`cacheComponents: true`) preserves this route with React's
+  // <Activity> in hidden mode instead of unmounting it, so this state —
+  // and the controlled inputs — survive login → dashboard and reappear
+  // filled, with the stale "Logged in successfully." line, the next time
+  // /login is shown (typically right after logout). Reset while the
+  // route is hidden: the "Preserving UI state" guide's per-pattern
+  // reset (useLayoutEffect cleanup, so nothing can flash on re-show).
+  // Credentials are never a draft worth restoring, so the wipe is
+  // unconditional — unlike the guide's `shouldReset` contact form.
+  useLayoutEffect(() => {
+    return () => {
+      setEmail("");
+      setPassword("");
+      setRevealed(false);
+      setStatus({ state: "idle" });
+    };
+  }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
