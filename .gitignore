@@ -50,3 +50,10 @@ yarn-debug.log*
 *~
 .DS_Store
 Thumbs.db
+
+# OpenCode agent tooling — local agent environment, never commit
+opencode.json
+skills-lock.json
+.agents/skills/
+.playwright-mcp/
+.taste-skill/
