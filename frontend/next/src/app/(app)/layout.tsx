@@ -2,7 +2,7 @@ import Navigation from "@/components/Navigation";
 import NightBackdrop from "@/components/NightBackdrop";
 
 // Authenticated shell (Caribbean night theme): the shared photographic
-// backdrop (general-caribbean-night.jpg, fixed + -z-10, one cached
+// backdrop (general-caribbean-night.webp, fixed + -z-10, one cached
 // download across navigations) plus the sticky glass top nav and the
 // routed content. /login lives in the (auth) group, outside this
 // layout: it renders its OWN vivid mockup photo

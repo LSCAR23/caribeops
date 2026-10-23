@@ -9,7 +9,7 @@ import LoginForm from "@/components/LoginForm";
 // navy scrim, no radial wash on top of it — per the user's "la imagen de
 // fondo no debería verse opaca". The glass card carries its own contrast
 // and the heading sits over the photo's dark sky region, as in the
-// reference image. The shared root backdrop (general-caribbean-night.jpg)
+// reference image. The shared root backdrop (general-caribbean-night.webp)
 // moved to the (app) layout, so the two photos never stack behind each
 // other or double-download.
 //

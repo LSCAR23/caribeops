@@ -25,7 +25,7 @@ export default function NightBackdrop() {
       <div className="absolute inset-0 bg-[radial-gradient(130%_100%_at_74%_42%,#0e6b74_0%,#0a4756_30%,#07303c_55%,#041d26_82%,#03141b_100%)]" />
       {/* Layer 2 — the photographic backdrop (globe sits right-of-centre) */}
       <Image
-        src="/general-caribbean-night.jpg"
+        src="/general-caribbean-night.webp"
         alt=""
         fill
         sizes="100vw"
