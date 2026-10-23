@@ -7,6 +7,7 @@ import Card from "@/components/Card";
 import PageContainer from "@/components/PageContainer";
 import SectionHeading from "@/components/SectionHeading";
 import ReviewList from "@/components/ReviewList";
+import ReviewForm from "@/components/ReviewForm";
 import { focusRing } from "@/lib/ui";
 import type { ApiItemResponse } from "@/types/api";
 import type { Business } from "@/types/business";
@@ -131,6 +132,7 @@ export default async function BusinessDetailsPage({
 
       <section className="mt-8">
         <SectionHeading as="h2">Reviews ({reviews.length})</SectionHeading>
+        <ReviewForm businessId={business.id} />
         <ReviewList reviews={reviews} />
       </section>
     </PageContainer>

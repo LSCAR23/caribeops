@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import type { Category } from "@/types/category";
 import {
@@ -8,6 +9,24 @@ import {
   type BusinessFormField,
 } from "@/lib/validate-business";
 import { buttonClassName, errorClassName, inputClassName, labelClassName } from "@/lib/ui";
+
+// Leaflet touches window/document at import time, so the map picker is
+// client-only (D7-31). The loading placeholder keeps the form's layout
+// stable while the chunk arrives.
+const BusinessLocationPicker = dynamic(
+  () => import("./BusinessLocationPicker"),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        aria-busy="true"
+        className="mt-1.5 flex h-72 w-full items-center justify-center rounded-xl border border-ink-200 bg-surface text-sm text-ink-500"
+      >
+        Loading map…
+      </div>
+    ),
+  },
+);
 
 const FIELDS: BusinessFormField[] = [
   "name",
@@ -40,6 +59,10 @@ export default function BusinessForm({
   onValid?: (values: Record<BusinessFormField, string>) => void;
 }) {
   const [errors, setErrors] = useState<BusinessFormErrors>({});
+  // D7-31: coordinates now come from the map picker. Hidden synced
+  // inputs keep the FormData contract (and thus validateBusinessForm +
+  // NewBusinessForm's payload coercion) unchanged.
+  const [location, setLocation] = useState({ latitude: "", longitude: "" });
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -137,41 +160,27 @@ export default function BusinessForm({
         />
         <FieldError message={errors.address} />
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="latitude" className={labelClassName}>
-            Latitude
-          </label>
-          <input
-            id="latitude"
-            name="latitude"
-            type="number"
-            required
-            min={-90}
-            max={90}
-            step="any"
-            autoComplete="off"
-            className={inputClassName}
-          />
-          <FieldError message={errors.latitude} />
-        </div>
-        <div>
-          <label htmlFor="longitude" className={labelClassName}>
-            Longitude
-          </label>
-          <input
-            id="longitude"
-            name="longitude"
-            type="number"
-            required
-            min={-180}
-            max={180}
-            step="any"
-            autoComplete="off"
-            className={inputClassName}
-          />
-          <FieldError message={errors.longitude} />
-        </div>
+      <div>
+        <span className={labelClassName}>Location</span>
+        <input
+          type="hidden"
+          name="latitude"
+          value={location.latitude}
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="longitude"
+          value={location.longitude}
+          readOnly
+        />
+        <BusinessLocationPicker
+          latitude={location.latitude}
+          longitude={location.longitude}
+          onChange={(latitude, longitude) => setLocation({ latitude, longitude })}
+        />
+        <FieldError message={errors.latitude} />
+        <FieldError message={errors.longitude} />
       </div>
       <div>
         <label htmlFor="website" className={labelClassName}>
