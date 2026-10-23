@@ -122,7 +122,7 @@ Verification (production):
 - Playwright screenshots at 1440×900 and 390×844 of login, dashboard, analytics, businesses, new, detail and the burger menu: 0 console errors, no horizontal scroll, live Neon data.
 
 Open items:
-- Unused Neon API role `analytics` (inherits write access, cannot be altered by the owner) — delete only with the user's OK.
+- ~~Unused Neon API role `analytics`~~ — **deleted 2026-10-23** with the user's OK ("bórralo"): grants revoked, role deleted via the Neon API; remaining roles `caribeops`, `analytics_reader`; Go analytics still 200 with live data.
 - Render Free services sleep after ~15 min idle; the first request afterwards takes ~30–60 s.
 - Demo account `test@example.com` / `password` is public — change its password.
 - Secrets live only in Render/Vercel and in local scratchpad files (`deploy/`), never in the repo or chat; delete the local copies when no longer needed.
