@@ -11,9 +11,12 @@ import type { AnalyticsOverview } from "@/types/analytics";
 export default async function GoKpiSection({
   from,
   to,
+  variant = "compact",
 }: {
   from?: string | null;
   to?: string | null;
+  /** "feature" = the dashboard's icon cards; "compact" = analytics. */
+  variant?: "compact" | "feature";
 }) {
   // D5-16: try wraps the fetch only — a Go outage degrades to the fallback
   // below, while a render bug still throws instead of being masked.
@@ -36,19 +39,31 @@ export default async function GoKpiSection({
     <>
       {/* Staggered entrance: optional className keeps the KpiCard props
           contract (label, value) untouched for KpiCard.test. */}
+      {/* Feature-card tracks: the rating one is real (average / 5); the
+          count cards have no natural maximum, so their track is a fixed
+          decorative length taken from the design. */}
       <KpiCard
         label="Total businesses"
         value={String(overview.businesses)}
+        variant={variant}
+        icon="store"
+        progress={35}
       />
       <KpiCard
         label="Total reviews"
         value={String(overview.reviews)}
         className="anim-delay-1"
+        variant={variant}
+        icon="star"
+        progress={33}
       />
       <KpiCard
         label="Average rating"
         value={average !== null ? average : "—"}
         className="anim-delay-2"
+        variant={variant}
+        icon="star"
+        progress={average !== null ? (Number(average) / 5) * 100 : 0}
       />
     </>
   );
