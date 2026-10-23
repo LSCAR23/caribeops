@@ -7,7 +7,7 @@ import LoginForm from "@/components/LoginForm";
 // macaw emerging bottom-right, and a left-aligned column: brand lockup
 // ("Caribe Ops" + orange dot — always this brand), heading, subtitle
 // and the glass sign-in card. On narrow screens the macaw shrinks,
-// peeks in from the bottom-right corner and fades behind the form.
+// moves to the top-right corner and fades behind the heading.
 export default function LoginPage() {
   return (
     <main
@@ -16,7 +16,7 @@ export default function LoginPage() {
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-0 bottom-0 h-[min(927px,103dvh)] max-[820px]:-right-[14vw] max-[820px]:h-[min(560px,62dvh)] max-[820px]:opacity-40"
+        className="pointer-events-none absolute right-0 bottom-0 h-[min(927px,103dvh)] max-[820px]:top-0 max-[820px]:bottom-auto max-[820px]:-right-[8vw] max-[820px]:h-[min(440px,50dvh)] max-[820px]:opacity-45"
       >
         <Image
           src="/animals/lapa.png"
