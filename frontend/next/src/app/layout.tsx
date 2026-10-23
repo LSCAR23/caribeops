@@ -14,17 +14,14 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Caribe OPS | Tourism Operations & Analytics",
+  title: "Caribe Ops | Tourism Operations & Analytics",
   description: "Tourism operations and analytics for Caribbean businesses.",
 };
 
-// The photographic backdrop lives in the (app) layout (authenticated
-// views share ONE cached download — client navigations never re-fetch
-// it or flash). /login renders its own mockup photo instead
-// (public/login/caribbean-night.webp), so it is deliberately not here.
-// RequireAuth guards the authenticated area from the root.
-// colorScheme:dark steers native form controls, scrollbars and :root
-// semantics to match.
+// Page themes (palette + animal) are applied below this layout: the
+// (app) group wraps its routes in ThemeShell and /login sets its own
+// lapa theme. RequireAuth guards the authenticated area from the root.
+// colorScheme:dark steers native form controls and scrollbars.
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${dmSans.variable} h-full antialiased`}>

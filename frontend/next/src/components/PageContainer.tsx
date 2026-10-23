@@ -1,7 +1,8 @@
-// Shared page container (UI redesign, Phase 2): replaces the
-// `mx-auto w-full max-w-5xl px-6 py-12` string duplicated across
-// seven files. Renders the page's single <main> landmark; callers
-// pass an id when a skip-link target is needed.
+// Shared page container. Renders the page's single <main> landmark on
+// the same centred 1360px grid and gutters as the site header, so every
+// page lines up with the nav. `className` styles the inner column
+// (width/alignment differ per page: Analytics sits right of the jaguar,
+// Businesses left of the sloth). Callers pass an id for skip links.
 export default function PageContainer({
   id,
   className,
@@ -14,9 +15,9 @@ export default function PageContainer({
   return (
     <main
       id={id}
-      className={`mx-auto w-full max-w-5xl px-5 py-10 sm:px-6 sm:py-14 ${className ?? ""}`.trim()}
+      className="mx-auto box-border w-full max-w-[1360px] px-[clamp(20px,5vw,72px)] pt-14 pb-20"
     >
-      {children}
+      <div className={className}>{children}</div>
     </main>
   );
 }

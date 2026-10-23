@@ -3,7 +3,7 @@
 // rows. Failures keep going through the D3-09 error path, never here.
 export default function EmptyState({ message }: { message: string }) {
   return (
-    <p className="mt-6 rounded-2xl border border-dashed border-ink-200 bg-ivory-100/60 px-5 py-8 text-center text-sm text-ink-500">
+    <p className="mt-6 rounded-2xl border border-dashed border-[color:var(--field-border)] p-7 text-[15px] text-ink-600/75">
       {message}
     </p>
   );

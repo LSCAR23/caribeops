@@ -1,5 +1,5 @@
-// Section heading primitive (UI redesign, Phase 2): one consistent
-// heading scale (display serif comes from the global h1–h3 rule).
+// Section heading primitive with the design's type scale: page titles
+// are 44px bold with tight tracking; section titles 22px semibold.
 export default function SectionHeading({
   as: Tag = "h2",
   id,
@@ -14,7 +14,11 @@ export default function SectionHeading({
   return (
     <Tag
       id={id}
-      className={`tracking-tight ${Tag === "h1" ? "text-3xl sm:text-4xl" : "text-xl"} ${className ?? ""}`.trim()}
+      className={`${
+        Tag === "h1"
+          ? "text-[clamp(34px,5vw,44px)] font-bold leading-[1.05] tracking-[-0.03em]"
+          : "text-[22px] font-semibold tracking-[-0.01em]"
+      } ${className ?? ""}`.trim()}
     >
       {children}
     </Tag>

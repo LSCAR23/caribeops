@@ -1,60 +1,61 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------
-   CaribeOps — Caribbean night theme
-   A single photographic backdrop (general-caribbean-night.jpg) sits
-   fixed behind every route; cards are translucent glass over it. The
-   glowing globe lives right-of-centre, so a directional scrim keeps
-   left-aligned text at WCAG AA while the globe stays vivid.
+   Caribe Ops — "Login Ojo del Caribe" design (black + glass + animals)
+   Every page is near-black with translucent glass cards and one animal
+   that emerges on entry. Each page has its OWN palette, applied with a
+   `data-theme` attribute on the page wrapper:
 
-   Token NAMES are unchanged from the light era on purpose: every
-   component keeps compiling while the VALUES retune for dark. The ink
-   ramp is inverted — ink-900 is now near-white (headings/values) and
-   ink-100/200 are faint white (borders/hover only, never body text).
+     lapa      → /login        orange / yellow / red
+     tortuga   → /             cyan / teal
+     jaguar    → /analytics    olive / amber
+     perezoso  → /businesses*  green / sand / orange
+
+   Token NAMES stay the same everywhere (brand-*, accent-*, ink-*,
+   ivory, surface): Tailwind v4 utilities read them as CSS variables, so
+   each theme block below just redefines the values and every existing
+   class (`text-brand-300`, `bg-brand-500/20`, …) follows the page.
    Type: DM Sans everywhere. Motion is compositor-only.
 ------------------------------------------------------------------- */
 @theme {
-  /* Brand turquoise ramp. 200–400 are the bright accents used for text
-     and glow ON dark; 500–900 stay deep so white text pops on them. */
-  --color-brand-50: #eaf6f5;
-  --color-brand-100: #cdeae8;
-  --color-brand-200: #9ad5d2;
-  --color-brand-300: #6fe0d8;
-  --color-brand-400: #35cdc4;
-  --color-brand-500: #17b3ac;
-  --color-brand-600: #0e8f8c;
-  --color-brand-700: #0b7573;
-  --color-brand-800: #095c5b;
-  --color-brand-900: #053534;
+  /* Defaults = tortuga (dashboard) so anything outside a themed wrapper
+     still looks right. */
+  --color-brand-50: #e6fbf9;
+  --color-brand-100: #c9f6f1;
+  --color-brand-200: #8ff5ec;
+  --color-brand-300: #3fe6d8;
+  --color-brand-400: #2dd4c4;
+  --color-brand-500: #14a89c;
+  --color-brand-600: #0f8a80;
+  --color-brand-700: #0b6d66;
+  --color-brand-800: #08514c;
+  --color-brand-900: #043531;
 
-  /* Sun coral — accents only (badges, dots, highlights). Brightened so
-     it reads on dark. */
-  --color-accent-100: #ffe9e0;
-  --color-accent-300: #ffb489;
-  --color-accent-400: #ff8552;
-  --color-accent-500: #f26032;
-  --color-accent-600: #d44d24;
+  /* Accent = the orange family (brand dot, #1 rank, stars). */
+  --color-accent-100: #ffe9d6;
+  --color-accent-300: #ffb27a;
+  --color-accent-400: #ff8a2b;
+  --color-accent-500: #f47a1f;
+  --color-accent-600: #d45f12;
 
-  /* Surfaces: deep-sea base + translucent white overlays. `surface` is
-     the card fill — translucent so the photo glows through. */
-  --color-ivory: #04141c;
-  --color-ivory-100: rgba(255, 255, 255, 0.06);
-  --color-ivory-200: rgba(255, 255, 255, 0.1);
-  --color-surface: rgba(9, 32, 41, 0.62);
+  /* Page base + translucent overlays. */
+  --color-ivory: #030607;
+  --color-ivory-100: rgba(255, 255, 255, 0.05);
+  --color-ivory-200: rgba(255, 255, 255, 0.09);
+  --color-surface: rgba(10, 30, 32, 0.55);
 
-  /* Ink ramp, inverted for dark. 100/200 are faint white (borders,
-     shimmer, hover washes — never body text). 300–900 brighten upward
-     to near-white for headings and values. */
-  --color-ink-50: #f7faf9;
+  /* Ink ramp (dark UI): 100/200 faint white for borders/hover only;
+     300–900 brighten to the page's near-white text colour. */
+  --color-ink-50: #ffffff;
   --color-ink-100: rgba(255, 255, 255, 0.08);
   --color-ink-200: rgba(255, 255, 255, 0.14);
-  --color-ink-300: #55686a;
-  --color-ink-400: #6f8583;
-  --color-ink-500: #8ba3a0;
-  --color-ink-600: #a9bebb;
-  --color-ink-700: #c4d4d1;
-  --color-ink-800: #dfe9e7;
-  --color-ink-900: #f4f8f7;
+  --color-ink-300: #5e7b78;
+  --color-ink-400: #8fbcb6;
+  --color-ink-500: #9fd3cc;
+  --color-ink-600: #c6e8e4;
+  --color-ink-700: #d7f4f1;
+  --color-ink-800: #eaf8f6;
+  --color-ink-900: #ffffff;
 }
 
 @theme inline {
@@ -63,18 +64,197 @@
   --font-mono: ui-monospace, monospace;
 }
 
+/* ------------------------------------------------------------------
+   Page themes. Non-Tailwind variables:
+     --page-bg          page background
+     --on-accent        text colour on the primary gradient button
+     --btn-from/mid/to  primary gradient stops
+     --btn-glow         primary button shadow colour
+     --glass-*          glass card tint, border, top highlight
+     --chart-1…6        categorical series (donut)
+     --brand-dot        the orange dot next to "Caribe Ops"
+------------------------------------------------------------------- */
+:root,
+[data-theme="tortuga"] {
+  --page-bg: #030607;
+  --on-accent: #022421;
+  --btn-from: #7df9ee;
+  --btn-mid: #2dd4c4;
+  --btn-to: #14a89c;
+  --btn-glow: rgba(45, 212, 196, 0.38);
+  --glass-from: rgba(63, 230, 216, 0.1);
+  --glass-mid: rgba(255, 255, 255, 0.03);
+  --glass-to: rgba(14, 116, 144, 0.08);
+  --glass-border: rgba(63, 230, 216, 0.32);
+  --glass-border-hover: rgba(63, 230, 216, 0.6);
+  --glass-highlight: rgba(180, 255, 248, 0.14);
+  --field-bg: rgba(10, 30, 32, 0.55);
+  --field-border: rgba(63, 230, 216, 0.3);
+  --chart-1: #3fe6d8;
+  --chart-2: #14a89c;
+  --chart-3: #8ff5ec;
+  --chart-4: #0b6d66;
+  --chart-5: #c9f6f1;
+  --chart-6: #2dd4c4;
+  --brand-dot: #ff8a2b;
+}
+
+[data-theme="tortuga"] {
+  --color-ivory: #030607;
+}
+
+[data-theme="jaguar"] {
+  --page-bg: #040503;
+  --on-accent: #1a2208;
+  --btn-from: #e4efb8;
+  --btn-mid: #c3d672;
+  --btn-to: #8ca53c;
+  --btn-glow: rgba(183, 203, 94, 0.32);
+  --glass-from: rgba(160, 185, 80, 0.12);
+  --glass-mid: rgba(255, 255, 255, 0.025);
+  --glass-to: rgba(60, 80, 25, 0.12);
+  --glass-border: rgba(183, 203, 94, 0.28);
+  --glass-border-hover: rgba(183, 203, 94, 0.55);
+  --glass-highlight: rgba(230, 240, 190, 0.1);
+  --field-bg: rgba(20, 26, 10, 0.45);
+  --field-border: rgba(183, 203, 94, 0.3);
+  --chart-1: #b7cb5e;
+  --chart-2: #6f8a34;
+  --chart-3: #dde9a6;
+  --chart-4: #f2a93b;
+  --chart-5: #4a5e22;
+  --chart-6: #e4efb8;
+  --brand-dot: #ff8a2b;
+
+  --color-brand-50: #f6f9ea;
+  --color-brand-100: #eaf1cc;
+  --color-brand-200: #d6e79a;
+  --color-brand-300: #c3d672;
+  --color-brand-400: #b7cb5e;
+  --color-brand-500: #8ca53c;
+  --color-brand-600: #6f8a34;
+  --color-brand-700: #5f7a2c;
+  --color-brand-800: #3f5220;
+  --color-brand-900: #263313;
+
+  --color-accent-100: #fdeccf;
+  --color-accent-300: #f7c879;
+  --color-accent-400: #f2a93b;
+  --color-accent-500: #e08f1f;
+  --color-accent-600: #b8720f;
+
+  --color-ivory: #040503;
+  --color-surface: rgba(20, 26, 10, 0.5);
+
+  --color-ink-300: #6e7658;
+  --color-ink-400: #9faa82;
+  --color-ink-500: #b9c59a;
+  --color-ink-600: #dce3c8;
+  --color-ink-700: #e4eacf;
+  --color-ink-800: #eef2e2;
+}
+
+[data-theme="perezoso"] {
+  --page-bg: #050403;
+  --on-accent: #1a2410;
+  --btn-from: #f3dcbc;
+  --btn-mid: #d9d39a;
+  --btn-to: #a8e07a;
+  --btn-glow: rgba(168, 224, 122, 0.28);
+  --glass-from: rgba(200, 160, 110, 0.11);
+  --glass-mid: rgba(255, 255, 255, 0.025);
+  --glass-to: rgba(110, 170, 80, 0.1);
+  --glass-border: rgba(226, 190, 146, 0.24);
+  --glass-border-hover: rgba(168, 224, 122, 0.55);
+  --glass-highlight: rgba(245, 225, 200, 0.09);
+  --field-bg: rgba(24, 17, 10, 0.55);
+  --field-border: rgba(226, 190, 146, 0.3);
+  --chart-1: #a8e07a;
+  --chart-2: #e2be92;
+  --chart-3: #d9822b;
+  --chart-4: #5f9442;
+  --chart-5: #f3dcbc;
+  --chart-6: #cdefb0;
+  --brand-dot: #ff8a2b;
+
+  --color-brand-50: #f2fbea;
+  --color-brand-100: #e1f6cf;
+  --color-brand-200: #cdefb0;
+  --color-brand-300: #b8e68e;
+  --color-brand-400: #a8e07a;
+  --color-brand-500: #7fb85a;
+  --color-brand-600: #5f9442;
+  --color-brand-700: #4a7534;
+  --color-brand-800: #335224;
+  --color-brand-900: #1f3315;
+
+  --color-accent-100: #f7e2c8;
+  --color-accent-300: #ebb37a;
+  --color-accent-400: #d9822b;
+  --color-accent-500: #c26f1d;
+  --color-accent-600: #9c5814;
+
+  --color-ivory: #050403;
+  --color-surface: rgba(24, 17, 10, 0.55);
+
+  --color-ink-300: #7a6e60;
+  --color-ink-400: #b3a593;
+  --color-ink-500: #cdbfae;
+  --color-ink-600: #e6dccf;
+  --color-ink-700: #ebd3b0;
+  --color-ink-800: #f3ece3;
+}
+
+[data-theme="lapa"] {
+  --page-bg: #050505;
+  --on-accent: #1a0a02;
+  --btn-from: #ffc72c;
+  --btn-mid: #ff7a1a;
+  --btn-to: #f04a1e;
+  --btn-glow: rgba(240, 90, 30, 0.4);
+  --glass-from: rgba(255, 120, 50, 0.1);
+  --glass-mid: rgba(255, 255, 255, 0.035);
+  --glass-to: rgba(30, 90, 200, 0.06);
+  --glass-border: rgba(255, 150, 80, 0.28);
+  --glass-border-hover: rgba(255, 150, 70, 0.75);
+  --glass-highlight: rgba(255, 220, 180, 0.12);
+  --field-bg: rgba(20, 8, 4, 0.55);
+  --field-border: rgba(255, 150, 80, 0.3);
+  --brand-dot: #ff8a2b;
+
+  --color-brand-50: #fff6ee;
+  --color-brand-100: #ffecdc;
+  --color-brand-200: #ffd27a;
+  --color-brand-300: #ffb547;
+  --color-brand-400: #ff8a2b;
+  --color-brand-500: #ff7a1a;
+  --color-brand-600: #f04a1e;
+  --color-brand-700: #c23a15;
+  --color-brand-800: #8f2a0f;
+  --color-brand-900: #5c1a08;
+
+  --color-ivory: #050505;
+  --color-surface: rgba(20, 8, 4, 0.55);
+
+  --color-ink-300: #8a6e5c;
+  --color-ink-400: #c9a48a;
+  --color-ink-500: #e2c2aa;
+  --color-ink-600: #f2d8c4;
+  --color-ink-700: #ffe6d2;
+  --color-ink-800: #fff6ee;
+}
+
 @layer base {
   :root {
     color-scheme: dark;
   }
 
   body {
-    background: var(--color-ivory);
+    background: #050505;
     color: var(--color-ink-800);
     font-family: var(--font-sans);
   }
 
-  /* Display weight for headings by default; utility classes still win. */
   h1,
   h2,
   h3 {
@@ -85,47 +265,229 @@
 
   ::selection {
     background: var(--color-brand-400);
-    color: #04212a;
+    color: var(--on-accent);
+  }
+
+  select option {
+    background: var(--page-bg);
+    color: var(--color-ink-800);
+  }
+}
+
+/* Themed page wrapper: paints the page colour behind everything. */
+.theme-page {
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  width: 100%;
+  overflow-x: clip;
+  background: var(--page-bg);
+  color: var(--color-ink-800);
+}
+
+/* ------------------------------------------------------------------
+   Glass surfaces — tinted translucent gradient, hairline accent border,
+   inset top highlight, deep drop shadow, blur + saturate.
+------------------------------------------------------------------- */
+.glass-card {
+  background: linear-gradient(
+    160deg,
+    var(--glass-from) 0%,
+    var(--glass-mid) 52%,
+    var(--glass-to) 100%
+  );
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(18px) saturate(1.25);
+  -webkit-backdrop-filter: blur(18px) saturate(1.25);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Glass that lifts and lights its border on hover (cards, rows). */
+.glass-hover {
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.glass-hover:hover,
+.glass-hover:focus-within {
+  transform: translateY(-3px);
+  border-color: var(--glass-border-hover);
+}
+
+/* Kept for compatibility: a faint accent line along the top edge. */
+.glass-glow {
+  position: relative;
+}
+
+/* Dark glass field (inputs/selects) with accent focus ring. */
+.glass-field {
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.glass-field:focus,
+.glass-field:focus-within {
+  outline: none;
+  border-color: var(--glass-border-hover);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-brand-500) 22%, transparent);
+}
+
+/* Primary gradient pill (the design's main CTA on every page). */
+.btn-accent {
+  background: linear-gradient(
+    135deg,
+    var(--btn-from) 0%,
+    var(--btn-mid) 55%,
+    var(--btn-to) 100%
+  );
+  color: var(--on-accent);
+  box-shadow:
+    0 8px 28px var(--btn-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.38);
+  transition: filter 0.15s;
+}
+
+.btn-accent:hover {
+  filter: brightness(1.08);
+}
+
+/* Secondary glass pill. */
+.btn-glass {
+  border: 1px solid var(--glass-border);
+  background: color-mix(in oklab, var(--page-bg) 60%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background-color 0.15s;
+}
+
+.btn-glass:hover {
+  background: color-mix(in oklab, var(--color-brand-400) 10%, transparent);
+}
+
+/* The orange dot after "Caribe Ops". */
+.brand-dot {
+  display: inline-block;
+  border-radius: 9999px;
+  background: var(--brand-dot);
+  box-shadow: 0 0 8px color-mix(in oklab, var(--brand-dot) 80%, transparent);
+}
+
+/* ------------------------------------------------------------------
+   Site header — the dashboard style on EVERY page: transparent header,
+   brand on the left, a large glass pill on the right whose active item
+   is lit with a bottom glow. Colours follow the page theme.
+------------------------------------------------------------------- */
+.site-header {
+  position: relative;
+  z-index: 40;
+}
+
+.site-header-inner {
+  box-sizing: border-box;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 28px clamp(20px, 5vw, 72px) 0;
+}
+
+.site-brand {
+  font-size: 26px;
+}
+
+.site-pill {
+  padding: 6px;
+  border: 1px solid color-mix(in oklab, var(--color-brand-300) 35%, transparent);
+  background: color-mix(in oklab, var(--page-bg) 55%, transparent);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.site-link {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  font-size: 14px;
+  color: var(--color-ink-700);
+  transition:
+    color 0.15s,
+    background-color 0.15s;
+}
+
+.site-link:hover {
+  color: #ffffff;
+}
+
+.site-link[aria-current="page"] {
+  padding: 0 20px;
+  font-weight: 600;
+  color: var(--color-brand-300);
+  background: color-mix(in oklab, var(--color-brand-300) 12%, transparent);
+  box-shadow: inset 0 -2px 0 var(--color-brand-300);
+}
+
+/* Phone dropdown (burger menu): solid page colour so page content never
+   shows through the links. */
+@media (max-width: 720px) {
+  #primary-menu.site-pill {
+    background: var(--page-bg);
+    box-shadow:
+      inset 0 1px 0 var(--glass-highlight),
+      0 24px 60px rgba(0, 0, 0, 0.6);
   }
 }
 
 /* ------------------------------------------------------------------
-   Glass surfaces — the signature of the night theme. Translucent dark
-   fill + a hairline cyan border + blur so the photo reads through, and
-   a deep drop shadow so cards lift off the backdrop.
+   Animal entrance — opacity/scale/translate/filter only (compositor).
+   1.8–2s, cubic-bezier(.16,1,.3,1), as in the design.
 ------------------------------------------------------------------- */
-.glass-card {
-  background: linear-gradient(
-    158deg,
-    rgba(15, 48, 59, 0.72) 0%,
-    rgba(7, 26, 34, 0.6) 100%
-  );
-  border: 1px solid rgba(111, 224, 216, 0.16);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  box-shadow:
-    0 24px 60px -30px rgba(0, 0, 0, 0.9),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+@keyframes emerge {
+  0% {
+    opacity: 0;
+    scale: 0.72;
+    translate: var(--emerge-x, -40px) 30px;
+    filter: blur(18px) brightness(0.4);
+  }
+  55% {
+    opacity: 1;
+    filter: blur(2px) brightness(0.9);
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+    filter: blur(0) brightness(1);
+  }
 }
 
-/* KPI/feature variant: adds the cyan glow along the top edge that the
-   dashboard mockup uses to signal "live" data. */
-.glass-glow {
-  position: relative;
-  overflow: hidden;
+@keyframes palm-fade {
+  0% {
+    opacity: 0;
+    filter: blur(14px) brightness(0.4);
+  }
+  100% {
+    opacity: 0.38;
+    filter: blur(1.5px) brightness(0.75) saturate(1.1);
+  }
 }
 
-.glass-glow::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(53, 205, 196, 0.7),
-    transparent
-  );
+.anim-emerge {
+  animation: emerge 2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+.anim-palm {
+  animation: palm-fade 2.4s ease 0.1s both;
 }
 
 /* ------------------------------------------------------------------
@@ -232,10 +594,6 @@
   animation-delay: 300ms;
 }
 
-/* ------------------------------------------------------------------
-   Breach entrance — compositor-only: touches transform/opacity only.
-   Curve is the approved 420ms cubic-bezier(.23,1,.32,1).
-------------------------------------------------------------------- */
 @keyframes breach {
   from {
     opacity: 0;
@@ -272,11 +630,20 @@
   .anim-delay-3,
   .anim-delay-4,
   .anim-delay-5,
-  .anim-breach {
+  .anim-breach,
+  .anim-emerge {
     animation: none !important;
   }
 
-  .lift:hover {
+  .anim-palm {
+    animation: none !important;
+    opacity: 0.38;
+    filter: blur(1.5px) brightness(0.75) saturate(1.1);
+  }
+
+  .lift:hover,
+  .glass-hover:hover,
+  .glass-hover:focus-within {
     transform: none;
   }
 }
